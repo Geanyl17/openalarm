@@ -67,6 +67,7 @@ import io.github.geanyl17.openalarm.core.RepeatDays
 import io.github.geanyl17.openalarm.core.nextTrigger
 import io.github.geanyl17.openalarm.missions.LocalMissionSensors
 import io.github.geanyl17.openalarm.missions.canRun
+import io.github.geanyl17.openalarm.missions.offered
 import io.github.geanyl17.openalarm.missions.difficultyName
 import io.github.geanyl17.openalarm.missions.missionName
 import io.github.geanyl17.openalarm.ui.resources.Res
@@ -250,7 +251,7 @@ internal fun AlarmEditorScreen(
                     OutlinedButton(
                         onClick = {
                             // A chain is more fun with different missions, so start with one that isn't in it yet.
-                            val type = MissionType.entries.firstOrNull { type -> missions.none { it.type == type } && sensors.canRun(type) }
+                            val type = MissionType.entries.firstOrNull { type -> missions.none { it.type == type } && type.offered && sensors.canRun(type) }
                                 ?: MissionType.Math
                             missions = missions + Mission(type)
                         },
@@ -355,9 +356,9 @@ private fun MissionCard(
                     Icon(painterResource(Res.drawable.ic_close), contentDescription = stringResource(Res.string.mission_remove, number))
                 }
             }
-            // Missions this phone can't run aren't offered.
+            // Missions this phone can't run, or that are held back for now, aren't offered.
             val sensors = LocalMissionSensors.current
-            val types = MissionType.entries.filter { it == mission.type || sensors.canRun(it) }
+            val types = MissionType.entries.filter { it == mission.type || (it.offered && sensors.canRun(it)) }
             var scanningTag by rememberSaveable { mutableStateOf(false) }
             ChoiceChips(
                 types,

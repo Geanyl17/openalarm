@@ -49,7 +49,7 @@ To dismiss an alarm, you complete one or more missions, which can be chained (fo
 | **Barcode** | Scan a barcode you registered earlier (toothpaste, a bag of coffee). | zxing-cpp | 1 |
 | **Lights On** | The room must stay bright for 20 seconds. Bright light helps shake off grogginess. | Light sensor or camera exposure | 2 |
 | **Photo Match** | Photograph a spot during setup (bathroom sink, coffee maker), then photograph it again to dismiss. | On-device image similarity against your reference photos | 3 |
-| **Object Hunt** | "Photograph a *toothbrush*": a random pick from objects you said are outside your bedroom. | Apache-2.0 object detector (EfficientDet-Lite) on LiteRT | 3 |
+| **Object Hunt** | "Photograph a *toothbrush*": a random pick from objects you said are outside your bedroom. | Apache-2.0 object detector (EfficientDet-Lite) on LiteRT | Later |
 
 Camera missions only accept the live camera, never gallery images. The target must stay in frame for about a second, and frames are never saved.
 
@@ -106,7 +106,7 @@ openalarm/
 │   ├── core/       # alarm model, next-ring-time math, snooze and dismiss rules (later: Wake Guard state machine)
 │   ├── data/       # alarm storage (a versioned JSON file)
 │   ├── ui/         # Compose Multiplatform screens and the theme engine
-│   └── missions/   # the missions: math, memory, reaction, Stroop, Lights On, Steps, NFC tag and the Alertness Gate so far, camera missions next
+│   └── missions/   # the missions: math, memory, reaction, Stroop, Lights On and Steps so far (NFC tag and the Alertness Gate held back), camera missions next
 ├── tools/          # scripts that generate bundled assets, such as the fallback alarm sound
 ├── iosApp/         # (Phase 5) AlarmKit alarm engine in Swift, Live Activity
 ├── models/         # (Phase 3) on-device ML models, their licenses and conversion scripts
@@ -156,12 +156,14 @@ IzzyOnDroid was part of this phase, but its [inclusion policy](https://izzyondro
 - [ ] Wake Guard 4 (with the camera missions in Phase 3)
 - [x] Mission chains
 - [x] Wake-up streaks
-- [x] Missions: Stroop, Lights On, Steps, NFC Tag, the Alertness Gate, and Reaction, a short version of it
+- [x] Missions: Stroop, Lights On, Steps, and Reaction, a short version of the Alertness Gate
+- [ ] NFC Tag and the full Alertness Gate: built, but held back for now as harder to set up and use
 - [ ] Submit to F-Droid
 
 ### Phase 3: smarter camera missions
 
-- [ ] Photo Match, Object Hunt, Wake Map
+- [ ] Photo Match, Wake Map
+- [ ] Object Hunt: postponed for now, as the hardest mission to build
 - [ ] Tooling to prepare, license-check and ship the ML models
 
 ### Phase 4: polish

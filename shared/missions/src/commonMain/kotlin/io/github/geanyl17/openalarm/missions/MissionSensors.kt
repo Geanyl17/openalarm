@@ -39,6 +39,12 @@ fun MissionSensors.canRun(type: MissionType): Boolean = when (type) {
     else -> true
 }
 
+/**
+ * Whether the alarm editor offers [this] mission. The NFC tag and Alertness missions are held back for now,
+ * as harder to set up and use than the rest; alarms that already have one still run it.
+ */
+val MissionType.offered: Boolean get() = this != MissionType.NfcTag && this != MissionType.Alertness
+
 /** Missions that need something done away from the screen, which a player might not manage. */
 internal val MissionType.usesHardware: Boolean
     get() = this == MissionType.LightsOn || this == MissionType.Steps || this == MissionType.NfcTag

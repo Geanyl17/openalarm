@@ -37,7 +37,11 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.geanyl17.openalarm.core.Mission
@@ -168,7 +172,7 @@ private fun Ringing(
                     modifier = Modifier.size(56.dp),
                 )
                 Text(
-                    text = formatTime(now.hour, now.minute, use24Hour),
+                    text = withSmallLetters(formatTime(now.hour, now.minute, use24Hour)),
                     style = MaterialTheme.typography.displayLarge.copy(fontSize = 88.sp, lineHeight = 96.sp),
                     modifier = Modifier.semantics { heading() },
                 )
@@ -213,5 +217,12 @@ private fun EmergencyCallButton(onClick: () -> Unit, modifier: Modifier = Modifi
         modifier = modifier,
     ) {
         Text(stringResource(Res.string.emergency_call))
+    }
+}
+
+/** AM and PM in a smaller size, so a time like 10:30 PM fits on one line. */
+private fun withSmallLetters(time: String): AnnotatedString = buildAnnotatedString {
+    for (char in time) {
+        if (char.isLetter() || char.isWhitespace()) withStyle(SpanStyle(fontSize = 36.sp)) { append(char) } else append(char)
     }
 }

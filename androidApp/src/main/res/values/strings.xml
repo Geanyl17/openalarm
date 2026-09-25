@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name" translatable="false">OpenAlarm</string>
+
+    <!-- The notification shown while an alarm rings -->
+    <string name="channel_ringing">Ringing alarms</string>
+    <string name="channel_ringing_description">Shows the alarm that\'s ringing right now, over the lock screen.</string>
+    <string name="notification_title">Alarm</string>
+    <string name="notification_text">Ringing now</string>
+    <string name="action_snooze">Snooze</string>
+    <string name="action_dismiss">Dismiss</string>
 </resources>

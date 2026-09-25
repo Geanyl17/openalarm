@@ -36,8 +36,10 @@ kotlin {
 }
 
 dependencies {
+    implementation(projects.shared.data)
     implementation(projects.shared.ui)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.core)
 }
 
 /** Fails the build if the final app manifest requests the internet permission. */

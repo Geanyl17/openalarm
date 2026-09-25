@@ -29,6 +29,7 @@ class RingingService : Service() {
     private lateinit var player: AlarmPlayer
     private lateinit var wakeLock: PowerManager.WakeLock
     private var timeout: Job? = null
+    private var heartbeat: Job? = null
     private var stopping = false
 
     override fun onCreate() {
@@ -79,6 +80,12 @@ class RingingService : Service() {
         if (current != null) return
 
         player.start(sound = ringing.first.sound, vibrate = ringing.alarms.any { it.vibrate }, fadeIn = ringing.first.fadeIn)
+        heartbeat = scope.launch {
+            while (true) {
+                RingingBackup.arm(this@RingingService, at)
+                delay(RingingBackup.delay / 2)
+            }
+        }
         timeout = scope.launch {
             delay(RING_TIMEOUT)
             // Nobody reacted. Snooze instead of ringing forever, so the alarm comes back.
@@ -91,6 +98,8 @@ class RingingService : Service() {
         val ringing = RingingSession.state.value
         stopping = true
         timeout?.cancel()
+        heartbeat?.cancel()
+        RingingBackup.cancel(this)
         player.stop()
         RingingSession.end()
         if (ringing != null) action(ringing.alarms.map { it.id })

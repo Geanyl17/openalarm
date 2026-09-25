@@ -28,12 +28,19 @@ class AlarmReceiver : BroadcastReceiver() {
         private const val ACTION_FIRE = "io.github.geanyl17.openalarm.action.FIRE"
         private const val EXTRA_TRIGGER_AT = "trigger_at"
 
-        fun pendingIntent(context: Context, at: Instant?): PendingIntent {
+        /** The next scheduled alarm. */
+        const val REQUEST_NEXT = 0
+
+        /** The backup that re-rings an alarm if the app dies while it's ringing. */
+        const val REQUEST_BACKUP = 1
+
+        /** Fires for the alarms due at [at]. [requestCode] keeps the next alarm and the backup apart. */
+        fun pendingIntent(context: Context, at: Instant?, requestCode: Int = REQUEST_NEXT): PendingIntent {
             val intent = Intent(context, AlarmReceiver::class.java).setAction(ACTION_FIRE)
             if (at != null) intent.putExtra(EXTRA_TRIGGER_AT, at.toEpochMilliseconds())
             return PendingIntent.getBroadcast(
                 context,
-                0,
+                requestCode,
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
             )

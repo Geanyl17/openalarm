@@ -3,6 +3,7 @@ package io.github.geanyl17.openalarm.ui.theme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import io.github.geanyl17.openalarm.core.ThemeMode
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -36,13 +37,15 @@ class ThemeContrastTest {
     fun everySeedColorGivesReadableText() {
         val failures = buildList {
             for (seed in seeds) {
-                for ((darkTheme, amoled) in listOf(false to false, true to false, true to true)) {
-                    val scheme = openAlarmColorScheme(seed, darkTheme, amoled)
-                    for ((pair, colors) in textOnBackgroundPairs(scheme)) {
-                        val ratio = contrastRatio(colors.first, colors.second)
-                        if (ratio < MIN_TEXT_CONTRAST) {
-                            val hex = seed.toArgb().toUInt().toString(16)
-                            add("seed #$hex dark=$darkTheme amoled=$amoled: $pair is only $ratio:1")
+                for (mode in ThemeMode.entries) {
+                    for (systemDark in listOf(false, true)) {
+                        val scheme = openAlarmColorScheme(seed, mode, systemDark)
+                        for ((pair, colors) in textOnBackgroundPairs(scheme)) {
+                            val ratio = contrastRatio(colors.first, colors.second)
+                            if (ratio < MIN_TEXT_CONTRAST) {
+                                val hex = seed.toArgb().toUInt().toString(16)
+                                add("seed #$hex $mode (phone dark=$systemDark): $pair is only $ratio:1")
+                            }
                         }
                     }
                 }

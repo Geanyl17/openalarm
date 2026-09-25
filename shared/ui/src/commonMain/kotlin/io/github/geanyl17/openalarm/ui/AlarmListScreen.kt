@@ -24,6 +24,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -49,11 +50,15 @@ import io.github.geanyl17.openalarm.ui.resources.add_alarm
 import io.github.geanyl17.openalarm.ui.resources.alarm_at
 import io.github.geanyl17.openalarm.ui.resources.app_name
 import io.github.geanyl17.openalarm.ui.resources.ic_add
+import io.github.geanyl17.openalarm.ui.resources.ic_palette
 import io.github.geanyl17.openalarm.ui.resources.ic_alarm
 import io.github.geanyl17.openalarm.ui.resources.next_alarm_in
 import io.github.geanyl17.openalarm.ui.resources.no_alarm_on
 import io.github.geanyl17.openalarm.ui.resources.no_alarms_title
 import io.github.geanyl17.openalarm.ui.resources.snoozed_until
+import io.github.geanyl17.openalarm.ui.resources.theme
+import io.github.geanyl17.openalarm.ui.theme.isNightRed
+import io.github.geanyl17.openalarm.ui.theme.nightRedFilter
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.painterResource
@@ -73,10 +78,20 @@ internal fun AlarmListScreen(
     onAdd: () -> Unit,
     onEdit: (Alarm) -> Unit,
     onToggle: (Alarm, Boolean) -> Unit,
+    onOpenTheme: () -> Unit,
 ) {
     val now = rememberNow(tick = 15.seconds)
     Scaffold(
-        topBar = { TopAppBar(title = { Text(stringResource(Res.string.app_name)) }) },
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(Res.string.app_name)) },
+                actions = {
+                    IconButton(onClick = onOpenTheme) {
+                        Icon(painterResource(Res.drawable.ic_palette), contentDescription = stringResource(Res.string.theme))
+                    }
+                },
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(onClick = onAdd) {
                 Icon(painterResource(Res.drawable.ic_add), contentDescription = stringResource(Res.string.add_alarm))
@@ -151,7 +166,7 @@ private fun AlarmCard(
                     Modifier
                         .size(12.dp)
                         .clip(CircleShape)
-                        .background(alarm.colorArgb?.let { Color(it) } ?: MaterialTheme.colorScheme.primary),
+                        .background(alarm.colorArgb?.takeUnless { isNightRed() }?.let { Color(it) } ?: MaterialTheme.colorScheme.primary),
                 )
             } else {
                 val photo = rememberPhoto(photos, alarm.photo, maxSize = 256)
@@ -167,6 +182,7 @@ private fun AlarmCard(
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
                             alpha = if (alarm.enabled) 1f else 0.5f,
+                            colorFilter = nightRedFilter(),
                             modifier = Modifier.fillMaxSize(),
                         )
                     }

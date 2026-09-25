@@ -11,6 +11,11 @@ All notable changes to OpenAlarm. Versions follow [Semantic Versioning](https://
 - A Reaction mission: tap as soon as the screen says so, within 0.9, 0.65 or 0.5 seconds depending on the difficulty. A miss costs a round, and after 3 misses you can switch to math.
 - A Colors mission: a color word is written in another color, and you tap the color, not the word. Its colors can be told apart with color blindness too. A wrong answer costs a round, and after 3 you can switch to math.
 - Mission chains: up to 3 missions on one alarm, done one after another.
+- A Theme screen, behind the palette button on the alarm list: pick the app's color, or take it from the wallpaper (Android 12 and later), and a mode: System, Light, Dark, Black (pure black backgrounds for OLED screens) or Night red (red on black, with no blue light, for setting alarms in bed). Alarms with their own color keep it, in the chosen mode.
+
+### Changed
+
+- Selected options in the alarm editor show a check mark, so they don't rely on color alone.
 
 ## [0.2.0] - 2026-09-25
 

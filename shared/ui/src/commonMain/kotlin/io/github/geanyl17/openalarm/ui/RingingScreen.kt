@@ -60,8 +60,8 @@ import io.github.geanyl17.openalarm.ui.resources.seconds_short
 import io.github.geanyl17.openalarm.ui.resources.snooze_for
 import io.github.geanyl17.openalarm.ui.resources.snooze_for_left
 import io.github.geanyl17.openalarm.ui.resources.turn_off
-import io.github.geanyl17.openalarm.ui.theme.DefaultSeedColor
 import io.github.geanyl17.openalarm.ui.theme.OpenAlarmTheme
+import io.github.geanyl17.openalarm.ui.theme.nightRedFilter
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -97,7 +97,7 @@ fun RingingScreen(
     checkInUntil: Long? = null,
     onCheckedIn: () -> Unit = {},
 ) {
-    OpenAlarmTheme(seedColor = colorArgb?.let { Color(it) } ?: DefaultSeedColor) {
+    OpenAlarmTheme(seedColor = colorArgb?.let { Color(it) }) {
         val instant = rememberNow(tick = 1.seconds)
         val now = instant.toLocalDateTime(TimeZone.currentSystemDefault())
         var solving by rememberSaveable { mutableStateOf(false) }
@@ -206,6 +206,7 @@ private fun Ringing(
                     bitmap = it,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
+                    colorFilter = nightRedFilter(),
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()

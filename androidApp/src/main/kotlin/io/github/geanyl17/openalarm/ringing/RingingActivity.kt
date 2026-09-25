@@ -12,7 +12,6 @@ import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.addCallback
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,7 +20,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.lifecycleScope
 import io.github.geanyl17.openalarm.AlarmMedia
+import io.github.geanyl17.openalarm.WithThemeSettings
+import io.github.geanyl17.openalarm.wallpaperColor
 import io.github.geanyl17.openalarm.ui.RingingScreen
+import io.github.geanyl17.openalarm.ui.theme.ProvideAppTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -36,7 +38,6 @@ class RingingActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         showOverLockScreen()
-        enableEdgeToEdge()
         // Back must not make a ringing alarm go away.
         onBackPressedDispatcher.addCallback(this) {}
         startWithMission = intent.getBooleanExtra(EXTRA_START_MISSION, false)
@@ -50,22 +51,26 @@ class RingingActivity : ComponentActivity() {
                 val photo by produceState<ImageBitmap?>(null, current.photo) {
                     value = current.photo?.let { withContext(Dispatchers.IO) { AlarmMedia.loadPhoto(it, AlarmMedia.PHOTO_SIZE) } }
                 }
-                RingingScreen(
-                    label = current.label,
-                    colorArgb = current.first.colorArgb,
-                    photo = photo,
-                    snoozeMinutes = current.snoozeMinutes,
-                    snoozesLeft = current.snoozesLeft,
-                    missions = current.missions,
-                    use24Hour = use24Hour,
-                    startWithMission = startWithMission,
-                    onSnooze = { startService(RingingService.intent(this, RingingService.ACTION_SNOOZE)) },
-                    onDismiss = { startService(RingingService.intent(this, RingingService.ACTION_DISMISS)) },
-                    onMissionInteraction = RingingSession::missionInteraction,
-                    onEmergencyCall = ::callEmergencyServices,
-                    checkInUntil = current.checkInUntil,
-                    onCheckedIn = { startService(RingingService.intent(this, RingingService.ACTION_CHECKED_IN)) },
-                )
+                WithThemeSettings { theme ->
+                    ProvideAppTheme(theme, wallpaperColor(this)) {
+                        RingingScreen(
+                            label = current.label,
+                            colorArgb = current.first.colorArgb,
+                            photo = photo,
+                            snoozeMinutes = current.snoozeMinutes,
+                            snoozesLeft = current.snoozesLeft,
+                            missions = current.missions,
+                            use24Hour = use24Hour,
+                            startWithMission = startWithMission,
+                            onSnooze = { startService(RingingService.intent(this, RingingService.ACTION_SNOOZE)) },
+                            onDismiss = { startService(RingingService.intent(this, RingingService.ACTION_DISMISS)) },
+                            onMissionInteraction = RingingSession::missionInteraction,
+                            onEmergencyCall = ::callEmergencyServices,
+                            checkInUntil = current.checkInUntil,
+                            onCheckedIn = { startService(RingingService.intent(this, RingingService.ACTION_CHECKED_IN)) },
+                        )
+                    }
+                }
             }
         }
     }

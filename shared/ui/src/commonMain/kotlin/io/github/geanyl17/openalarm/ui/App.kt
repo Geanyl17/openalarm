@@ -7,14 +7,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.graphics.Color
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import io.github.geanyl17.openalarm.core.Alarm
 import io.github.geanyl17.openalarm.core.AlarmController
+import io.github.geanyl17.openalarm.core.ThemeSettings
 import io.github.geanyl17.openalarm.core.nextTrigger
 import io.github.geanyl17.openalarm.ui.resources.Res
 import io.github.geanyl17.openalarm.ui.resources.alarm_set_for
 import io.github.geanyl17.openalarm.ui.theme.OpenAlarmTheme
+import io.github.geanyl17.openalarm.ui.theme.ProvideAppTheme
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import org.jetbrains.compose.resources.getString
@@ -25,11 +28,14 @@ private sealed interface Screen {
 
     /** Editing [alarm], or creating a new one when it's null. */
     data class EditAlarm(val alarm: Alarm?) : Screen
+
+    data object Theme : Screen
 }
 
 /**
  * The main app UI. [setupIssues] lists the permissions still missing, and [onFixSetupIssue]
  * takes the user to where they can grant one. Both come from the platform, as do [sounds] and [photos].
+ * [wallpaperColor] is the wallpaper's main color, or null on phones that don't offer one.
  */
 @Composable
 fun App(
@@ -39,7 +45,10 @@ fun App(
     sounds: AlarmSounds,
     photos: AlarmPhotos,
     use24Hour: Boolean,
-) {
+    theme: ThemeSettings,
+    wallpaperColor: Color?,
+    onThemeChange: (ThemeSettings) -> Unit,
+) = ProvideAppTheme(theme, wallpaperColor) {
     OpenAlarmTheme {
         val backStack = remember { mutableStateListOf<Screen>(Screen.AlarmList) }
         val scope = rememberCoroutineScope()
@@ -73,6 +82,15 @@ fun App(
                                 if (enabled) confirmSchedule(alarm.copy(enabled = true, snoozedUntil = null))
                             }
                         },
+                        onOpenTheme = { backStack.add(Screen.Theme) },
+                    )
+                }
+                entry<Screen.Theme> {
+                    ThemeScreen(
+                        theme = theme,
+                        wallpaperColorsAvailable = wallpaperColor != null,
+                        onChange = onThemeChange,
+                        onClose = { backStack.removeLastOrNull() },
                     )
                 }
                 entry<Screen.EditAlarm> { screen ->

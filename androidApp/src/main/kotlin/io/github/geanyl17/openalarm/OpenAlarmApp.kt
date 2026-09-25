@@ -4,11 +4,19 @@ import android.app.Application
 import android.content.Context
 import io.github.geanyl17.openalarm.alarm.AndroidAlarmScheduler
 import io.github.geanyl17.openalarm.core.AlarmController
+import io.github.geanyl17.openalarm.core.ThemeSettings
 import io.github.geanyl17.openalarm.data.openAlarmRepository
+import io.github.geanyl17.openalarm.data.openSettingsRepository
 import io.github.geanyl17.openalarm.ringing.RingingNotification
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import okio.FileSystem
 import okio.Path.Companion.toOkioPath
 import org.jetbrains.compose.resources.ExperimentalResourceApi
@@ -31,16 +39,26 @@ class OpenAlarmApp : Application() {
 class AppGraph(app: Application) {
     val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
+    // Device-protected storage can be read before the first unlock after a reboot,
+    // so alarms still ring, in the chosen theme, if the phone restarts overnight.
+    private val files = app.createDeviceProtectedStorageContext().filesDir.toOkioPath()
+
     val controller = AlarmController(
-        repository = openAlarmRepository(
-            fileSystem = FileSystem.SYSTEM,
-            // Device-protected storage can be read before the first unlock after a reboot,
-            // so alarms still ring if the phone restarts overnight.
-            path = app.createDeviceProtectedStorageContext().filesDir.toOkioPath() / "alarms.json",
-            scope = scope,
-        ),
+        repository = openAlarmRepository(FileSystem.SYSTEM, files / "alarms.json", scope),
         scheduler = AndroidAlarmScheduler(app),
     )
+
+    val settings = openSettingsRepository(FileSystem.SYSTEM, files / "settings.json", scope)
+
+    /** Null until the settings file has been read. If it can't be, the app still works in the default theme. */
+    val theme: StateFlow<ThemeSettings?> = settings.settings
+        .map { it.theme }
+        .catch { emit(ThemeSettings()) }
+        .stateIn(scope, SharingStarted.Eagerly, null)
+
+    fun setTheme(theme: ThemeSettings) {
+        scope.launch { settings.update { it.copy(theme = theme) } }
+    }
 }
 
 val Context.appGraph: AppGraph get() = (applicationContext as OpenAlarmApp).graph

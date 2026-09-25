@@ -39,6 +39,7 @@ import io.github.geanyl17.openalarm.ui.resources.color_sunrise
 import io.github.geanyl17.openalarm.ui.resources.color_teal
 import io.github.geanyl17.openalarm.ui.resources.color_yellow
 import io.github.geanyl17.openalarm.ui.theme.DefaultSeedColor
+import io.github.geanyl17.openalarm.ui.theme.LocalAppTheme
 import io.github.geanyl17.openalarm.ui.theme.openAlarmColorScheme
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -61,20 +62,24 @@ private val Rainbow = Brush.sweepGradient(
     listOf(Color.Red, Color.Yellow, Color.Green, Color.Cyan, Color.Blue, Color.Magenta, Color.Red),
 )
 
-/** The preset colors, plus a custom one picked on a color wheel. */
+/**
+ * The preset colors, plus a custom one picked on a color wheel. [withThemeColor] adds "Theme color"
+ * (null) in front, for things that can follow the app's color.
+ */
 @Composable
-internal fun AlarmColorPicker(selected: Int?, onSelect: (Int?) -> Unit) {
+internal fun AlarmColorPicker(selected: Int?, onSelect: (Int?) -> Unit, withThemeColor: Boolean = true) {
     var pickingCustom by rememberSaveable { mutableStateOf(false) }
     val custom = selected?.takeIf { argb -> AlarmColors.none { it.argb == argb } }
     // The editor is themed with the alarm's own color, so "Theme color" has to show the app theme explicitly.
-    val darkTheme = isSystemInDarkTheme()
-    val appThemeColor = remember(darkTheme) { openAlarmColorScheme(DefaultSeedColor, darkTheme).primary }
+    val appTheme = LocalAppTheme.current
+    val systemDark = isSystemInDarkTheme()
+    val appThemeColor = remember(appTheme, systemDark) { openAlarmColorScheme(appTheme.seedColor, appTheme.mode, systemDark).primary }
 
     FlowRow(
         modifier = Modifier.selectableGroup(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        AlarmColors.forEach { option ->
+        AlarmColors.filter { withThemeColor || it.argb != null }.forEach { option ->
             Swatch(
                 name = stringResource(option.name),
                 fill = SolidColor(option.argb?.let { Color(it) } ?: appThemeColor),

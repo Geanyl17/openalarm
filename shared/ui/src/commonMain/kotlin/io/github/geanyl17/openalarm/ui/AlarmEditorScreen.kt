@@ -25,6 +25,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -70,6 +71,7 @@ import io.github.geanyl17.openalarm.ui.resources.delete_alarm
 import io.github.geanyl17.openalarm.ui.resources.edit_alarm
 import io.github.geanyl17.openalarm.ui.resources.fade_in
 import io.github.geanyl17.openalarm.ui.resources.ic_add
+import io.github.geanyl17.openalarm.ui.resources.ic_check
 import io.github.geanyl17.openalarm.ui.resources.ic_close
 import io.github.geanyl17.openalarm.ui.resources.ic_delete
 import io.github.geanyl17.openalarm.ui.resources.label
@@ -95,7 +97,6 @@ import io.github.geanyl17.openalarm.ui.resources.sound
 import io.github.geanyl17.openalarm.ui.resources.sound_custom
 import io.github.geanyl17.openalarm.ui.resources.sound_default
 import io.github.geanyl17.openalarm.ui.resources.vibrate
-import io.github.geanyl17.openalarm.ui.theme.DefaultSeedColor
 import io.github.geanyl17.openalarm.ui.theme.OpenAlarmTheme
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.TimeZone
@@ -145,7 +146,7 @@ internal fun AlarmEditorScreen(
     var snoozeLimit by rememberSaveable { mutableStateOf(base.snoozeLimit) }
 
     // The editor takes on the alarm's color, as a live preview of how it will look when it rings.
-    OpenAlarmTheme(seedColor = colorArgb?.let { Color(it) } ?: DefaultSeedColor) {
+    OpenAlarmTheme(seedColor = colorArgb?.let { Color(it) }) {
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -296,7 +297,7 @@ private fun ColumnScope.RingsIn(alarm: Alarm) {
 }
 
 @Composable
-private fun SectionTitle(text: String) {
+internal fun SectionTitle(text: String) {
     Text(
         text = text,
         style = MaterialTheme.typography.titleSmall,
@@ -329,13 +330,19 @@ private fun MissionCard(number: Int, mission: Mission, onChange: (Mission) -> Un
 }
 
 @Composable
-private fun <T> ChoiceChips(options: List<T>, selected: T, label: @Composable (T) -> String, onSelect: (T) -> Unit) {
+internal fun <T> ChoiceChips(options: List<T>, selected: T, label: @Composable (T) -> String, onSelect: (T) -> Unit) {
     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         options.forEach { option ->
             FilterChip(
                 selected = option == selected,
                 onClick = { onSelect(option) },
                 label = { Text(label(option)) },
+                // Shows the choice without relying on color, which matters most in Night red.
+                leadingIcon = if (option == selected) {
+                    { Icon(painterResource(Res.drawable.ic_check), contentDescription = null, Modifier.size(FilterChipDefaults.IconSize)) }
+                } else {
+                    null
+                },
             )
         }
     }
@@ -427,7 +434,7 @@ private fun DayToggles(repeat: RepeatDays, onChange: (RepeatDays) -> Unit) {
 }
 
 @Composable
-private fun SwitchRow(title: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
+internal fun SwitchRow(title: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()

@@ -11,7 +11,6 @@ import android.text.format.DateFormat
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.getValue
@@ -91,7 +90,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         val graph = appGraph
         // "Force stop" in the system settings deletes the app's scheduled alarms; opening the app re-arms them.
         graph.scope.launch { graph.controller.reschedule() }
@@ -99,14 +97,19 @@ class MainActivity : ComponentActivity() {
             graph.controller.alarms.collect { AlarmMedia.deleteUnused(this@MainActivity, it) }
         }
         setContent {
-            App(
-                controller = graph.controller,
-                setupIssues = setupIssues,
-                onFixSetupIssue = ::fixSetupIssue,
-                sounds = sounds,
-                photos = photos,
-                use24Hour = DateFormat.is24HourFormat(this),
-            )
+            WithThemeSettings { theme ->
+                App(
+                    controller = graph.controller,
+                    setupIssues = setupIssues,
+                    onFixSetupIssue = ::fixSetupIssue,
+                    sounds = sounds,
+                    photos = photos,
+                    use24Hour = DateFormat.is24HourFormat(this),
+                    theme = theme,
+                    wallpaperColor = wallpaperColor(this),
+                    onThemeChange = graph::setTheme,
+                )
+            }
         }
     }
 

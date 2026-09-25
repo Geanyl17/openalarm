@@ -89,6 +89,17 @@
     <string name="mission_difficulty">Difficulty</string>
     <string name="mission_rounds">Rounds</string>
 
+    <!-- Theme -->
+    <string name="theme">Theme</string>
+    <string name="back">Back</string>
+    <string name="theme_mode">Mode</string>
+    <string name="mode_system">System</string>
+    <string name="mode_light">Light</string>
+    <string name="mode_dark">Dark</string>
+    <string name="mode_black">Black</string>
+    <string name="mode_night_red">Night red</string>
+    <string name="wallpaper_colors">Wallpaper colors</string>
+
     <!-- Colors -->
     <string name="color_default">Theme color</string>
     <string name="color_sunrise">Sunrise</string>

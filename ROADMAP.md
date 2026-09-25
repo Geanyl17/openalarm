@@ -142,7 +142,7 @@ Each mission declares what it needs (camera, NFC, step counter, microphone) and 
 - [x] Missions: Math and Memory, with the alarm quiet while you solve and loud again if you stop
 - [ ] Missions: Color Hunt and Barcode (camera)
 - [x] A color for each alarm: a preset or any color from a color wheel
-- [ ] App color picker, AMOLED black
+- [x] App color picker, AMOLED black
 - [x] Release on GitHub, with updates through Obtainium
 
 IzzyOnDroid was part of this phase, but its [inclusion policy](https://izzyondroid.org/docs/general/AppInclusionPolicy/) rejects apps whose code is partly written by generative AI tools, and OpenAlarm's is.
@@ -168,7 +168,8 @@ IzzyOnDroid was part of this phase, but its [inclusion policy](https://izzyondro
 ### Phase 4: polish
 
 - [x] Your own alarm sounds, and a cover photo for each alarm
-- [ ] Night Red, Material You, ringing screen styles
+- [x] Night Red, Material You
+- [ ] Ringing screen styles
 - [ ] Theme sharing and the community theme gallery
 - [ ] Hum It mission, home screen widgets
 - [ ] Translations through Hosted Weblate

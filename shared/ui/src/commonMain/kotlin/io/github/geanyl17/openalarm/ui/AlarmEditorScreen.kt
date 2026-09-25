@@ -3,6 +3,7 @@ package io.github.geanyl17.openalarm.ui
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -51,10 +52,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.offset
 import io.github.geanyl17.openalarm.core.Alarm
 import io.github.geanyl17.openalarm.core.Difficulty
 import io.github.geanyl17.openalarm.core.Mission
@@ -117,6 +121,9 @@ private val MissionsSaver = listSaver<List<Mission>, Int>(
 /** No limit, then fewer and fewer snoozes, down to none. */
 private val SnoozeLimits = listOf(null, 3, 2, 1, 0)
 private const val MAX_LABEL_LENGTH = 60
+
+/** How far a row's press highlight reaches past its text on each side. */
+private val RowHighlightBleed = 12.dp
 
 /** Creates a new alarm when [initial] is null, otherwise edits it. */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -357,14 +364,26 @@ private fun SoundRow(sound: String?, sounds: AlarmSounds, onChosen: (String?) ->
     }
     Column(
         Modifier
-            .fillMaxWidth()
             .padding(top = 8.dp)
+            .bleed(RowHighlightBleed)
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.medium)
             .clickable { sounds.choose(sound, onChosen) }
-            .padding(vertical = 12.dp),
+            .padding(horizontal = RowHighlightBleed, vertical = 12.dp),
     ) {
         Text(stringResource(Res.string.sound), style = MaterialTheme.typography.bodyLarge)
         Text(name, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
+}
+
+/**
+ * Widens an element by [amount] on each side without moving its content, so a rounded press highlight
+ * has some room around the text instead of ending right at its edge.
+ */
+private fun Modifier.bleed(amount: Dp): Modifier = layout { measurable, constraints ->
+    val extra = (amount * 2).roundToPx()
+    val placeable = measurable.measure(constraints.offset(horizontal = extra))
+    layout(placeable.width - extra, placeable.height) { placeable.place(-extra / 2, 0) }
 }
 
 @Composable
@@ -435,14 +454,22 @@ private fun DayToggles(repeat: RepeatDays, onChange: (RepeatDays) -> Unit) {
 
 @Composable
 internal fun SwitchRow(title: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
+    // The whole row toggles, but only the switch lights up when pressed or hovered, not a box around the row.
+    val interactionSource = remember { MutableInteractionSource() }
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .toggleable(value = checked, role = Role.Switch, onValueChange = onCheckedChange)
+            .toggleable(
+                value = checked,
+                interactionSource = interactionSource,
+                indication = null,
+                role = Role.Switch,
+                onValueChange = onCheckedChange,
+            )
             .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(title, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
-        Switch(checked = checked, onCheckedChange = null)
+        Switch(checked = checked, onCheckedChange = null, interactionSource = interactionSource)
     }
 }

@@ -1,0 +1,60 @@
+name: Alarm didn't ring
+description: An alarm didn't go off, went off late, was silent, or didn't show its screen.
+title: "Alarm didn't ring: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A missed alarm is the most serious bug OpenAlarm can have, so thank you for reporting it.
+        Phone makers change how Android treats background apps, so the details below really matter.
+  - type: dropdown
+    id: symptom
+    attributes:
+      label: What went wrong?
+      options:
+        - It didn't ring at all
+        - It rang late
+        - It rang without sound
+        - The sound played but the alarm screen didn't appear
+        - Something else (describe below)
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: What happened?
+      description: The alarm time and repeat days, when (or whether) it rang, and anything unusual that night.
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Phone make, model and Android version
+      placeholder: "Samsung Galaxy A55, Android 16 (One UI 8)"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: OpenAlarm version, and where you installed it from
+      placeholder: "0.1.0 from IzzyOnDroid"
+    validations:
+      required: true
+  - type: checkboxes
+    id: conditions
+    attributes:
+      label: That night (tick all that apply)
+      options:
+        - label: The phone restarted overnight (for example, for a system update)
+        - label: Battery saver was on
+        - label: Do Not Disturb or a Focus mode was on
+        - label: The phone was charging
+        - label: I force-stopped OpenAlarm or swiped it away before bed
+        - label: OpenAlarm is excluded from battery optimization
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Diagnostics
+      description: If your version has it, paste the output of "Copy diagnostics" from the alarm log.
+      render: text

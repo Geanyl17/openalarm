@@ -1,0 +1,36 @@
+name: Feature or mission idea
+description: Suggest a feature, a new mission, a Wake Guard idea or a theme.
+labels: ["enhancement"]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Mission (a challenge for turning off the alarm)
+        - Wake Guard (staying awake afterwards)
+        - Colors and themes
+        - Alarms and reliability
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: For a mission, what makes it hard to do half asleep but easy once you're up?
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: Your idea
+    validations:
+      required: true
+  - type: textarea
+    id: concerns
+    attributes:
+      label: Privacy, accessibility and cheating
+      description: >
+        Would it need a new permission or the internet? Could someone who can't see, hear or move easily
+        still turn their alarm off? How might a sleepy person get around it?

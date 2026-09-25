@@ -1,0 +1,42 @@
+name: Bug report
+description: Something in OpenAlarm doesn't work as it should.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! If an alarm didn't ring, rang late or rang silently, please use the
+        **Alarm didn't ring** template instead.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Create an alarm with...
+        2. ...
+  - type: input
+    id: version
+    attributes:
+      label: OpenAlarm version
+      description: The version shown in the app, or of the APK you installed.
+      placeholder: "0.1.0"
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Phone model and Android version
+      placeholder: "Pixel 9, Android 17"
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Screenshots, logs or anything else

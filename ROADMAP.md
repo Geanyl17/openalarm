@@ -100,12 +100,13 @@ Every channel gets the same fully open-source build. There's no separate Google 
 
 ```
 openalarm/
-├── androidApp/     # Android app. Later also the alarm engine: scheduling, receivers, ringing service, sensors
+├── androidApp/     # Android app and alarm engine: scheduling, receivers, ringing service and screen
 ├── shared/
+│   ├── core/       # alarm model, next-ring-time math, snooze and dismiss rules (later: Wake Guard state machine)
+│   ├── data/       # alarm storage (a versioned JSON file)
 │   ├── ui/         # Compose Multiplatform screens and the theme engine
-│   ├── core/       # (Phase 1) alarm model, next-ring-time math, snooze rules, Wake Guard state machine
-│   ├── missions/   # (Phase 1) mission plug-in API and the missions that need no hardware
-│   └── data/       # (Phase 1) database and settings
+│   └── missions/   # (Phase 1) mission plug-in API and the missions that need no hardware
+├── tools/          # scripts that generate bundled assets, such as the fallback alarm sound
 ├── iosApp/         # (Phase 5) AlarmKit alarm engine in Swift, Live Activity
 ├── models/         # (Phase 3) on-device ML models, their licenses and conversion scripts
 └── themes/         # (Phase 4) community themes as JSON
@@ -126,12 +127,18 @@ Each mission declares what it needs (camera, NFC, step counter, microphone) and 
 
 ### Phase 1: "It always rings" (first Android release)
 
-- [ ] Alarms: time, repeat days, label, sound, fade-in, vibration, snooze
-- [ ] Ringing screen over the lock screen
-- [ ] Rescheduling after reboot, time-zone and daylight-saving changes; Direct Boot support
+- [x] Alarms: time, repeat days, label, fade-in, vibration, snooze length
+- [ ] Choosing the alarm sound (for now it's the phone's default alarm sound)
+- [x] Ringing screen over the lock screen, with snooze and dismiss
+- [x] Re-arming after a reboot, a clock or time-zone change, and an app update
+- [x] Direct Boot: alarms ring even before the first unlock after a reboot
+- [x] Daylight-saving gaps and overlaps, covered by tests
+- [x] Never silent: falls back to a bundled sound, and a backup alarm re-rings within a minute if the app dies while ringing
+- [x] Setup checks for notifications, full-screen alarms and exact alarms
 - [ ] Reliability self-test and alarm log
 - [ ] Missions: Math, Memory, Color Hunt, Barcode
-- [ ] Colors: color picker, light/dark/AMOLED, a color per alarm
+- [x] A color for each alarm
+- [ ] App color picker, AMOLED black
 - [ ] Release on GitHub and IzzyOnDroid
 
 ### Phase 2: "You can't fall back asleep"

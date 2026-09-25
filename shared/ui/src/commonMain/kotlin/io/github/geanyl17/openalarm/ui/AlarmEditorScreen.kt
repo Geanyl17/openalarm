@@ -31,6 +31,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -290,7 +291,14 @@ private fun DayToggles(repeat: RepeatDays, onChange: (RepeatDays) -> Unit) {
                 modifier = Modifier
                     .weight(1f)
                     .height(48.dp)
-                    .toggleable(value = selected, role = Role.Checkbox, onValueChange = { onChange(repeat.toggle(day)) })
+                    .toggleable(
+                        value = selected,
+                        interactionSource = null,
+                        // The whole cell is tappable, but the ripple is round to match the circle.
+                        indication = ripple(bounded = false, radius = 22.dp),
+                        role = Role.Checkbox,
+                        onValueChange = { onChange(repeat.toggle(day)) },
+                    )
                     .semantics { contentDescription = name },
                 contentAlignment = Alignment.Center,
             ) {

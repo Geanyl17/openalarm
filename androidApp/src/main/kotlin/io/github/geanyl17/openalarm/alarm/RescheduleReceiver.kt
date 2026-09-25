@@ -5,11 +5,13 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import io.github.geanyl17.openalarm.appGraph
+import io.github.geanyl17.openalarm.ringing.RingingBackup
 import kotlinx.coroutines.launch
 
 /**
  * Re-arms the next alarm whenever the system may have dropped or shifted it: after a reboot
- * (including before the first unlock), a clock or time zone change, or an app update.
+ * (including before the first unlock), a clock or time zone change, or an app update. An alarm
+ * that was still ringing when the phone switched off rings again.
  */
 class RescheduleReceiver : BroadcastReceiver() {
 
@@ -20,6 +22,7 @@ class RescheduleReceiver : BroadcastReceiver() {
         graph.scope.launch {
             try {
                 graph.controller.reschedule()
+                RingingBackup.ringAgainIfInterrupted(context)
             } finally {
                 pending.finish()
             }

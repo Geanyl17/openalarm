@@ -47,6 +47,10 @@ internal class AlarmPlayer(private val context: Context) {
     private var vibrate = false
     private var vibrating = false
     private var quiet = false
+    private var silenced = false
+
+    /** The alarm volume when ringing started. It can't be turned lower while the alarm rings. */
+    private var volumeFloor: Int? = null
 
     /** The fade-in volume, before [setQuiet] turns it down. */
     private var fadeVolume = 1f
@@ -56,6 +60,7 @@ internal class AlarmPlayer(private val context: Context) {
         this.vibrate = vibrate
         fadeVolume = if (fadeIn) MIN_VOLUME else 1f
         raiseVolumeIfMuted()
+        volumeFloor = audioManager.getStreamVolume(AudioManager.STREAM_ALARM)
         audioFocus = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
             .setAudioAttributes(alarmAudio)
             .build()
@@ -82,6 +87,8 @@ internal class AlarmPlayer(private val context: Context) {
         stopVibration()
         vibrate = false
         quiet = false
+        silenced = false
+        volumeFloor = null
         audioFocus?.let { audioManager.abandonAudioFocusRequest(it) }
         audioFocus = null
         volumeToRestore?.let { runCatching { audioManager.setStreamVolume(AudioManager.STREAM_ALARM, it, 0) } }
@@ -121,14 +128,41 @@ internal class AlarmPlayer(private val context: Context) {
     fun setQuiet(quiet: Boolean) {
         if (this.quiet == quiet) return
         this.quiet = quiet
+        applyLevel()
+    }
+
+    /** Silences the alarm completely during a phone call or an emergency call, or brings it back. */
+    fun setSilenced(silenced: Boolean) {
+        if (this.silenced == silenced) return
+        this.silenced = silenced
+        tone?.run { if (silenced) stopTone() else startTone(ToneGenerator.TONE_CDMA_EMERGENCY_RINGBACK) }
+        applyLevel()
+    }
+
+    /** Puts the alarm volume back up if something turned it below where it started. Call it regularly while ringing. */
+    fun keepVolumeUp() {
+        val floor = volumeFloor ?: return
+        if (audioManager.getStreamVolume(AudioManager.STREAM_ALARM) >= floor) return
+        try {
+            audioManager.setStreamVolume(AudioManager.STREAM_ALARM, floor, 0)
+        } catch (e: SecurityException) {
+            Log.w(TAG, "Can't restore the alarm volume", e)
+        }
+    }
+
+    private fun applyLevel() {
         player?.let { applyVolume(it) }
         if (vibrate) {
-            if (quiet) stopVibration() else startVibration()
+            if (quiet || silenced) stopVibration() else startVibration()
         }
     }
 
     private fun applyVolume(target: MediaPlayer) {
-        val volume = fadeVolume * if (quiet) QUIET_VOLUME else 1f
+        val volume = when {
+            silenced -> 0f
+            quiet -> fadeVolume * QUIET_VOLUME
+            else -> fadeVolume
+        }
         target.setVolume(volume, volume)
     }
 

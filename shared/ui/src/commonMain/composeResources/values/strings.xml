@@ -101,6 +101,7 @@
     <string name="snooze_for">Snooze %1$d min</string>
     <string name="dismiss">Dismiss</string>
     <string name="turn_off">Turn off</string>
+    <string name="emergency_call">Emergency call</string>
 
     <!-- Setup problems shown above the alarm list -->
     <string name="setup_notifications_title">Alarms can't ring yet</string>
@@ -110,5 +111,7 @@
     <string name="setup_full_screen_body">Allow full-screen notifications so a ringing alarm shows up over your lock screen.</string>
     <string name="setup_exact_alarms_title">Alarms might ring late</string>
     <string name="setup_exact_alarms_body">Allow OpenAlarm to set alarms so they ring at exactly the right time.</string>
+    <string name="setup_overlay_title">A ringing alarm can be pushed aside</string>
+    <string name="setup_overlay_body">Allow OpenAlarm to display over other apps, so a ringing alarm keeps coming back until you turn it off. If the switch is grayed out, open OpenAlarm's App info, tap ⋮ and choose “Allow restricted settings” first.</string>
     <string name="open_settings">Open settings</string>
 </resources>

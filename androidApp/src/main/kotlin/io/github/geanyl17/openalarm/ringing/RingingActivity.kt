@@ -1,10 +1,13 @@
 package io.github.geanyl17.openalarm.ringing
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.text.format.DateFormat
+import android.util.Log
+import android.view.KeyEvent
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.addCallback
@@ -49,6 +52,7 @@ class RingingActivity : ComponentActivity() {
                     onSnooze = { startService(RingingService.intent(this, RingingService.ACTION_SNOOZE)) },
                     onDismiss = { startService(RingingService.intent(this, RingingService.ACTION_DISMISS)) },
                     onMissionInteraction = RingingSession::missionInteraction,
+                    onEmergencyCall = ::callEmergencyServices,
                 )
             }
         }
@@ -63,6 +67,46 @@ class RingingActivity : ComponentActivity() {
         withTimeoutOrNull(RINGING_START_TIMEOUT) { RingingSession.state.first { it != null } }
         RingingSession.state.first { it == null }
         finish()
+    }
+
+    // "On screen" means in front of everything: the app switcher, for one, keeps this screen visible
+    // behind it. Before Android 10 there's no way to tell, so being started has to do.
+    override fun onStart() {
+        super.onStart()
+        if (Build.VERSION.SDK_INT < 29) RingingSession.setScreenVisible(true)
+    }
+
+    override fun onTopResumedActivityChanged(isTopResumedActivity: Boolean) {
+        super.onTopResumedActivityChanged(isTopResumedActivity)
+        RingingSession.setScreenVisible(isTopResumedActivity)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        RingingSession.setScreenVisible(false)
+    }
+
+    // The volume can't be turned down while the alarm rings. RingingService also puts it back up
+    // if it's lowered some other way.
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean = keyCode.isVolumeDown() || super.onKeyDown(keyCode, event)
+
+    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean = keyCode.isVolumeDown() || super.onKeyUp(keyCode, event)
+
+    private fun Int.isVolumeDown() = this == KeyEvent.KEYCODE_VOLUME_DOWN || this == KeyEvent.KEYCODE_VOLUME_MUTE
+
+    /** Opens the emergency dialer. The alarm stays silent and lets the phone be used for a while. */
+    private fun callEmergencyServices() {
+        RingingSession.emergencyCall()
+        // The phone app's emergency dialer works over the lock screen. A phone without it gets the
+        // regular dialer, and a locked one offers its own emergency call button on the way.
+        for (dialer in listOf(Intent(ACTION_EMERGENCY_DIAL), Intent(Intent.ACTION_DIAL))) {
+            try {
+                startActivity(dialer)
+                return
+            } catch (e: ActivityNotFoundException) {
+                Log.w(TAG, "No activity for ${dialer.action}", e)
+            }
+        }
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -83,6 +127,8 @@ class RingingActivity : ComponentActivity() {
     }
 
     companion object {
+        private const val TAG = "RingingActivity"
+        private const val ACTION_EMERGENCY_DIAL = "com.android.phone.EmergencyDialer.DIAL"
         private const val EXTRA_START_MISSION = "start_mission"
         private val RINGING_START_TIMEOUT = 5.seconds
 

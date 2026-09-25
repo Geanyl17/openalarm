@@ -17,6 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.content.IntentCompat
 import androidx.core.net.toUri
+import io.github.geanyl17.openalarm.ringing.RingingBackup
 import io.github.geanyl17.openalarm.ui.AlarmSounds
 import io.github.geanyl17.openalarm.ui.App
 import io.github.geanyl17.openalarm.ui.SetupIssue
@@ -84,6 +85,8 @@ class MainActivity : ComponentActivity() {
         super.onResume()
         // The user may have just come back from granting a permission in the system settings.
         setupIssues = missingSetup()
+        // Force-stopping the app doesn't turn off a ringing alarm: it rings again as soon as the app is opened.
+        RingingBackup.ringAgainIfInterrupted(this)
     }
 
     private fun fixSetupIssue(issue: SetupIssue) {
@@ -98,6 +101,7 @@ class MainActivity : ComponentActivity() {
                 if (Build.VERSION.SDK_INT >= 34) openAppSettings(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT)
             SetupIssue.ExactAlarms ->
                 if (Build.VERSION.SDK_INT >= 31) openAppSettings(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+            SetupIssue.DisplayOverApps -> openAppSettings(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
         }
     }
 

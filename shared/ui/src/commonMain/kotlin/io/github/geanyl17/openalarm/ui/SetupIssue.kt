@@ -23,6 +23,8 @@ import io.github.geanyl17.openalarm.ui.resources.setup_full_screen_title
 import io.github.geanyl17.openalarm.ui.resources.setup_notifications_action
 import io.github.geanyl17.openalarm.ui.resources.setup_notifications_body
 import io.github.geanyl17.openalarm.ui.resources.setup_notifications_title
+import io.github.geanyl17.openalarm.ui.resources.setup_overlay_body
+import io.github.geanyl17.openalarm.ui.resources.setup_overlay_title
 import org.jetbrains.compose.resources.stringResource
 
 /** Something the user has to allow before alarms can ring reliably. The platform decides which apply. */
@@ -35,6 +37,9 @@ enum class SetupIssue {
 
     /** Without exact alarms, alarms may ring minutes late. */
     ExactAlarms,
+
+    /** Without "display over other apps", the ringing screen can be left and won't come back. */
+    DisplayOverApps,
 }
 
 @Composable
@@ -53,6 +58,11 @@ internal fun SetupIssueCard(issue: SetupIssue, onFix: () -> Unit) {
         SetupIssue.ExactAlarms -> Triple(
             Res.string.setup_exact_alarms_title,
             Res.string.setup_exact_alarms_body,
+            Res.string.open_settings,
+        )
+        SetupIssue.DisplayOverApps -> Triple(
+            Res.string.setup_overlay_title,
+            Res.string.setup_overlay_body,
             Res.string.open_settings,
         )
     }

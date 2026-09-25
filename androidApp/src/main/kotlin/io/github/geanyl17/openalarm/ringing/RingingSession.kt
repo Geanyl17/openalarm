@@ -2,6 +2,7 @@ package io.github.geanyl17.openalarm.ringing
 
 import android.content.Context
 import android.os.PowerManager
+import android.os.SystemClock
 import io.github.geanyl17.openalarm.core.Alarm
 import io.github.geanyl17.openalarm.core.Mission
 import kotlinx.coroutines.channels.BufferOverflow
@@ -11,6 +12,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlin.time.Duration.Companion.minutes
 
 /** Alarms that are ringing together. Usually one; several if they were set for the same time. */
 data class Ringing(val alarms: List<Alarm>) {
@@ -31,17 +33,42 @@ object RingingSession {
     /** Emits each time the user taps something in a mission. */
     val missionInteractions: SharedFlow<Unit> = interactions.asSharedFlow()
 
+    private val screenShown = MutableStateFlow(false)
+
+    /** Whether [RingingActivity] is on screen. While an alarm rings, [RingingService] brings it back when it isn't. */
+    val screenVisible: StateFlow<Boolean> = screenShown.asStateFlow()
+
+    private var emergencyCallUntil = 0L
+
+    /** True for a while after the user opened the emergency dialer from the ringing screen. */
+    val onEmergencyCall: Boolean get() = SystemClock.elapsedRealtime() < emergencyCallUntil
+
     fun start(ringing: Ringing) {
         current.value = ringing
     }
 
     fun end() {
         current.value = null
+        emergencyCallUntil = 0
     }
 
     fun missionInteraction() {
         interactions.tryEmit(Unit)
     }
+
+    fun setScreenVisible(visible: Boolean) {
+        screenShown.value = visible
+        // Back on the ringing screen, the emergency call is over, or never happened. A call that's still going
+        // keeps the alarm silent anyway.
+        if (visible) emergencyCallUntil = 0
+    }
+
+    /** The user is calling emergency services: the alarm stays silent and lets them use the phone for a while. */
+    fun emergencyCall() {
+        emergencyCallUntil = SystemClock.elapsedRealtime() + EMERGENCY_CALL_HOLD.inWholeMilliseconds
+    }
+
+    private val EMERGENCY_CALL_HOLD = 3.minutes
 }
 
 /**

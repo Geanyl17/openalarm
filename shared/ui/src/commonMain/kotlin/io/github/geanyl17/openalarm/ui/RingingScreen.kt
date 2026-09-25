@@ -3,6 +3,7 @@ package io.github.geanyl17.openalarm.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -12,8 +13,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -37,6 +40,7 @@ import io.github.geanyl17.openalarm.missions.MissionScreen
 import io.github.geanyl17.openalarm.ui.resources.Res
 import io.github.geanyl17.openalarm.ui.resources.alarm
 import io.github.geanyl17.openalarm.ui.resources.dismiss
+import io.github.geanyl17.openalarm.ui.resources.emergency_call
 import io.github.geanyl17.openalarm.ui.resources.ic_alarm
 import io.github.geanyl17.openalarm.ui.resources.snooze_for
 import io.github.geanyl17.openalarm.ui.resources.turn_off
@@ -53,6 +57,8 @@ import kotlin.time.Duration.Companion.seconds
  * The screen shown while an alarm rings, themed with the alarm's own color. With [missions], the
  * alarm only turns off once they're done; [onMissionInteraction] is called on every tap in them.
  * [startWithMission] opens the missions straight away, for example from the notification.
+ * [onEmergencyCall] opens the emergency dialer: a ringing alarm keeps its screen in front, but it
+ * must never stand in the way of an emergency call.
  */
 @Composable
 fun RingingScreen(
@@ -65,6 +71,7 @@ fun RingingScreen(
     onSnooze: () -> Unit,
     onDismiss: () -> Unit,
     onMissionInteraction: () -> Unit,
+    onEmergencyCall: () -> Unit,
 ) {
     OpenAlarmTheme(seedColor = colorArgb?.let { Color(it) } ?: DefaultSeedColor) {
         val now = rememberNow(tick = 1.seconds).toLocalDateTime(TimeZone.currentSystemDefault())
@@ -99,6 +106,7 @@ fun RingingScreen(
                         onComplete = onDismiss,
                         modifier = Modifier.fillMaxWidth(),
                     )
+                    EmergencyCallButton(onEmergencyCall, Modifier.align(Alignment.CenterHorizontally))
                 }
             }
         } else {
@@ -109,6 +117,7 @@ fun RingingScreen(
                 use24Hour = use24Hour,
                 needsMission = missions.isNotEmpty(),
                 onSnooze = onSnooze,
+                onEmergencyCall = onEmergencyCall,
                 onTurnOff = {
                     if (missions.isEmpty()) {
                         onDismiss()
@@ -130,6 +139,7 @@ private fun Ringing(
     use24Hour: Boolean,
     needsMission: Boolean,
     onSnooze: () -> Unit,
+    onEmergencyCall: () -> Unit,
     onTurnOff: () -> Unit,
 ) {
     Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.primaryContainer) {
@@ -139,10 +149,11 @@ private fun Ringing(
             verticalArrangement = Arrangement.SpaceBetween,
         ) {
             Column(
-                modifier = Modifier.padding(top = 64.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
+                EmergencyCallButton(onEmergencyCall)
+                Spacer(Modifier.height(8.dp))
                 Icon(
                     painter = painterResource(Res.drawable.ic_alarm),
                     contentDescription = null,
@@ -171,5 +182,16 @@ private fun Ringing(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun EmergencyCallButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    TextButton(
+        onClick = onClick,
+        colors = ButtonDefaults.textButtonColors(contentColor = LocalContentColor.current),
+        modifier = modifier,
+    ) {
+        Text(stringResource(Res.string.emergency_call))
     }
 }

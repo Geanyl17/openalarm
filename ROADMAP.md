@@ -138,7 +138,7 @@ Each mission declares what it needs (camera, NFC, step counter, microphone) and 
 - [ ] Reliability self-test and alarm log
 - [x] Missions: Math and Memory, with the alarm quiet while you solve and loud again if you stop
 - [ ] Missions: Color Hunt and Barcode (camera)
-- [x] A color for each alarm
+- [x] A color for each alarm: a preset or any color from a color wheel
 - [ ] App color picker, AMOLED black
 - [ ] Release on GitHub and IzzyOnDroid
 

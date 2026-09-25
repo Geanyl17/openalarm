@@ -86,6 +86,12 @@
     <string name="color_blue">Blue</string>
     <string name="color_teal">Teal</string>
     <string name="color_green">Green</string>
+    <string name="color_yellow">Yellow</string>
+    <string name="color_custom">Custom color</string>
+    <string name="color_wheel">Color wheel</string>
+    <string name="brightness">Brightness</string>
+    <string name="color_preview">How this alarm will look</string>
+    <string name="select">Select</string>
 
     <!-- Ringing screen -->
     <string name="alarm">Alarm</string>

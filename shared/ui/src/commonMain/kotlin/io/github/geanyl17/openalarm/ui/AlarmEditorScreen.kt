@@ -42,6 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -79,6 +80,8 @@ import io.github.geanyl17.openalarm.ui.resources.sound
 import io.github.geanyl17.openalarm.ui.resources.sound_custom
 import io.github.geanyl17.openalarm.ui.resources.sound_default
 import io.github.geanyl17.openalarm.ui.resources.vibrate
+import io.github.geanyl17.openalarm.ui.theme.DefaultSeedColor
+import io.github.geanyl17.openalarm.ui.theme.OpenAlarmTheme
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.TimeZone
 import org.jetbrains.compose.resources.painterResource
@@ -115,113 +118,116 @@ internal fun AlarmEditorScreen(
     var fadeIn by rememberSaveable { mutableStateOf(base.fadeIn) }
     var snoozeMinutes by rememberSaveable { mutableIntStateOf(base.snoozeMinutes) }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(if (initial == null) Res.string.new_alarm else Res.string.edit_alarm)) },
-                navigationIcon = {
-                    IconButton(onClick = onClose) {
-                        Icon(painterResource(Res.drawable.ic_close), contentDescription = stringResource(Res.string.cancel))
-                    }
-                },
-                actions = {
-                    TextButton(
-                        onClick = {
-                            onSave(
-                                base.copy(
-                                    hour = hour,
-                                    minute = minute,
-                                    repeat = RepeatDays(repeat),
-                                    label = label.trim(),
-                                    enabled = true,
-                                    vibrate = vibrate,
-                                    fadeIn = fadeIn,
-                                    snoozeMinutes = snoozeMinutes,
-                                    colorArgb = colorArgb,
-                                    sound = sound,
-                                    missions = listOfNotNull(missionType?.let { Mission(it, difficulty, rounds) }),
-                                ),
-                            )
-                        },
-                    ) {
-                        Text(stringResource(Res.string.save))
-                    }
-                },
-            )
-        },
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .padding(padding)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            TimeWheels(
-                hour = hour,
-                minute = minute,
-                use24Hour = use24Hour,
-                onChange = { newHour, newMinute ->
-                    hour = newHour
-                    minute = newMinute
-                },
-            )
-            RingsIn(base.copy(hour = hour, minute = minute, repeat = RepeatDays(repeat), enabled = true, snoozedUntil = null))
-
-            SectionTitle(stringResource(Res.string.repeat))
-            DayToggles(RepeatDays(repeat), onChange = { repeat = it.mask })
-
-            OutlinedTextField(
-                value = label,
-                onValueChange = { label = it.take(MAX_LABEL_LENGTH) },
-                label = { Text(stringResource(Res.string.label)) },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-            )
-
-            SectionTitle(stringResource(Res.string.mission))
-            ChoiceChips(
-                options = listOf(null) + MissionType.entries,
-                selected = missionType,
-                label = { type -> if (type == null) stringResource(Res.string.mission_none) else missionName(type) },
-                onSelect = { missionType = it },
-            )
-            missionType?.let { type ->
-                Text(
-                    text = missionDescription(Mission(type, difficulty, rounds)),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+    // The editor takes on the alarm's color, as a live preview of how it will look when it rings.
+    OpenAlarmTheme(seedColor = colorArgb?.let { Color(it) } ?: DefaultSeedColor) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text(stringResource(if (initial == null) Res.string.new_alarm else Res.string.edit_alarm)) },
+                    navigationIcon = {
+                        IconButton(onClick = onClose) {
+                            Icon(painterResource(Res.drawable.ic_close), contentDescription = stringResource(Res.string.cancel))
+                        }
+                    },
+                    actions = {
+                        TextButton(
+                            onClick = {
+                                onSave(
+                                    base.copy(
+                                        hour = hour,
+                                        minute = minute,
+                                        repeat = RepeatDays(repeat),
+                                        label = label.trim(),
+                                        enabled = true,
+                                        vibrate = vibrate,
+                                        fadeIn = fadeIn,
+                                        snoozeMinutes = snoozeMinutes,
+                                        colorArgb = colorArgb,
+                                        sound = sound,
+                                        missions = listOfNotNull(missionType?.let { Mission(it, difficulty, rounds) }),
+                                    ),
+                                )
+                            },
+                        ) {
+                            Text(stringResource(Res.string.save))
+                        }
+                    },
                 )
-                Text(stringResource(Res.string.mission_difficulty), style = MaterialTheme.typography.labelLarge)
-                ChoiceChips(Difficulty.entries, difficulty, label = { difficultyName(it) }, onSelect = { difficulty = it })
-                Text(stringResource(Res.string.mission_rounds), style = MaterialTheme.typography.labelLarge)
-                ChoiceChips(RoundChoices, rounds, label = { it.toString() }, onSelect = { rounds = it })
-            }
+            },
+        ) { padding ->
+            Column(
+                modifier = Modifier
+                    .padding(padding)
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                TimeWheels(
+                    hour = hour,
+                    minute = minute,
+                    use24Hour = use24Hour,
+                    onChange = { newHour, newMinute ->
+                        hour = newHour
+                        minute = newMinute
+                    },
+                )
+                RingsIn(base.copy(hour = hour, minute = minute, repeat = RepeatDays(repeat), enabled = true, snoozedUntil = null))
 
-            SoundRow(sound, sounds, onChosen = { sound = it })
+                SectionTitle(stringResource(Res.string.repeat))
+                DayToggles(RepeatDays(repeat), onChange = { repeat = it.mask })
 
-            SectionTitle(stringResource(Res.string.color))
-            AlarmColorPicker(selected = colorArgb, onSelect = { colorArgb = it })
+                OutlinedTextField(
+                    value = label,
+                    onValueChange = { label = it.take(MAX_LABEL_LENGTH) },
+                    label = { Text(stringResource(Res.string.label)) },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                )
 
-            SwitchRow(stringResource(Res.string.vibrate), null, vibrate) { vibrate = it }
-            SwitchRow(stringResource(Res.string.fade_in), stringResource(Res.string.fade_in_description), fadeIn) { fadeIn = it }
-
-            SectionTitle(stringResource(Res.string.snooze_length))
-            ChoiceChips(SnoozeChoices, snoozeMinutes, label = { stringResource(Res.string.minutes_short, it) }, onSelect = { snoozeMinutes = it })
-
-            if (initial != null) {
-                Spacer(Modifier.height(8.dp))
-                OutlinedButton(
-                    onClick = { onDelete(initial) },
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Icon(painterResource(Res.drawable.ic_delete), contentDescription = null)
-                    Spacer(Modifier.width(8.dp))
-                    Text(stringResource(Res.string.delete_alarm))
+                SectionTitle(stringResource(Res.string.mission))
+                ChoiceChips(
+                    options = listOf(null) + MissionType.entries,
+                    selected = missionType,
+                    label = { type -> if (type == null) stringResource(Res.string.mission_none) else missionName(type) },
+                    onSelect = { missionType = it },
+                )
+                missionType?.let { type ->
+                    Text(
+                        text = missionDescription(Mission(type, difficulty, rounds)),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Text(stringResource(Res.string.mission_difficulty), style = MaterialTheme.typography.labelLarge)
+                    ChoiceChips(Difficulty.entries, difficulty, label = { difficultyName(it) }, onSelect = { difficulty = it })
+                    Text(stringResource(Res.string.mission_rounds), style = MaterialTheme.typography.labelLarge)
+                    ChoiceChips(RoundChoices, rounds, label = { it.toString() }, onSelect = { rounds = it })
                 }
+
+                SoundRow(sound, sounds, onChosen = { sound = it })
+
+                SectionTitle(stringResource(Res.string.color))
+                AlarmColorPicker(selected = colorArgb, onSelect = { colorArgb = it })
+
+                SwitchRow(stringResource(Res.string.vibrate), null, vibrate) { vibrate = it }
+                SwitchRow(stringResource(Res.string.fade_in), stringResource(Res.string.fade_in_description), fadeIn) { fadeIn = it }
+
+                SectionTitle(stringResource(Res.string.snooze_length))
+                ChoiceChips(SnoozeChoices, snoozeMinutes, label = { stringResource(Res.string.minutes_short, it) }, onSelect = { snoozeMinutes = it })
+
+                if (initial != null) {
+                    Spacer(Modifier.height(8.dp))
+                    OutlinedButton(
+                        onClick = { onDelete(initial) },
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Icon(painterResource(Res.drawable.ic_delete), contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text(stringResource(Res.string.delete_alarm))
+                    }
+                }
+                Spacer(Modifier.height(16.dp))
             }
-            Spacer(Modifier.height(16.dp))
         }
     }
 }

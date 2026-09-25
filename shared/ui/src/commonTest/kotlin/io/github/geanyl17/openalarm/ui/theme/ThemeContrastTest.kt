@@ -14,7 +14,16 @@ class ThemeContrastTest {
         DefaultSeedColor,
         Color.Red, Color.Yellow, Color.Green, Color.Cyan, Color.Blue, Color.Magenta,
         Color.Black, Color.White, Color.Gray, Color(0xFF8B4513),
-    )
+    ) + wheelColors()
+
+    /** A grid over the custom color wheel, since an alarm can have any color on it. */
+    private fun wheelColors() = buildList {
+        for (hue in 0 until 360 step 15) {
+            for (saturation in listOf(0.3f, 0.65f, 1f)) {
+                for (value in listOf(0.15f, 0.55f, 1f)) add(Color.hsv(hue.toFloat(), saturation, value))
+            }
+        }
+    }
 
     @Test
     fun contrastRatioMatchesWcagReferenceValues() {

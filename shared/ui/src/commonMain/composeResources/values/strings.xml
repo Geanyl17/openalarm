@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">OpenAlarm</string>
+    <string name="early_development">OpenAlarm is in early development, and alarms arrive in the first release. Until then, pick a color and watch the whole app re-theme around it.</string>
+    <string name="pick_a_color">Pick a color</string>
+    <string name="color_sunrise">Sunrise</string>
+    <string name="color_red">Red</string>
+    <string name="color_purple">Purple</string>
+    <string name="color_blue">Blue</string>
+    <string name="color_teal">Teal</string>
+    <string name="color_green">Green</string>
+</resources>

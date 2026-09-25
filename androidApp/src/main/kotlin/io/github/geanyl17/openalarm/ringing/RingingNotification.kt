@@ -35,7 +35,7 @@ object RingingNotification {
             RingingActivity.intent(context),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
-        return NotificationCompat.Builder(context, CHANNEL_ID)
+        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_alarm)
             .setContentTitle(ringing?.label?.ifBlank { null } ?: context.getString(R.string.notification_title))
             .setContentText(context.getString(R.string.notification_text))
@@ -47,9 +47,20 @@ object RingingNotification {
             .setFullScreenIntent(ringingScreen, true)
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
             .addAction(0, context.getString(R.string.action_snooze), serviceAction(context, RingingService.ACTION_SNOOZE, 1))
-            .addAction(0, context.getString(R.string.action_dismiss), serviceAction(context, RingingService.ACTION_DISMISS, 2))
-            .apply { ringing?.first?.colorArgb?.let { setColor(it) } }
-            .build()
+        if (ringing?.missions.isNullOrEmpty()) {
+            builder.addAction(0, context.getString(R.string.action_dismiss), serviceAction(context, RingingService.ACTION_DISMISS, 2))
+        } else {
+            // No dismiss button: the alarm only turns off once its mission is done on the ringing screen.
+            val startMission = PendingIntent.getActivity(
+                context,
+                3,
+                RingingActivity.intent(context, startMission = true),
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+            )
+            builder.addAction(0, context.getString(R.string.action_turn_off), startMission)
+        }
+        ringing?.first?.colorArgb?.let { builder.setColor(it) }
+        return builder.build()
     }
 
     private fun serviceAction(context: Context, action: String, requestCode: Int): PendingIntent =

@@ -12,6 +12,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.lifecycleScope
 import io.github.geanyl17.openalarm.ui.RingingScreen
 import kotlinx.coroutines.flow.first
@@ -21,6 +23,7 @@ import kotlin.time.Duration.Companion.seconds
 
 /** The full-screen ringing alarm, shown over the lock screen. Closes itself once the alarm stops. */
 class RingingActivity : ComponentActivity() {
+    private var startWithMission by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +31,7 @@ class RingingActivity : ComponentActivity() {
         enableEdgeToEdge()
         // Back must not make a ringing alarm go away.
         onBackPressedDispatcher.addCallback(this) {}
+        startWithMission = intent.getBooleanExtra(EXTRA_START_MISSION, false)
         val use24Hour = DateFormat.is24HourFormat(this)
         lifecycleScope.launch { finishWhenRingingStops() }
 
@@ -39,9 +43,12 @@ class RingingActivity : ComponentActivity() {
                     label = current.label,
                     colorArgb = current.first.colorArgb,
                     snoozeMinutes = current.first.snoozeMinutes,
+                    missions = current.missions,
                     use24Hour = use24Hour,
+                    startWithMission = startWithMission,
                     onSnooze = { startService(RingingService.intent(this, RingingService.ACTION_SNOOZE)) },
                     onDismiss = { startService(RingingService.intent(this, RingingService.ACTION_DISMISS)) },
+                    onMissionInteraction = RingingSession::missionInteraction,
                 )
             }
         }
@@ -58,6 +65,12 @@ class RingingActivity : ComponentActivity() {
         finish()
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        // The notification's "Turn off" button was tapped while this screen was already open.
+        if (intent.getBooleanExtra(EXTRA_START_MISSION, false)) startWithMission = true
+    }
+
     private fun showOverLockScreen() {
         if (Build.VERSION.SDK_INT >= 27) {
             setShowWhenLocked(true)
@@ -70,10 +83,13 @@ class RingingActivity : ComponentActivity() {
     }
 
     companion object {
+        private const val EXTRA_START_MISSION = "start_mission"
         private val RINGING_START_TIMEOUT = 5.seconds
 
-        fun intent(context: Context): Intent =
+        /** Opens the ringing screen; with [startMission], it goes straight to the alarm's missions. */
+        fun intent(context: Context, startMission: Boolean = false): Intent =
             Intent(context, RingingActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_USER_ACTION)
+                .putExtra(EXTRA_START_MISSION, startMission)
     }
 }

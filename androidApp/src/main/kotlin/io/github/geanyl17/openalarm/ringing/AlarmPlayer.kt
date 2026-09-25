@@ -44,10 +44,17 @@ internal class AlarmPlayer(private val context: Context) {
     private var tone: ToneGenerator? = null
     private var audioFocus: AudioFocusRequest? = null
     private var volumeToRestore: Int? = null
+    private var vibrate = false
     private var vibrating = false
+    private var quiet = false
+
+    /** The fade-in volume, before [setQuiet] turns it down. */
+    private var fadeVolume = 1f
 
     fun start(sound: String?, vibrate: Boolean, fadeIn: Boolean) {
         stop()
+        this.vibrate = vibrate
+        fadeVolume = if (fadeIn) MIN_VOLUME else 1f
         raiseVolumeIfMuted()
         audioFocus = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
             .setAudioAttributes(alarmAudio)
@@ -72,8 +79,9 @@ internal class AlarmPlayer(private val context: Context) {
             release()
         }
         tone = null
-        if (vibrating) vibrator.cancel()
-        vibrating = false
+        stopVibration()
+        vibrate = false
+        quiet = false
         audioFocus?.let { audioManager.abandonAudioFocusRequest(it) }
         audioFocus = null
         volumeToRestore?.let { runCatching { audioManager.setStreamVolume(AudioManager.STREAM_ALARM, it, 0) } }
@@ -92,8 +100,7 @@ internal class AlarmPlayer(private val context: Context) {
                     true
                 }
                 prepare()
-                val startVolume = if (fadeIn) MIN_VOLUME else 1f
-                setVolume(startVolume, startVolume)
+                applyVolume(this)
                 start()
                 if (fadeIn) fadeIn(this)
             }
@@ -105,8 +112,24 @@ internal class AlarmPlayer(private val context: Context) {
 
     private fun switchToBundledSound() {
         player?.release()
+        fadeVolume = 1f
         player = play(bundledSound(), fadeIn = false)
         if (player == null) playTone()
+    }
+
+    /** Turns the alarm down and pauses vibration while the user works on a mission, or back up again. */
+    fun setQuiet(quiet: Boolean) {
+        if (this.quiet == quiet) return
+        this.quiet = quiet
+        player?.let { applyVolume(it) }
+        if (vibrate) {
+            if (quiet) stopVibration() else startVibration()
+        }
+    }
+
+    private fun applyVolume(target: MediaPlayer) {
+        val volume = fadeVolume * if (quiet) QUIET_VOLUME else 1f
+        target.setVolume(volume, volume)
     }
 
     /** Raises the volume gradually. Loudness is perceived logarithmically, so it follows a curve. */
@@ -116,8 +139,8 @@ internal class AlarmPlayer(private val context: Context) {
             override fun run() {
                 if (player !== target) return
                 val progress = ((SystemClock.elapsedRealtime() - start) / FADE_IN_MILLIS.toFloat()).coerceAtMost(1f)
-                val volume = MIN_VOLUME + (1f - MIN_VOLUME) * progress * progress
-                target.setVolume(volume, volume)
+                fadeVolume = MIN_VOLUME + (1f - MIN_VOLUME) * progress * progress
+                applyVolume(target)
                 if (progress < 1f) handler.postDelayed(this, FADE_STEP_MILLIS)
             }
         })
@@ -153,11 +176,17 @@ internal class AlarmPlayer(private val context: Context) {
         vibrating = true
     }
 
+    private fun stopVibration() {
+        if (vibrating) vibrator.cancel()
+        vibrating = false
+    }
+
     private fun bundledSound(): Uri = "android.resource://${context.packageName}/${R.raw.alarm_fallback}".toUri()
 
     private companion object {
         const val TAG = "AlarmPlayer"
         const val MIN_VOLUME = 0.05f
+        const val QUIET_VOLUME = 0.2f
         const val FADE_IN_MILLIS = 30_000L
         const val FADE_STEP_MILLIS = 250L
     }

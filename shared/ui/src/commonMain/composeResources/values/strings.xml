@@ -83,6 +83,7 @@
     <string name="alarm">Alarm</string>
     <string name="snooze_for">Snooze %1$d min</string>
     <string name="dismiss">Dismiss</string>
+    <string name="turn_off">Turn off</string>
 
     <!-- Setup problems shown above the alarm list -->
     <string name="setup_notifications_title">Alarms can't ring yet</string>

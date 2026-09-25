@@ -136,7 +136,8 @@ Each mission declares what it needs (camera, NFC, step counter, microphone) and 
 - [x] Never silent: falls back to a bundled sound, and a backup alarm re-rings within a minute if the app dies while ringing
 - [x] Setup checks for notifications, full-screen alarms and exact alarms
 - [ ] Reliability self-test and alarm log
-- [ ] Missions: Math, Memory, Color Hunt, Barcode
+- [x] Missions: Math and Memory, with the alarm quiet while you solve and loud again if you stop
+- [ ] Missions: Color Hunt and Barcode (camera)
 - [x] A color for each alarm
 - [ ] App color picker, AMOLED black
 - [ ] Release on GitHub and IzzyOnDroid

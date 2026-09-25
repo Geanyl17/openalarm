@@ -9,4 +9,5 @@
     <string name="notification_text">Ringing now</string>
     <string name="action_snooze">Snooze</string>
     <string name="action_dismiss">Dismiss</string>
+    <string name="action_turn_off">Turn off</string>
 </resources>

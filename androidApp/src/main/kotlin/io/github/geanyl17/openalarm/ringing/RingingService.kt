@@ -16,8 +16,10 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
 /**
@@ -30,6 +32,7 @@ class RingingService : Service() {
     private lateinit var wakeLock: PowerManager.WakeLock
     private var timeout: Job? = null
     private var heartbeat: Job? = null
+    private var quietWhileSolving: Job? = null
     private var stopping = false
 
     override fun onCreate() {
@@ -89,11 +92,27 @@ class RingingService : Service() {
                 delay(RingingBackup.delay / 2)
             }
         }
+        restartTimeout()
+        quietWhileSolving = scope.launch {
+            RingingSession.missionInteractions.collectLatest {
+                // Someone is working on the mission: keep the alarm quiet and don't give up on them.
+                restartTimeout()
+                player.setQuiet(true)
+                delay(QUIET_WHILE_SOLVING)
+                // They stopped, so the alarm gets loud again.
+                player.setQuiet(false)
+            }
+        }
+    }
+
+    private fun restartTimeout() {
+        wakeLock.acquire(WAKE_LOCK_TIMEOUT.inWholeMilliseconds)
+        timeout?.cancel()
         timeout = scope.launch {
             delay(RING_TIMEOUT)
             // Nobody reacted. Snooze instead of ringing forever, so the alarm comes back.
             // It runs in a new coroutine because finish() cancels this one.
-            scope.launch { finish { ids -> controller.snooze(ids) } }
+            scope.launch { finish { ids -> appGraph.controller.snooze(ids) } }
         }
     }
 
@@ -101,6 +120,7 @@ class RingingService : Service() {
         val ringing = RingingSession.state.value
         stopping = true
         timeout?.cancel()
+        quietWhileSolving?.cancel()
         heartbeat?.cancel()
         RingingBackup.cancel(this)
         player.stop()
@@ -136,6 +156,7 @@ class RingingService : Service() {
         private const val EXTRA_TRIGGER_AT = "trigger_at"
         private val RING_TIMEOUT = 10.minutes
         private val WAKE_LOCK_TIMEOUT = RING_TIMEOUT + 1.minutes
+        private val QUIET_WHILE_SOLVING = 20.seconds
 
         fun ring(context: Context, at: Instant) {
             ContextCompat.startForegroundService(

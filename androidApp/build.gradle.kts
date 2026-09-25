@@ -40,6 +40,7 @@ dependencies {
     implementation(projects.shared.ui)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core)
+    implementation(libs.compose.components.resources)
 }
 
 /** Fails the build if the final app manifest requests the internet permission. */

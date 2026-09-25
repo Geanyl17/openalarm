@@ -11,12 +11,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import okio.FileSystem
 import okio.Path.Companion.toOkioPath
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.setResourceReaderAndroidContext
 
 class OpenAlarmApp : Application() {
     val graph: AppGraph by lazy { AppGraph(this) }
 
+    @OptIn(ExperimentalResourceApi::class)
     override fun onCreate() {
         super.onCreate()
+        // Compose resources normally get their context from a ContentProvider, but Android doesn't start
+        // it before the first unlock after a reboot, and the ringing screen needs its strings and icons then.
+        setResourceReaderAndroidContext(this)
         RingingNotification.createChannel(this)
     }
 }

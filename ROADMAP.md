@@ -62,7 +62,7 @@ Camera missions only accept the live camera, never gallery images. The target mu
 | **Steps** | Walk a set number of steps. | 2 |
 | **NFC Tag** | Tap an NFC sticker placed away from your bed. Instant once you're up, impossible from bed. | 2 |
 | **Stroop** | The word "RED" is printed in blue, and you tap *blue*. Hard to do half asleep. | 2 |
-| **Alertness Gate** | A reaction test of about 45 seconds, based on the Psychomotor Vigilance Task sleep researchers use to measure drowsiness. You pass when you're close to your own daytime speed. After 3 failed tries it swaps in another mission. | 2 |
+| **Alertness Gate** | A reaction test of about 45 seconds, based on the Psychomotor Vigilance Task sleep researchers use to measure drowsiness. You pass when you're close to your own daytime speed. After 3 failed tries it swaps in another mission. A short version with fixed time limits, "Reaction", came first. | 2 |
 | **Hum It** | The app plays a note, and you hum it back for 2 seconds. | 4 |
 
 ## Wake Guard
@@ -106,7 +106,7 @@ openalarm/
 │   ├── core/       # alarm model, next-ring-time math, snooze and dismiss rules (later: Wake Guard state machine)
 │   ├── data/       # alarm storage (a versioned JSON file)
 │   ├── ui/         # Compose Multiplatform screens and the theme engine
-│   └── missions/   # the missions: math and memory so far, camera missions next
+│   └── missions/   # the missions: math, memory and reaction so far, camera missions next
 ├── tools/          # scripts that generate bundled assets, such as the fallback alarm sound
 ├── iosApp/         # (Phase 5) AlarmKit alarm engine in Swift, Live Activity
 ├── models/         # (Phase 3) on-device ML models, their licenses and conversion scripts
@@ -155,7 +155,8 @@ IzzyOnDroid was part of this phase, but its [inclusion policy](https://izzyondro
 - [x] Wake Guard 3: Snooze Tax
 - [ ] Wake Guard 4 (with the camera missions in Phase 3), and the Honesty Log
 - [ ] Mission chains and wake-up streaks
-- [ ] Missions: Steps, NFC Tag, Lights On, Stroop, Alertness Gate
+- [x] Missions: Reaction, a short version of the Alertness Gate
+- [ ] Missions: Steps, NFC Tag, Lights On, Stroop, the full Alertness Gate
 - [ ] Submit to F-Droid
 
 ### Phase 3: smarter camera missions

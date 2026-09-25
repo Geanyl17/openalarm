@@ -14,7 +14,7 @@ import kotlinx.serialization.Serializable
 data class Mission(
     val type: MissionType = MissionType.Math,
     val difficulty: Difficulty = Difficulty.Normal,
-    /** How many problems or patterns in a row. */
+    /** How many problems, patterns or taps in a row. */
     val rounds: Int = 3,
 ) {
     init {
@@ -41,6 +41,10 @@ enum class MissionType {
     /** Repeat a pattern of tiles that light up. */
     @SerialName("memory")
     Memory,
+
+    /** Tap as soon as the screen says so, fast enough to show you're awake. */
+    @SerialName("reaction")
+    Reaction,
 }
 
 @Serializable

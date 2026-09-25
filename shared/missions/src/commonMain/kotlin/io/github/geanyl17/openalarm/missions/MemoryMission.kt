@@ -35,9 +35,9 @@ import io.github.geanyl17.openalarm.core.Mission
 import io.github.geanyl17.openalarm.missions.resources.Res
 import io.github.geanyl17.openalarm.missions.resources.memory_progress
 import io.github.geanyl17.openalarm.missions.resources.memory_repeat
-import io.github.geanyl17.openalarm.missions.resources.memory_switch_to_math
 import io.github.geanyl17.openalarm.missions.resources.memory_tile
 import io.github.geanyl17.openalarm.missions.resources.memory_watch
+import io.github.geanyl17.openalarm.missions.resources.switch_to_math
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 
@@ -134,7 +134,7 @@ internal fun MemoryMission(mission: Mission, onInteraction: () -> Unit, onDone: 
         )
         if (misses >= MISSES_BEFORE_EASIER) {
             TextButton(onClick = { onInteraction(); onSwitchToMath() }) {
-                Text(stringResource(Res.string.memory_switch_to_math))
+                Text(stringResource(Res.string.switch_to_math))
             }
         }
     }

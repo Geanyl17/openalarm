@@ -3,6 +3,7 @@
     <!-- Mission names, shown in the alarm editor -->
     <string name="mission_math">Math</string>
     <string name="mission_memory">Memory</string>
+    <string name="mission_reaction">Reaction</string>
     <string name="difficulty_easy">Easy</string>
     <string name="difficulty_normal">Normal</string>
     <string name="difficulty_hard">Hard</string>
@@ -17,5 +18,11 @@
     <string name="memory_repeat">Your turn</string>
     <string name="memory_progress">Pattern %1$d of %2$d</string>
     <string name="memory_tile">Tile %1$d</string>
-    <string name="memory_switch_to_math">Switch to math</string>
+    <string name="switch_to_math">Switch to math</string>
+    <string name="reaction_progress">Tap %1$d of %2$d</string>
+    <string name="reaction_wait">Wait…</string>
+    <string name="reaction_go">Tap!</string>
+    <string name="reaction_in_time">%1$d ms</string>
+    <string name="reaction_too_soon">Too soon</string>
+    <string name="reaction_too_slow">Too slow</string>
 </resources>

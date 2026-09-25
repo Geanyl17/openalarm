@@ -55,8 +55,13 @@
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="delete_alarm">Delete alarm</string>
-    <string name="type_time">Type the time</string>
-    <string name="use_dial">Use the clock dial</string>
+    <string name="hour">Hour</string>
+    <string name="minute">Minute</string>
+    <string name="am">AM</string>
+    <string name="pm">PM</string>
+    <string name="am_pm">AM or PM</string>
+    <!-- Under the time wheels, such as "Rings in 7 h 32 min" -->
+    <string name="rings_in">Rings in %1$s</string>
     <string name="repeat">Repeat</string>
     <string name="label">Label</string>
     <string name="color">Color</string>

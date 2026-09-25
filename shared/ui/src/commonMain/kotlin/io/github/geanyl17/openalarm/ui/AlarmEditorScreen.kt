@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,10 +30,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TimeInput
-import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -52,6 +50,7 @@ import io.github.geanyl17.openalarm.core.Difficulty
 import io.github.geanyl17.openalarm.core.Mission
 import io.github.geanyl17.openalarm.core.MissionType
 import io.github.geanyl17.openalarm.core.RepeatDays
+import io.github.geanyl17.openalarm.core.nextTrigger
 import io.github.geanyl17.openalarm.missions.difficultyName
 import io.github.geanyl17.openalarm.missions.missionDescription
 import io.github.geanyl17.openalarm.missions.missionName
@@ -64,8 +63,6 @@ import io.github.geanyl17.openalarm.ui.resources.fade_in
 import io.github.geanyl17.openalarm.ui.resources.fade_in_description
 import io.github.geanyl17.openalarm.ui.resources.ic_close
 import io.github.geanyl17.openalarm.ui.resources.ic_delete
-import io.github.geanyl17.openalarm.ui.resources.ic_keyboard
-import io.github.geanyl17.openalarm.ui.resources.ic_schedule
 import io.github.geanyl17.openalarm.ui.resources.label
 import io.github.geanyl17.openalarm.ui.resources.minutes_short
 import io.github.geanyl17.openalarm.ui.resources.mission
@@ -74,17 +71,18 @@ import io.github.geanyl17.openalarm.ui.resources.mission_none
 import io.github.geanyl17.openalarm.ui.resources.mission_rounds
 import io.github.geanyl17.openalarm.ui.resources.new_alarm
 import io.github.geanyl17.openalarm.ui.resources.repeat
+import io.github.geanyl17.openalarm.ui.resources.rings_in
 import io.github.geanyl17.openalarm.ui.resources.save
 import io.github.geanyl17.openalarm.ui.resources.snooze_length
 import io.github.geanyl17.openalarm.ui.resources.sound
 import io.github.geanyl17.openalarm.ui.resources.sound_custom
 import io.github.geanyl17.openalarm.ui.resources.sound_default
-import io.github.geanyl17.openalarm.ui.resources.type_time
-import io.github.geanyl17.openalarm.ui.resources.use_dial
 import io.github.geanyl17.openalarm.ui.resources.vibrate
 import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.TimeZone
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import kotlin.time.Duration.Companion.seconds
 
 private val SnoozeChoices = listOf(5, 9, 10, 15, 20)
 private val RoundChoices = listOf(1, 2, 3, 5)
@@ -103,8 +101,8 @@ internal fun AlarmEditorScreen(
 ) {
     val base = initial ?: Alarm(hour = 7, minute = 0)
     val baseMission = base.missions.firstOrNull()
-    val timeState = rememberTimePickerState(initialHour = base.hour, initialMinute = base.minute, is24Hour = use24Hour)
-    var typing by rememberSaveable { mutableStateOf(false) }
+    var hour by rememberSaveable { mutableIntStateOf(base.hour) }
+    var minute by rememberSaveable { mutableIntStateOf(base.minute) }
     var repeat by rememberSaveable { mutableIntStateOf(base.repeat.mask) }
     var label by rememberSaveable { mutableStateOf(base.label) }
     var missionType by rememberSaveable { mutableStateOf(baseMission?.type) }
@@ -130,8 +128,8 @@ internal fun AlarmEditorScreen(
                         onClick = {
                             onSave(
                                 base.copy(
-                                    hour = timeState.hour,
-                                    minute = timeState.minute,
+                                    hour = hour,
+                                    minute = minute,
                                     repeat = RepeatDays(repeat),
                                     label = label.trim(),
                                     enabled = true,
@@ -158,14 +156,16 @@ internal fun AlarmEditorScreen(
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                if (typing) TimeInput(state = timeState) else TimePicker(state = timeState)
-            }
-            TextButton(onClick = { typing = !typing }, modifier = Modifier.align(Alignment.CenterHorizontally)) {
-                Icon(painterResource(if (typing) Res.drawable.ic_schedule else Res.drawable.ic_keyboard), contentDescription = null)
-                Spacer(Modifier.width(8.dp))
-                Text(stringResource(if (typing) Res.string.use_dial else Res.string.type_time))
-            }
+            TimeWheels(
+                hour = hour,
+                minute = minute,
+                use24Hour = use24Hour,
+                onChange = { newHour, newMinute ->
+                    hour = newHour
+                    minute = newMinute
+                },
+            )
+            RingsIn(base.copy(hour = hour, minute = minute, repeat = RepeatDays(repeat), enabled = true, snoozedUntil = null))
 
             SectionTitle(stringResource(Res.string.repeat))
             DayToggles(RepeatDays(repeat), onChange = { repeat = it.mask })
@@ -223,6 +223,19 @@ internal fun AlarmEditorScreen(
             Spacer(Modifier.height(16.dp))
         }
     }
+}
+
+/** "Rings in 7 h 32 min", so a wrong hour or AM/PM is obvious before saving. */
+@Composable
+private fun ColumnScope.RingsIn(alarm: Alarm) {
+    val now = rememberNow(tick = 10.seconds)
+    val next = alarm.nextTrigger(now, TimeZone.currentSystemDefault()) ?: return
+    Text(
+        text = stringResource(Res.string.rings_in, formatDuration(next - now)),
+        style = MaterialTheme.typography.titleMedium,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.align(Alignment.CenterHorizontally),
+    )
 }
 
 @Composable

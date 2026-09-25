@@ -1,9 +1,19 @@
 import com.android.build.api.artifact.SingleArtifact
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.io.StringReader
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeCompiler)
+}
+
+// Releases are signed on the maintainer's machine, and the key never goes into the repo or CI.
+// The openalarm.signing Gradle property (for example in ~/.gradle/gradle.properties) points to a
+// properties file with storeFile, storePassword, keyAlias and keyPassword. Without it, release
+// builds come out unsigned. RELEASING.md has the details.
+val releaseSigning: Properties? = providers.gradleProperty("openalarm.signing").orNull?.let { path ->
+    Properties().apply { load(StringReader(providers.fileContents(layout.projectDirectory.file(path)).asText.get())) }
 }
 
 android {
@@ -17,6 +27,25 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "0.1.0"
+    }
+    signingConfigs {
+        if (releaseSigning != null) {
+            create("release") {
+                storeFile = file(releaseSigning.getProperty("storeFile"))
+                storePassword = releaseSigning.getProperty("storePassword")
+                keyAlias = releaseSigning.getProperty("keyAlias")
+                keyPassword = releaseSigning.getProperty("keyPassword")
+            }
+        }
+    }
+    buildTypes {
+        release {
+            // R8 shrinks the APK to a fraction of its size and makes Compose noticeably faster.
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
+            signingConfig = signingConfigs.findByName("release")
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

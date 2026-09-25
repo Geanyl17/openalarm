@@ -32,6 +32,7 @@ To run the app, open the folder in Android Studio and pick a device or emulator.
 | `androidApp/` | The Android app and its alarm engine: scheduling, the ringing service and the ringing screen. |
 | `shared/core/` | Platform-independent alarm logic: the alarm model, when an alarm rings next, snooze and dismiss. |
 | `shared/data/` | Alarm storage. |
+| `shared/missions/` | The missions you complete to turn an alarm off, and their screens. |
 | `shared/ui/` | Compose Multiplatform screens and the theme engine, which the iOS app will reuse. |
 | `tools/` | Scripts that generate bundled assets. |
 | `gradle/libs.versions.toml` | All dependency versions. |

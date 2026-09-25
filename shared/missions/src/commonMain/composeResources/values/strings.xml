@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mission names and descriptions, shown in the alarm editor -->
+    <string name="mission_math">Math</string>
+    <string name="mission_memory">Memory</string>
+    <plurals name="mission_math_description">
+        <item quantity="one">Solve %1$d math problem to turn the alarm off.</item>
+        <item quantity="other">Solve %1$d math problems in a row to turn the alarm off.</item>
+    </plurals>
+    <plurals name="mission_memory_description">
+        <item quantity="one">Repeat %1$d pattern of lit tiles to turn the alarm off.</item>
+        <item quantity="other">Repeat %1$d patterns of lit tiles to turn the alarm off.</item>
+    </plurals>
+    <string name="difficulty_easy">Easy</string>
+    <string name="difficulty_normal">Normal</string>
+    <string name="difficulty_hard">Hard</string>
+
+    <!-- Shown while solving missions on the ringing screen -->
+    <string name="mission_progress">Mission %1$d of %2$d</string>
+    <string name="math_title">Solve it to turn off the alarm</string>
+    <string name="math_progress">Problem %1$d of %2$d</string>
+    <string name="math_wrong">Not quite. Here's a new one.</string>
+    <string name="math_delete">Delete</string>
+    <string name="math_check">Check answer</string>
+    <string name="memory_watch">Watch the pattern</string>
+    <string name="memory_repeat">Now tap the same tiles in order</string>
+    <string name="memory_progress">Pattern %1$d of %2$d</string>
+    <string name="memory_tile">Tile %1$d</string>
+    <string name="memory_switch_to_math">Switch to math problems instead</string>
+</resources>

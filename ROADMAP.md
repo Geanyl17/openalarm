@@ -105,7 +105,7 @@ openalarm/
 │   ├── core/       # alarm model, next-ring-time math, snooze and dismiss rules (later: Wake Guard state machine)
 │   ├── data/       # alarm storage (a versioned JSON file)
 │   ├── ui/         # Compose Multiplatform screens and the theme engine
-│   └── missions/   # (Phase 1) mission plug-in API and the missions that need no hardware
+│   └── missions/   # the missions: math and memory so far, camera missions next
 ├── tools/          # scripts that generate bundled assets, such as the fallback alarm sound
 ├── iosApp/         # (Phase 5) AlarmKit alarm engine in Swift, Live Activity
 ├── models/         # (Phase 3) on-device ML models, their licenses and conversion scripts

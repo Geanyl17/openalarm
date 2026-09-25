@@ -23,9 +23,10 @@ io.github.geanyl17.openalarm
 ## What it does today
 
 - **Alarms that always ring:** at the exact minute and over the lock screen, after reboots (even before the first unlock), clock, time-zone and daylight-saving changes. If the app is killed mid-alarm, a backup alarm rings again within a minute, and an alarm whose sound can't play falls back to a bundled one.
+- **No way around it:** a ringing alarm keeps its screen in front until you turn it off or snooze it, its volume can't be turned down, and it rings again after a reboot. Emergency calls and phone calls always come first.
 - **Missions:** Math and Memory. The alarm turns quiet while you solve and gets loud again if you stop.
-- **Setting alarms:** scroll wheels with a "Rings in 7 h 32 min" check, repeat days, labels, any alarm sound on the phone, a volume that rises gradually, and snoozes from 1 to 60 minutes.
-- **A color for each alarm,** from presets or a color wheel.
+- **Setting alarms:** scroll wheels with a "Rings in 7 h 32 min" check, repeat days, labels, any alarm sound on the phone, including your own, a volume that rises gradually, and snoozes from 1 to 60 minutes.
+- **A color and a cover photo for each alarm,** the color from presets or a color wheel.
 
 [CHANGELOG.md](CHANGELOG.md) lists every change.
 

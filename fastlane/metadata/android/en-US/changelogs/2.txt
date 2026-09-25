@@ -1,0 +1,5 @@
+• A ringing alarm can't be pushed aside: its screen comes back when you leave it, the volume can't be turned down, and it rings again after a reboot or a force stop.
+• Emergency call button on the ringing screen. Calls silence the alarm.
+• Your own alarm sounds, from My Sounds in the phone's sound picker.
+• A cover photo for each alarm.
+• Less text on screen.

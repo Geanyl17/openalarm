@@ -12,13 +12,14 @@ While you work on a mission, the alarm turns quiet. Stop for 20 seconds and it g
 • Rings even before the phone has been unlocked for the first time after a reboot.
 • If the app is killed while an alarm rings, a backup alarm rings it again within a minute.
 • Never silent: if the chosen sound can't be played, a bundled sound takes over.
+• No way around it: leave the ringing screen and it comes straight back, and the volume can't be turned down. Emergency calls and phone calls always come first.
 
 <b>Set it up your way</b>
 • Scroll wheels for the time, with "Rings in 7 h 32 min" underneath, so a wrong hour or AM/PM stands out.
 • Repeat days, labels, vibration, and a volume that rises gradually.
-• Any alarm sound on your phone.
+• Any alarm sound on your phone, including your own.
 • Snooze for 5, 10, 15 or 20 minutes, or any length up to an hour.
-• A color for each alarm, from presets or a color wheel, with text that stays readable in any color.
+• A color and a cover photo for each alarm, with text that stays readable in any color.
 
 <b>Private</b>
 No internet permission, no ads, no tracking and no account. Everything stays on your phone.

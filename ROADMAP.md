@@ -73,9 +73,10 @@ Waking up is the easy part; the real problem is dozing off two minutes after dis
 2. **Aftershocks.** One or two surprise check-ins at random times 5 to 15 minutes after dismissal. You get 60 seconds to tap "I'm up", which appears at a random spot on the screen. Miss it and the full alarm returns with a harder mission. On Android they're skipped if the step counter shows you're walking around.
 3. **Snooze Tax.** Snoozes are limited (for example to 2), each one is shorter than the last (10, then 5, then 2 minutes), and each adds a mission step.
 4. **Wake Map.** During setup you register spots and objects in other rooms. Each morning one is picked at random, so you can't keep the answer next to your bed.
-5. **Reboot-proof, plus an Honesty Log.** Switch the phone off mid-alarm and it rings again after booting. Force-stopping the app in Settings is the one way out Android can't block. It takes enough fiddling that you'll be awake anyway, and the app notices it the next time it opens, logs it and resets your wake-up streak.
+5. **Reboot-proof, plus an Honesty Log.** Switch the phone off mid-alarm and it rings again after booting. Force-stopping the app in Settings is the one way out Android can't block. It takes enough fiddling that you'll be awake anyway, and the alarm rings again the next time the app opens, which also logs it and resets your wake-up streak.
 6. **Volume floor (Android).** The volume buttons can't turn a ringing alarm below the level you set.
-7. **Later, opt-in:** a sunrise ramp that brightens the screen or smart lights (through Home Assistant) before the alarm, and a buddy ping that notifies a friend through self-hostable [ntfy](https://ntfy.sh) if the mission isn't done 15 minutes in. These would be the first features to use the internet, so they stay optional.
+7. **No way around it (Android).** Leave the ringing screen (Home, the app switcher, another app) and it comes straight back until the alarm is turned off or snoozed. Its notification can't be swiped away either. Emergency calls and phone calls always come first: the alarm goes silent and stays out of their way.
+8. **Later, opt-in:** a sunrise ramp that brightens the screen or smart lights (through Home Assistant) before the alarm, and a buddy ping that notifies a friend through self-hostable [ntfy](https://ntfy.sh) if the mission isn't done 15 minutes in. These would be the first features to use the internet, so they stay optional.
 
 ## Colors and themes
 
@@ -127,7 +128,7 @@ Each mission declares what it needs (camera, NFC, step counter, microphone) and 
 
 ### Phase 1: "It always rings" (first Android release)
 
-[0.1.0](CHANGELOG.md) shipped everything checked here. The rest comes in 0.2.
+[0.1.0](CHANGELOG.md) shipped everything checked here. The rest comes in a later release.
 
 - [x] Alarms: time, repeat days, label, fade-in, vibration, snooze length
 - [x] Choosing the alarm sound, with the phone's own sound picker (no "silent" option)
@@ -148,7 +149,8 @@ IzzyOnDroid was part of this phase, but its [inclusion policy](https://izzyondro
 
 ### Phase 2: "You can't fall back asleep"
 
-- [ ] Wake Guard 1–6
+- [x] Wake Guard 5–7: a ringing alarm keeps coming back, can't be turned down, and rings again after a reboot or a force stop (the Honesty Log is still to come)
+- [ ] Wake Guard 1–4, and the Honesty Log
 - [ ] Mission chains and wake-up streaks
 - [ ] Missions: Steps, NFC Tag, Lights On, Stroop, Alertness Gate
 - [ ] Submit to F-Droid
@@ -160,6 +162,7 @@ IzzyOnDroid was part of this phase, but its [inclusion policy](https://izzyondro
 
 ### Phase 4: polish
 
+- [x] Your own alarm sounds, and a cover photo for each alarm
 - [ ] Night Red, Material You, ringing screen styles
 - [ ] Theme sharing and the community theme gallery
 - [ ] Hum It mission, home screen widgets

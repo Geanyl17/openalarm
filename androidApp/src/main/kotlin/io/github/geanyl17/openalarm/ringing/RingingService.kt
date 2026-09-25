@@ -79,6 +79,9 @@ class RingingService : Service() {
         // If something was already ringing, the new alarm just joins in.
         if (current != null) return
 
+        // When OpenAlarm is on screen, open the ringing screen straight away. Otherwise Android blocks
+        // this, and the notification shows it instead: full screen when locked, as a banner when in use.
+        startActivity(RingingActivity.intent(this))
         player.start(sound = ringing.first.sound, vibrate = ringing.alarms.any { it.vibrate }, fadeIn = ringing.first.fadeIn)
         heartbeat = scope.launch {
             while (true) {

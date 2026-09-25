@@ -24,6 +24,8 @@ data class Alarm(
     val colorArgb: Int? = null,
     /** Platform sound reference (a content URI on Android), or null for the default alarm sound. */
     val sound: String? = null,
+    /** Challenges to complete, in order, before the alarm turns off. Empty means a plain dismiss button. */
+    val missions: List<Mission> = emptyList(),
     /** When a snoozed alarm rings again, in epoch milliseconds; null when it isn't snoozed. */
     val snoozedUntil: Long? = null,
 ) {

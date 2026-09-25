@@ -1,6 +1,9 @@
 package io.github.geanyl17.openalarm.data
 
 import io.github.geanyl17.openalarm.core.Alarm
+import io.github.geanyl17.openalarm.core.Difficulty
+import io.github.geanyl17.openalarm.core.Mission
+import io.github.geanyl17.openalarm.core.MissionType
 import io.github.geanyl17.openalarm.core.RepeatDays
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -75,6 +78,35 @@ class FileAlarmRepositoryTest {
         }
         val repository = openAlarmRepository(fileSystem, path, backgroundScope)
         assertEquals(listOf(Alarm(id = 1, hour = 6, minute = 15)), repository.alarms.first())
+    }
+
+    @Test
+    fun missionsAreStoredUnderStableNames() = runTest {
+        val path = "/missions.json".toPath()
+        val repository = openAlarmRepository(fileSystem, path, backgroundScope)
+        val mission = Mission(MissionType.Memory, Difficulty.Hard, rounds = 2)
+        val saved = repository.save(Alarm(hour = 6, minute = 0, missions = listOf(mission)))
+        val json = fileSystem.read(path) { readUtf8() }
+        assertTrue("\"type\":\"memory\"" in json && "\"difficulty\":\"hard\"" in json, json)
+        assertEquals(listOf(mission), repository.get(saved.id)?.missions)
+    }
+
+    @Test
+    fun alarmsSavedBeforeMissionsExistedHaveNone() = runTest {
+        val path = "/before-missions.json".toPath()
+        fileSystem.write(path) { writeUtf8("""{"version":1,"nextId":2,"alarms":[{"id":1,"hour":7,"minute":0}]}""") }
+        val repository = openAlarmRepository(fileSystem, path, backgroundScope)
+        assertEquals(emptyList(), repository.get(1)?.missions)
+    }
+
+    @Test
+    fun unknownMissionTypeFromANewerVersionFallsBackToMath() = runTest {
+        val path = "/future-mission.json".toPath()
+        fileSystem.write(path) {
+            writeUtf8("""{"version":1,"nextId":2,"alarms":[{"id":1,"hour":7,"minute":0,"missions":[{"type":"not-a-real-mission","difficulty":"extreme","rounds":2}]}]}""")
+        }
+        val repository = openAlarmRepository(fileSystem, path, backgroundScope)
+        assertEquals(listOf(Mission(MissionType.Math, Difficulty.Normal, rounds = 2)), repository.get(1)?.missions)
     }
 
     @Test

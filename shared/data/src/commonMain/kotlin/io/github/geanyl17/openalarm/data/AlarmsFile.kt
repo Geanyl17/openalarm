@@ -22,10 +22,12 @@ internal data class AlarmsFile(
 
 internal object AlarmsFileSerializer : OkioSerializer<AlarmsFile> {
     // Defaults are written out so that changing a default later can't silently change existing alarms.
-    // Unknown keys are ignored so an older app version can still read a newer file.
+    // Unknown keys are ignored, and unknown enum values (such as a newer mission type) fall back to
+    // the property's default, so an older app version can still read a newer file.
     private val json = Json {
         encodeDefaults = true
         ignoreUnknownKeys = true
+        coerceInputValues = true
     }
 
     override val defaultValue = AlarmsFile()

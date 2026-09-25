@@ -82,7 +82,15 @@ class RingingService : Service() {
             }
             // Past the snooze limit, only turning the alarm off stops it.
             ACTION_SNOOZE -> if (RingingSession.state.value?.snoozeMinutes != null) scope.launch { finish { ids -> appGraph.controller.snooze(ids) } }
-            ACTION_DISMISS -> scope.launch { finish { ids -> appGraph.controller.dismiss(ids) } }
+            ACTION_DISMISS -> {
+                val checkIns = RingingSession.state.value?.alarms?.any { it.checkIns } == true
+                scope.launch {
+                    finish { ids ->
+                        appGraph.controller.dismiss(ids)
+                        if (checkIns) WalkingCheck.rememberSteps(this@RingingService)
+                    }
+                }
+            }
             // The notification was swiped away, but the alarm is still ringing: it comes straight back.
             ACTION_SHOW_AGAIN -> if (RingingSession.state.value != null) updateNotification(notificationAlerts) else stopSelf()
             else -> if (RingingSession.state.value == null) stopSelf()
@@ -111,6 +119,12 @@ class RingingService : Service() {
 
         val alarms = (current?.alarms.orEmpty() + due).distinctBy { it.id }
         val checkIn = current == null && due.all { it.isCheckInAt(at) }
+        if (checkIn && WalkingCheck.walkedSinceTurnOff(this)) {
+            // Walking around since the alarm was turned off is answer enough.
+            appGraph.controller.checkedIn(ids, at)
+            stopRinging()
+            return
+        }
         val ringing = Ringing(
             alarms = alarms,
             checkInUntil = if (checkIn) (Clock.System.now() + CHECK_IN_TIME).toEpochMilliseconds() else null,

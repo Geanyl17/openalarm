@@ -258,7 +258,11 @@ internal fun AlarmEditorScreen(
 
                 SwitchRow(stringResource(Res.string.vibrate), vibrate) { vibrate = it }
                 SwitchRow(stringResource(Res.string.fade_in), fadeIn) { fadeIn = it }
-                SwitchRow(stringResource(Res.string.check_ins), checkIns) { checkIns = it }
+                SwitchRow(stringResource(Res.string.check_ins), checkIns) {
+                    // Counting steps lets check-ins be skipped for someone who's clearly up and walking around.
+                    if (it) sensors.requestSteps()
+                    checkIns = it
+                }
 
                 SectionTitle(stringResource(Res.string.snooze_length))
                 SnoozeLengthPicker(snoozeMinutes, onSelect = { snoozeMinutes = it })
@@ -334,7 +338,15 @@ private fun MissionCard(number: Int, mission: Mission, onChange: (Mission) -> Un
             // Missions this phone can't run aren't offered.
             val sensors = LocalMissionSensors.current
             val types = MissionType.entries.filter { it == mission.type || sensors.canRun(it) }
-            ChoiceChips(types, mission.type, label = { missionName(it) }, onSelect = { onChange(mission.copy(type = it)) })
+            ChoiceChips(
+                types,
+                mission.type,
+                label = { missionName(it) },
+                onSelect = {
+                    if (it == MissionType.Steps) sensors.requestSteps()
+                    onChange(mission.copy(type = it))
+                },
+            )
             Text(stringResource(Res.string.mission_difficulty), style = MaterialTheme.typography.labelLarge)
             ChoiceChips(Difficulty.entries, mission.difficulty, label = { difficultyName(it) }, onSelect = { onChange(mission.copy(difficulty = it)) })
             Text(stringResource(Res.string.mission_rounds), style = MaterialTheme.typography.labelLarge)

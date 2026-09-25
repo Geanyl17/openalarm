@@ -6,6 +6,7 @@
     <string name="mission_reaction">Reaction</string>
     <string name="mission_stroop">Colors</string>
     <string name="mission_lights_on">Lights on</string>
+    <string name="mission_steps">Steps</string>
     <string name="difficulty_easy">Easy</string>
     <string name="difficulty_normal">Normal</string>
     <string name="difficulty_hard">Hard</string>
@@ -37,4 +38,6 @@
     <string name="lights_on_too_dark">Too dark</string>
     <string name="lights_on_keep">Keep it bright</string>
     <string name="seconds_left">%1$d s</string>
+    <string name="steps_title">Walk around</string>
+    <string name="steps_count">%1$d / %2$d</string>
 </resources>

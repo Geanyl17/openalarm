@@ -51,7 +51,15 @@ class MainActivity : ComponentActivity() {
         if (uri != null && onChosen != null) copyInBackground({ AlarmMedia.importPhoto(this, uri) }, onChosen)
     }
 
-    private val sensors by lazy { AndroidMissionSensors(this) }
+    private val stepsPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+        // Nothing to do either way: without the permission, steps are counted with the accelerometer.
+    }
+
+    private val sensors by lazy {
+        AndroidMissionSensors(this) {
+            if (Build.VERSION.SDK_INT >= 29) stepsPermission.launch(Manifest.permission.ACTIVITY_RECOGNITION)
+        }
+    }
 
     private val defaultAlarmSound: Uri get() = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
 

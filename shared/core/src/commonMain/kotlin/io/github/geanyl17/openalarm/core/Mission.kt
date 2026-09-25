@@ -14,7 +14,7 @@ import kotlinx.serialization.Serializable
 data class Mission(
     val type: MissionType = MissionType.Math,
     val difficulty: Difficulty = Difficulty.Normal,
-    /** How many problems, patterns, taps or words in a row, or for Lights On, how many 10-second stretches. */
+    /** How many problems, patterns, taps or words in a row. For Lights On and Steps, how long or how far to go. */
     val rounds: Int = 3,
 ) {
     init {
@@ -53,6 +53,10 @@ enum class MissionType {
     /** Keep the room bright for a while. */
     @SerialName("lights_on")
     LightsOn,
+
+    /** Walk a number of steps. */
+    @SerialName("steps")
+    Steps,
 }
 
 @Serializable

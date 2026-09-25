@@ -28,6 +28,7 @@ import io.github.geanyl17.openalarm.missions.resources.mission_math
 import io.github.geanyl17.openalarm.missions.resources.mission_memory
 import io.github.geanyl17.openalarm.missions.resources.mission_progress
 import io.github.geanyl17.openalarm.missions.resources.mission_reaction
+import io.github.geanyl17.openalarm.missions.resources.mission_steps
 import io.github.geanyl17.openalarm.missions.resources.mission_stroop
 import io.github.geanyl17.openalarm.missions.resources.switch_to_math
 import kotlinx.coroutines.delay
@@ -101,6 +102,7 @@ fun MissionScreen(
                     onSwitchToMath = { switchedToMath = true },
                 )
                 MissionType.LightsOn -> LightsOnMission(mission, sensors.light!!, onInteraction, onDone = { index++ })
+                MissionType.Steps -> StepsMission(mission, sensors.steps!!, onInteraction, onDone = { index++ })
             }
         }
         if (offerMath && !useMath) {
@@ -119,6 +121,7 @@ fun missionName(type: MissionType): String = stringResource(
         MissionType.Reaction -> Res.string.mission_reaction
         MissionType.Stroop -> Res.string.mission_stroop
         MissionType.LightsOn -> Res.string.mission_lights_on
+        MissionType.Steps -> Res.string.mission_steps
     },
 )
 

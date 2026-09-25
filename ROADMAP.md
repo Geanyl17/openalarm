@@ -106,7 +106,7 @@ openalarm/
 │   ├── core/       # alarm model, next-ring-time math, snooze and dismiss rules (later: Wake Guard state machine)
 │   ├── data/       # alarm storage (a versioned JSON file)
 │   ├── ui/         # Compose Multiplatform screens and the theme engine
-│   └── missions/   # the missions: math, memory, reaction, Stroop and Lights On so far, camera missions next
+│   └── missions/   # the missions: math, memory, reaction, Stroop, Lights On and Steps so far, camera missions next
 ├── tools/          # scripts that generate bundled assets, such as the fallback alarm sound
 ├── iosApp/         # (Phase 5) AlarmKit alarm engine in Swift, Live Activity
 ├── models/         # (Phase 3) on-device ML models, their licenses and conversion scripts
@@ -151,13 +151,13 @@ IzzyOnDroid was part of this phase, but its [inclusion policy](https://izzyondro
 
 - [x] Wake Guard 5–7: a ringing alarm keeps coming back, can't be turned down, and rings again after a reboot or a force stop, with an Honesty Log
 - [x] Wake Guard 1 on Android: the backup alarm that rings again if the app dies or the phone restarts
-- [x] Wake Guard 2: Aftershocks (skipping them while you walk comes with the Steps mission)
+- [x] Wake Guard 2: Aftershocks, skipped while you walk around
 - [x] Wake Guard 3: Snooze Tax
 - [ ] Wake Guard 4 (with the camera missions in Phase 3)
 - [x] Mission chains
 - [x] Wake-up streaks
-- [x] Missions: Stroop, Lights On, and Reaction, a short version of the Alertness Gate
-- [ ] Missions: Steps, NFC Tag, the full Alertness Gate
+- [x] Missions: Stroop, Lights On, Steps, and Reaction, a short version of the Alertness Gate
+- [ ] Missions: NFC Tag, the full Alertness Gate
 - [ ] Submit to F-Droid
 
 ### Phase 3: smarter camera missions

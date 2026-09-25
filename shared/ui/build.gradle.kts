@@ -29,6 +29,8 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            api(projects.shared.core)
+            implementation(libs.navigation3.ui)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)

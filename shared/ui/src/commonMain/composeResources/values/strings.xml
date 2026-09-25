@@ -3,10 +3,92 @@
     <string name="app_name">OpenAlarm</string>
     <string name="early_development">OpenAlarm is in early development, and alarms arrive in the first release. Until then, pick a color and watch the whole app re-theme around it.</string>
     <string name="pick_a_color">Pick a color</string>
+
+    <!-- Alarm list -->
+    <string name="add_alarm">Add alarm</string>
+    <string name="no_alarms_title">No alarms yet</string>
+    <string name="no_alarms_body">Tap + to set your first alarm.</string>
+    <string name="next_alarm_in">Next alarm in %1$s</string>
+    <string name="no_alarm_on">No alarms are on</string>
+    <string name="snoozed_until">Snoozed until %1$s</string>
+    <string name="alarm_set_for">Alarm set for %1$s from now</string>
+    <string name="alarm_at">Alarm at %1$s</string>
+
+    <!-- Durations, as in "Next alarm in 7 h 32 min" -->
+    <string name="duration_days_hours">%1$d d %2$d h</string>
+    <string name="duration_hours_minutes">%1$d h %2$d min</string>
+    <string name="duration_minutes">%1$d min</string>
+    <string name="duration_under_a_minute">less than a minute</string>
+
+    <!-- 12-hour clock times; %1$s is the time, such as 7:30 -->
+    <string name="time_am">%1$s AM</string>
+    <string name="time_pm">%1$s PM</string>
+
+    <!-- Repeat -->
+    <string name="repeat_once">Once</string>
+    <string name="repeat_every_day">Every day</string>
+    <string name="repeat_weekdays">Weekdays</string>
+    <string name="repeat_weekends">Weekends</string>
+    <string name="day_letter_monday">M</string>
+    <string name="day_letter_tuesday">T</string>
+    <string name="day_letter_wednesday">W</string>
+    <string name="day_letter_thursday">T</string>
+    <string name="day_letter_friday">F</string>
+    <string name="day_letter_saturday">S</string>
+    <string name="day_letter_sunday">S</string>
+    <string name="day_short_monday">Mon</string>
+    <string name="day_short_tuesday">Tue</string>
+    <string name="day_short_wednesday">Wed</string>
+    <string name="day_short_thursday">Thu</string>
+    <string name="day_short_friday">Fri</string>
+    <string name="day_short_saturday">Sat</string>
+    <string name="day_short_sunday">Sun</string>
+    <string name="day_monday">Monday</string>
+    <string name="day_tuesday">Tuesday</string>
+    <string name="day_wednesday">Wednesday</string>
+    <string name="day_thursday">Thursday</string>
+    <string name="day_friday">Friday</string>
+    <string name="day_saturday">Saturday</string>
+    <string name="day_sunday">Sunday</string>
+
+    <!-- Alarm editor -->
+    <string name="new_alarm">New alarm</string>
+    <string name="edit_alarm">Edit alarm</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete_alarm">Delete alarm</string>
+    <string name="type_time">Type the time</string>
+    <string name="use_dial">Use the clock dial</string>
+    <string name="repeat">Repeat</string>
+    <string name="label">Label</string>
+    <string name="color">Color</string>
+    <string name="vibrate">Vibrate</string>
+    <string name="fade_in">Start quietly</string>
+    <string name="fade_in_description">The volume rises over 30 seconds</string>
+    <string name="snooze_length">Snooze length</string>
+    <string name="minutes_short">%1$d min</string>
+
+    <!-- Colors -->
+    <string name="color_default">Theme color</string>
     <string name="color_sunrise">Sunrise</string>
     <string name="color_red">Red</string>
     <string name="color_purple">Purple</string>
     <string name="color_blue">Blue</string>
     <string name="color_teal">Teal</string>
     <string name="color_green">Green</string>
+
+    <!-- Ringing screen -->
+    <string name="alarm">Alarm</string>
+    <string name="snooze_for">Snooze %1$d min</string>
+    <string name="dismiss">Dismiss</string>
+
+    <!-- Setup problems shown above the alarm list -->
+    <string name="setup_notifications_title">Alarms can't ring yet</string>
+    <string name="setup_notifications_body">OpenAlarm needs permission to show notifications. That's how a ringing alarm appears on your lock screen.</string>
+    <string name="setup_notifications_action">Allow notifications</string>
+    <string name="setup_full_screen_title">Alarms won't fill the screen</string>
+    <string name="setup_full_screen_body">Allow full-screen notifications so a ringing alarm shows up over your lock screen.</string>
+    <string name="setup_exact_alarms_title">Alarms might ring late</string>
+    <string name="setup_exact_alarms_body">Allow OpenAlarm to set alarms so they ring at exactly the right time.</string>
+    <string name="open_settings">Open settings</string>
 </resources>

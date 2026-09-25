@@ -71,6 +71,9 @@
     <string name="snooze_custom">Custom</string>
     <!-- Beside the wheel for picking a custom snooze length -->
     <string name="minutes_unit">min</string>
+    <string name="snooze_limit">Snooze limit</string>
+    <string name="snooze_no_limit">No limit</string>
+    <string name="snooze_off">Off</string>
     <string name="sound">Sound</string>
     <string name="sound_default">Default alarm sound</string>
     <string name="sound_custom">Custom sound</string>
@@ -100,6 +103,8 @@
     <!-- Ringing screen -->
     <string name="alarm">Alarm</string>
     <string name="snooze_for">Snooze %1$d min</string>
+    <!-- Such as "Snooze 5 min · 1 left" -->
+    <string name="snooze_for_left">Snooze %1$d min · %2$d left</string>
     <string name="dismiss">Dismiss</string>
     <string name="turn_off">Turn off</string>
     <string name="emergency_call">Emergency call</string>

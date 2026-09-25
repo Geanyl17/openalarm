@@ -5,6 +5,10 @@ import android.os.PowerManager
 import android.os.SystemClock
 import io.github.geanyl17.openalarm.core.Alarm
 import io.github.geanyl17.openalarm.core.Mission
+import io.github.geanyl17.openalarm.core.canSnooze
+import io.github.geanyl17.openalarm.core.missionsDue
+import io.github.geanyl17.openalarm.core.nextSnoozeMinutes
+import io.github.geanyl17.openalarm.core.snoozesLeft
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,8 +23,13 @@ data class Ringing(val alarms: List<Alarm>) {
     val first: Alarm get() = alarms.first()
     val label: String get() = alarms.firstNotNullOfOrNull { it.label.ifBlank { null } }.orEmpty()
 
-    /** Every ringing alarm's missions, all of which must be done to turn them off. */
-    val missions: List<Mission> get() = alarms.flatMap { it.missions }
+    /** Every ringing alarm's missions, all of which must be done to turn them off. Snoozing can add rounds. */
+    val missions: List<Mission> get() = alarms.flatMap { it.missionsDue }
+
+    /** How long a snooze lasts now, or null if the snooze limit is used up. */
+    val snoozeMinutes: Int? get() = if (alarms.all { it.canSnooze }) first.nextSnoozeMinutes else null
+
+    val snoozesLeft: Int? get() = alarms.mapNotNull { it.snoozesLeft }.minOrNull()
 
     val photo: String? get() = alarms.firstNotNullOfOrNull { it.photo }
 }

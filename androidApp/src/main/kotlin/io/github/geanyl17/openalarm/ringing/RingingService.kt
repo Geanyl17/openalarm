@@ -69,7 +69,8 @@ class RingingService : Service() {
                 val at = Instant.fromEpochMilliseconds(intent.getLongExtra(EXTRA_TRIGGER_AT, System.currentTimeMillis()))
                 scope.launch { ring(at) }
             }
-            ACTION_SNOOZE -> scope.launch { finish { ids -> appGraph.controller.snooze(ids) } }
+            // Past the snooze limit, only turning the alarm off stops it.
+            ACTION_SNOOZE -> if (RingingSession.state.value?.snoozeMinutes != null) scope.launch { finish { ids -> appGraph.controller.snooze(ids) } }
             ACTION_DISMISS -> scope.launch { finish { ids -> appGraph.controller.dismiss(ids) } }
             // The notification was swiped away, but the alarm is still ringing: it comes straight back.
             ACTION_SHOW_AGAIN -> if (RingingSession.state.value != null) updateNotification(notificationAlerts) else stopSelf()

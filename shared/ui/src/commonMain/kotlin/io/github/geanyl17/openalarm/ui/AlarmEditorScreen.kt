@@ -81,6 +81,9 @@ import io.github.geanyl17.openalarm.ui.resources.repeat
 import io.github.geanyl17.openalarm.ui.resources.rings_in
 import io.github.geanyl17.openalarm.ui.resources.save
 import io.github.geanyl17.openalarm.ui.resources.snooze_length
+import io.github.geanyl17.openalarm.ui.resources.snooze_limit
+import io.github.geanyl17.openalarm.ui.resources.snooze_no_limit
+import io.github.geanyl17.openalarm.ui.resources.snooze_off
 import io.github.geanyl17.openalarm.ui.resources.sound
 import io.github.geanyl17.openalarm.ui.resources.sound_custom
 import io.github.geanyl17.openalarm.ui.resources.sound_default
@@ -94,6 +97,9 @@ import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Duration.Companion.seconds
 
 private val RoundChoices = listOf(1, 2, 3, 5)
+
+/** No limit, then fewer and fewer snoozes, down to none. */
+private val SnoozeLimits = listOf(null, 3, 2, 1, 0)
 private const val MAX_LABEL_LENGTH = 60
 
 /** Creates a new alarm when [initial] is null, otherwise edits it. */
@@ -123,6 +129,7 @@ internal fun AlarmEditorScreen(
     var vibrate by rememberSaveable { mutableStateOf(base.vibrate) }
     var fadeIn by rememberSaveable { mutableStateOf(base.fadeIn) }
     var snoozeMinutes by rememberSaveable { mutableIntStateOf(base.snoozeMinutes) }
+    var snoozeLimit by rememberSaveable { mutableStateOf(base.snoozeLimit) }
 
     // The editor takes on the alarm's color, as a live preview of how it will look when it rings.
     OpenAlarmTheme(seedColor = colorArgb?.let { Color(it) } ?: DefaultSeedColor) {
@@ -148,6 +155,7 @@ internal fun AlarmEditorScreen(
                                         vibrate = vibrate,
                                         fadeIn = fadeIn,
                                         snoozeMinutes = snoozeMinutes,
+                                        snoozeLimit = snoozeLimit,
                                         colorArgb = colorArgb,
                                         sound = sound,
                                         photo = photo,
@@ -218,6 +226,19 @@ internal fun AlarmEditorScreen(
 
                 SectionTitle(stringResource(Res.string.snooze_length))
                 SnoozeLengthPicker(snoozeMinutes, onSelect = { snoozeMinutes = it })
+                Text(stringResource(Res.string.snooze_limit), style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(top = 8.dp))
+                ChoiceChips(
+                    options = SnoozeLimits,
+                    selected = snoozeLimit,
+                    label = { limit ->
+                        when (limit) {
+                            null -> stringResource(Res.string.snooze_no_limit)
+                            0 -> stringResource(Res.string.snooze_off)
+                            else -> limit.toString()
+                        }
+                    },
+                    onSelect = { snoozeLimit = it },
+                )
 
                 if (initial != null) {
                     Spacer(Modifier.height(8.dp))

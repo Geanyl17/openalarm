@@ -22,13 +22,13 @@ class AlarmController(
 
     /** Saves a new or edited alarm. Editing an alarm cancels any pending snooze. */
     suspend fun save(alarm: Alarm): Alarm {
-        val saved = repository.save(alarm.copy(snoozedUntil = null))
+        val saved = repository.save(alarm.copy(snoozedUntil = null, snoozesTaken = 0))
         reschedule()
         return saved
     }
 
     suspend fun setEnabled(id: Long, enabled: Boolean) {
-        repository.update(listOf(id)) { it.copy(enabled = enabled, snoozedUntil = null) }
+        repository.update(listOf(id)) { it.copy(enabled = enabled, snoozedUntil = null, snoozesTaken = 0) }
         reschedule()
     }
 
@@ -42,14 +42,16 @@ class AlarmController(
 
     /** Turns off ringing alarms: one-time alarms switch off, and snoozes are cleared. */
     suspend fun dismiss(ids: Collection<Long>) {
-        repository.update(ids) { it.copy(enabled = it.repeats, snoozedUntil = null) }
+        repository.update(ids) { it.copy(enabled = it.repeats, snoozedUntil = null, snoozesTaken = 0) }
         reschedule()
     }
 
-    /** Makes the ringing alarms ring again after their snooze length. */
+    /** Makes the ringing alarms ring again after their snooze length, and counts the snooze. */
     suspend fun snooze(ids: Collection<Long>) {
         val now = clock.now()
-        repository.update(ids) { it.copy(snoozedUntil = (now + it.snoozeMinutes.minutes).toEpochMilliseconds()) }
+        repository.update(ids) {
+            it.copy(snoozedUntil = (now + it.nextSnoozeMinutes.minutes).toEpochMilliseconds(), snoozesTaken = it.snoozesTaken + 1)
+        }
         reschedule()
     }
 

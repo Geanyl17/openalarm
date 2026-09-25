@@ -54,7 +54,9 @@ object RingingNotification {
             // Swiping the notification away doesn't get rid of the alarm; the notification just comes back.
             .setDeleteIntent(serviceAction(context, RingingService.ACTION_SHOW_AGAIN, 4))
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
-            .addAction(0, context.getString(R.string.action_snooze), serviceAction(context, RingingService.ACTION_SNOOZE, 1))
+        if (ringing?.snoozeMinutes != null) {
+            builder.addAction(0, context.getString(R.string.action_snooze), serviceAction(context, RingingService.ACTION_SNOOZE, 1))
+        }
         if (ringing?.missions.isNullOrEmpty()) {
             builder.addAction(0, context.getString(R.string.action_dismiss), serviceAction(context, RingingService.ACTION_DISMISS, 2))
         } else {

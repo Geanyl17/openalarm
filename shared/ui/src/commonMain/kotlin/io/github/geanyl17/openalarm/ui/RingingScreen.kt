@@ -52,6 +52,7 @@ import io.github.geanyl17.openalarm.ui.resources.dismiss
 import io.github.geanyl17.openalarm.ui.resources.emergency_call
 import io.github.geanyl17.openalarm.ui.resources.ic_alarm
 import io.github.geanyl17.openalarm.ui.resources.snooze_for
+import io.github.geanyl17.openalarm.ui.resources.snooze_for_left
 import io.github.geanyl17.openalarm.ui.resources.turn_off
 import io.github.geanyl17.openalarm.ui.theme.DefaultSeedColor
 import io.github.geanyl17.openalarm.ui.theme.OpenAlarmTheme
@@ -65,16 +66,18 @@ import kotlin.time.Duration.Companion.seconds
 /**
  * The screen shown while an alarm rings, themed with the alarm's own color and showing its cover
  * [photo], if it has one. With [missions], the alarm only turns off once they're done;
- * [onMissionInteraction] is called on every tap in them. [startWithMission] opens the missions
- * straight away, for example from the notification. [onEmergencyCall] opens the emergency dialer:
- * a ringing alarm keeps its screen in front, but it must never stand in the way of an emergency call.
+ * [onMissionInteraction] is called on every tap in them. [snoozeMinutes] is null once the snooze
+ * limit is used up. [startWithMission] opens the missions straight away, for example from the
+ * notification. [onEmergencyCall] opens the emergency dialer: a ringing alarm keeps its screen in
+ * front, but it must never stand in the way of an emergency call.
  */
 @Composable
 fun RingingScreen(
     label: String,
     colorArgb: Int?,
     photo: ImageBitmap?,
-    snoozeMinutes: Int,
+    snoozeMinutes: Int?,
+    snoozesLeft: Int?,
     missions: List<Mission>,
     use24Hour: Boolean,
     startWithMission: Boolean,
@@ -106,8 +109,8 @@ fun RingingScreen(
                             style = MaterialTheme.typography.headlineMedium,
                             modifier = Modifier.weight(1f),
                         )
-                        TextButton(onClick = onSnooze) {
-                            Text(stringResource(Res.string.snooze_for, snoozeMinutes))
+                        if (snoozeMinutes != null) {
+                            TextButton(onClick = onSnooze) { Text(snoozeText(snoozeMinutes, snoozesLeft)) }
                         }
                     }
                     MissionScreen(
@@ -125,6 +128,7 @@ fun RingingScreen(
                 label = label,
                 photo = photo,
                 snoozeMinutes = snoozeMinutes,
+                snoozesLeft = snoozesLeft,
                 use24Hour = use24Hour,
                 needsMission = missions.isNotEmpty(),
                 onSnooze = onSnooze,
@@ -147,7 +151,8 @@ private fun Ringing(
     now: LocalDateTime,
     label: String,
     photo: ImageBitmap?,
-    snoozeMinutes: Int,
+    snoozeMinutes: Int?,
+    snoozesLeft: Int?,
     use24Hour: Boolean,
     needsMission: Boolean,
     onSnooze: () -> Unit,
@@ -195,8 +200,10 @@ private fun Ringing(
                 )
             }
             Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                FilledTonalButton(onClick = onSnooze, modifier = Modifier.fillMaxWidth().height(64.dp)) {
-                    Text(stringResource(Res.string.snooze_for, snoozeMinutes), style = MaterialTheme.typography.titleMedium)
+                if (snoozeMinutes != null) {
+                    FilledTonalButton(onClick = onSnooze, modifier = Modifier.fillMaxWidth().height(64.dp)) {
+                        Text(snoozeText(snoozeMinutes, snoozesLeft), style = MaterialTheme.typography.titleMedium)
+                    }
                 }
                 Button(onClick = onTurnOff, modifier = Modifier.fillMaxWidth().height(72.dp)) {
                     Text(
@@ -226,3 +233,7 @@ private fun withSmallLetters(time: String): AnnotatedString = buildAnnotatedStri
         if (char.isLetter() || char.isWhitespace()) withStyle(SpanStyle(fontSize = 36.sp)) { append(char) } else append(char)
     }
 }
+
+@Composable
+private fun snoozeText(minutes: Int, left: Int?): String =
+    if (left == null) stringResource(Res.string.snooze_for, minutes) else stringResource(Res.string.snooze_for_left, minutes, left)

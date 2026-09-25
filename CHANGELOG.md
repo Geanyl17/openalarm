@@ -2,6 +2,12 @@
 
 All notable changes to OpenAlarm. Versions follow [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- A snooze limit for each alarm. Under a limit, each snooze is half as long as the one before (10, then 5, then 2 minutes) and adds a round to the mission. Once the snoozes are used up, only turning the alarm off stops it.
+
 ## [0.2.0] - 2026-09-25
 
 ### Added
@@ -54,5 +60,6 @@ The first release, for Android 8.0 and newer.
 
 - No internet permission, no ads, no tracking and no account.
 
+[Unreleased]: https://github.com/Geanyl17/openalarm/compare/v0.2.0...HEAD
 [0.2.0]: https://github.com/Geanyl17/openalarm/releases/tag/v0.2.0
 [0.1.0]: https://github.com/Geanyl17/openalarm/releases/tag/v0.1.0

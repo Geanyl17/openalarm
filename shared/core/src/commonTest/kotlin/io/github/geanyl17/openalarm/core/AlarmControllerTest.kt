@@ -50,6 +50,18 @@ class AlarmControllerTest {
     }
 
     @Test
+    fun snoozesUnderALimitGetShorterAndAreCountedUntilTheAlarmIsTurnedOff() = runTest {
+        val alarm = controller.save(Alarm(hour = 8, minute = 0, snoozeMinutes = 10, snoozeLimit = 2))
+        controller.snooze(listOf(alarm.id))
+        controller.snooze(listOf(alarm.id))
+        val snoozed = repository.get(alarm.id)!!
+        assertEquals(2, snoozed.snoozesTaken)
+        assertEquals((clock.now() + 5.minutes).toEpochMilliseconds(), snoozed.snoozedUntil)
+        controller.dismiss(listOf(alarm.id))
+        assertEquals(0, repository.get(alarm.id)!!.snoozesTaken)
+    }
+
+    @Test
     fun editingAnAlarmClearsItsSnooze() = runTest {
         val alarm = controller.save(Alarm(hour = 8, minute = 0))
         controller.snooze(listOf(alarm.id))

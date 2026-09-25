@@ -29,11 +29,24 @@ To run the app, open the folder in Android Studio and pick a device or emulator.
 
 | Path | Contents |
 |---|---|
-| `androidApp/` | The Android app. Later also the alarm engine (scheduling, ringing, sensors). |
-| `shared/ui/` | Compose Multiplatform UI and the theme engine, which the iOS app will reuse. |
+| `androidApp/` | The Android app and its alarm engine: scheduling, the ringing service and the ringing screen. |
+| `shared/core/` | Platform-independent alarm logic: the alarm model, when an alarm rings next, snooze and dismiss. |
+| `shared/data/` | Alarm storage. |
+| `shared/ui/` | Compose Multiplatform screens and the theme engine, which the iOS app will reuse. |
+| `tools/` | Scripts that generate bundled assets. |
 | `gradle/libs.versions.toml` | All dependency versions. |
 
-More modules arrive in Phase 1; see [Code layout](ROADMAP.md#code-layout) in the roadmap.
+See [Code layout](ROADMAP.md#code-layout) in the roadmap for what's planned.
+
+### Testing alarms by hand
+
+Unit tests can't show that an alarm really wakes a locked phone, so check changes to the alarm engine on a device or emulator:
+
+1. Set an alarm two or three minutes ahead and lock the screen. It should wake the screen and ring over the lock screen.
+2. Try Snooze and Dismiss, both on the ringing screen and from the notification.
+3. Set a PIN, restart the phone and don't unlock it. The alarm must still ring; this is the Direct Boot case.
+
+`adb logcat -s AlarmScheduler AlarmReceiver RescheduleReceiver AlarmPlayer` shows what the engine is doing.
 
 ## Making a change
 
@@ -54,6 +67,23 @@ These come from the roadmap's [principles](ROADMAP.md#principles):
 - **No internet.** The app ships without the internet permission, and `./gradlew check` fails if a change adds it. Features that need a network come later and are opt-in.
 - **No tracking or analytics.**
 - **Missions must never trap anyone.** Every mission needs a fallback for when it can't run.
+
+### Commit messages
+
+Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/): a type, an optional scope, and a short summary in the imperative, such as `feat(android): ring alarms over the lock screen`. Keep each commit to one feature or fix, and use the body to explain why when that isn't obvious.
+
+| Type | Use it for |
+|---|---|
+| `feat` | A new feature |
+| `fix` | A bug fix |
+| `docs` | Documentation only |
+| `test` | Adding or changing tests |
+| `refactor` | A code change that doesn't change behavior |
+| `build` | Gradle setup and dependencies |
+| `ci` | GitHub Actions workflows |
+| `chore` | Other housekeeping |
+
+The scope names the part of the app: `core`, `data`, `ui`, `android`, and later `ios` or `missions`.
 
 ## Sign off your commits
 

@@ -26,6 +26,7 @@ import io.github.geanyl17.openalarm.missions.resources.mission_math
 import io.github.geanyl17.openalarm.missions.resources.mission_memory
 import io.github.geanyl17.openalarm.missions.resources.mission_progress
 import io.github.geanyl17.openalarm.missions.resources.mission_reaction
+import io.github.geanyl17.openalarm.missions.resources.mission_stroop
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -75,6 +76,12 @@ fun MissionScreen(
                     onDone = { index++ },
                     onSwitchToMath = { switchedToMath = true },
                 )
+                MissionType.Stroop -> StroopMission(
+                    mission = mission,
+                    onInteraction = onInteraction,
+                    onDone = { index++ },
+                    onSwitchToMath = { switchedToMath = true },
+                )
             }
         }
     }
@@ -86,6 +93,7 @@ fun missionName(type: MissionType): String = stringResource(
         MissionType.Math -> Res.string.mission_math
         MissionType.Memory -> Res.string.mission_memory
         MissionType.Reaction -> Res.string.mission_reaction
+        MissionType.Stroop -> Res.string.mission_stroop
     },
 )
 

@@ -14,7 +14,7 @@ import kotlinx.serialization.Serializable
 data class Mission(
     val type: MissionType = MissionType.Math,
     val difficulty: Difficulty = Difficulty.Normal,
-    /** How many problems, patterns or taps in a row. */
+    /** How many problems, patterns, taps or words in a row. */
     val rounds: Int = 3,
 ) {
     init {
@@ -45,6 +45,10 @@ enum class MissionType {
     /** Tap as soon as the screen says so, fast enough to show you're awake. */
     @SerialName("reaction")
     Reaction,
+
+    /** Name the ink color of a color word, not the word itself. */
+    @SerialName("stroop")
+    Stroop,
 }
 
 @Serializable

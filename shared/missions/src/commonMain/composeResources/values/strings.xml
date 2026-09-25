@@ -4,6 +4,7 @@
     <string name="mission_math">Math</string>
     <string name="mission_memory">Memory</string>
     <string name="mission_reaction">Reaction</string>
+    <string name="mission_stroop">Colors</string>
     <string name="difficulty_easy">Easy</string>
     <string name="difficulty_normal">Normal</string>
     <string name="difficulty_hard">Hard</string>
@@ -25,4 +26,10 @@
     <string name="reaction_in_time">%1$d ms</string>
     <string name="reaction_too_soon">Too soon</string>
     <string name="reaction_too_slow">Too slow</string>
+    <string name="stroop_progress">Word %1$d of %2$d</string>
+    <string name="stroop_prompt">Tap the color, not the word</string>
+    <string name="ink_blue">Blue</string>
+    <string name="ink_orange">Orange</string>
+    <string name="ink_pink">Pink</string>
+    <string name="ink_green">Green</string>
 </resources>

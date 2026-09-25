@@ -66,6 +66,7 @@
     <string name="color">Color</string>
     <string name="vibrate">Vibrate</string>
     <string name="fade_in">Start quietly</string>
+    <string name="check_ins">Check-ins</string>
     <string name="snooze_length">Snooze length</string>
     <string name="minutes_short">%1$d min</string>
     <string name="snooze_custom">Custom</string>
@@ -108,6 +109,10 @@
     <string name="dismiss">Dismiss</string>
     <string name="turn_off">Turn off</string>
     <string name="emergency_call">Emergency call</string>
+    <string name="check_in_title">Are you up?</string>
+    <string name="check_in_button">I'm up</string>
+    <!-- A countdown, such as "42 s" -->
+    <string name="seconds_short">%1$d s</string>
 
     <!-- Setup problems shown above the alarm list -->
     <string name="setup_notifications_title">Alarms can't ring yet</string>

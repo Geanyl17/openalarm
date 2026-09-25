@@ -150,8 +150,10 @@ IzzyOnDroid was part of this phase, but its [inclusion policy](https://izzyondro
 ### Phase 2: "You can't fall back asleep"
 
 - [x] Wake Guard 5–7: a ringing alarm keeps coming back, can't be turned down, and rings again after a reboot or a force stop (the Honesty Log is still to come)
+- [x] Wake Guard 1 on Android: the backup alarm that rings again if the app dies or the phone restarts
+- [x] Wake Guard 2: Aftershocks (skipping them while you walk comes with the Steps mission)
 - [x] Wake Guard 3: Snooze Tax
-- [ ] Wake Guard 1, 2 and 4, and the Honesty Log
+- [ ] Wake Guard 4 (with the camera missions in Phase 3), and the Honesty Log
 - [ ] Mission chains and wake-up streaks
 - [ ] Missions: Steps, NFC Tag, Lights On, Stroop, Alertness Gate
 - [ ] Submit to F-Droid

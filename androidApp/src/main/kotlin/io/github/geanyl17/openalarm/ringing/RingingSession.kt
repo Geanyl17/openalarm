@@ -18,16 +18,31 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlin.time.Duration.Companion.minutes
 
-/** Alarms that are ringing together. Usually one; several if they were set for the same time. */
-data class Ringing(val alarms: List<Alarm>) {
+/**
+ * Alarms that are ringing together. Usually one; several if they were set for the same time.
+ * It can also be a check-in after an alarm was turned off, which turns into the full alarm again,
+ * with a [harder] mission, if nobody answers it by [checkInUntil].
+ */
+data class Ringing(
+    val alarms: List<Alarm>,
+    /** For a check-in: when it turns into the full alarm, in epoch milliseconds. */
+    val checkInUntil: Long? = null,
+    val harder: Boolean = false,
+) {
     val first: Alarm get() = alarms.first()
     val label: String get() = alarms.firstNotNullOfOrNull { it.label.ifBlank { null } }.orEmpty()
+    val checkIn: Boolean get() = checkInUntil != null
 
     /** Every ringing alarm's missions, all of which must be done to turn them off. Snoozing can add rounds. */
-    val missions: List<Mission> get() = alarms.flatMap { it.missionsDue }
+    val missions: List<Mission>
+        get() {
+            val due = alarms.flatMap { it.missionsDue }
+            // After a missed check-in, even an alarm without a mission gets one.
+            return if (harder) due.ifEmpty { listOf(Mission()) }.map { it.harder() } else due
+        }
 
-    /** How long a snooze lasts now, or null if the snooze limit is used up. */
-    val snoozeMinutes: Int? get() = if (alarms.all { it.canSnooze }) first.nextSnoozeMinutes else null
+    /** How long a snooze lasts now, or null if the snooze limit is used up. A check-in can't be snoozed. */
+    val snoozeMinutes: Int? get() = if (!checkIn && alarms.all { it.canSnooze }) first.nextSnoozeMinutes else null
 
     val snoozesLeft: Int? get() = alarms.mapNotNull { it.snoozesLeft }.minOrNull()
 

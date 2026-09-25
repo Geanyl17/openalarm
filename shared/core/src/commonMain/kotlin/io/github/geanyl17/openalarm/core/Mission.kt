@@ -21,6 +21,12 @@ data class Mission(
         require(rounds in 1..MAX_ROUNDS) { "Rounds out of range: $rounds" }
     }
 
+    /** The same mission, one difficulty level up and with one more round. */
+    fun harder(): Mission = copy(
+        difficulty = Difficulty.entries[(difficulty.ordinal + 1).coerceAtMost(Difficulty.entries.lastIndex)],
+        rounds = (rounds + 1).coerceAtMost(MAX_ROUNDS),
+    )
+
     companion object {
         const val MAX_ROUNDS = 10
     }

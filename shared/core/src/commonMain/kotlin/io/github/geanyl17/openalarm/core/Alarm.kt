@@ -37,6 +37,10 @@ data class Alarm(
     val missions: List<Mission> = emptyList(),
     /** When a snoozed alarm rings again, in epoch milliseconds; null when it isn't snoozed. */
     val snoozedUntil: Long? = null,
+    /** Surprise check-ins after the alarm is turned off, to catch anyone who went back to sleep. */
+    val checkIns: Boolean = false,
+    /** When the pending check-ins are due, in epoch milliseconds. */
+    val checkInsAt: List<Long> = emptyList(),
 ) {
     init {
         require(hour in 0..23) { "Hour out of range: $hour" }

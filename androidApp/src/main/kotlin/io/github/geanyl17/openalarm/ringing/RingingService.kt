@@ -14,6 +14,7 @@ import android.provider.Settings
 import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
 import io.github.geanyl17.openalarm.appGraph
+import io.github.geanyl17.openalarm.core.isCheckInAt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -25,6 +26,7 @@ import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Clock
 import kotlin.time.Instant
 
 /**
@@ -44,6 +46,8 @@ class RingingService : Service() {
     private var heartbeat: Job? = null
     private var quietWhileSolving: Job? = null
     private var keepOnScreen: Job? = null
+    private var checkInTimer: Job? = null
+    private var checkInAt: Instant? = null
     private var stopping = false
     private var notificationId = RingingNotification.ID
     private var notificationAlerts = true
@@ -69,6 +73,12 @@ class RingingService : Service() {
                 val at = Instant.fromEpochMilliseconds(intent.getLongExtra(EXTRA_TRIGGER_AT, System.currentTimeMillis()))
                 scope.launch { ring(at) }
             }
+            ACTION_CHECKED_IN -> {
+                val at = checkInAt
+                if (RingingSession.state.value?.checkIn == true && at != null) {
+                    scope.launch { finish { ids -> appGraph.controller.checkedIn(ids, at) } }
+                }
+            }
             // Past the snooze limit, only turning the alarm off stops it.
             ACTION_SNOOZE -> if (RingingSession.state.value?.snoozeMinutes != null) scope.launch { finish { ids -> appGraph.controller.snooze(ids) } }
             ACTION_DISMISS -> scope.launch { finish { ids -> appGraph.controller.dismiss(ids) } }
@@ -92,11 +102,21 @@ class RingingService : Service() {
             if (current == null) stopRinging()
             return
         }
-        val ringing = Ringing((current?.alarms.orEmpty() + due).distinctBy { it.id })
+        val alarms = (current?.alarms.orEmpty() + due).distinctBy { it.id }
+        val checkIn = current == null && due.all { it.isCheckInAt(at) }
+        val ringing = Ringing(
+            alarms = alarms,
+            checkInUntil = if (checkIn) (Clock.System.now() + CHECK_IN_TIME).toEpochMilliseconds() else null,
+            harder = current?.harder == true,
+        )
         RingingSession.start(ringing)
         goForeground(ringing)
-        // If something was already ringing, the new alarm just joins in.
-        if (current != null) return
+        // If something was already ringing, the new alarm just joins in. A check-in that's joined by a
+        // regular alarm becomes a full alarm.
+        if (current != null) {
+            if (current.checkIn) becomeFullAlarm()
+            return
+        }
 
         // Until it's turned off or snoozed, the alarm rings again after a reboot or if the app is stopped.
         RingingBackup.remember(this, at)
@@ -104,6 +124,16 @@ class RingingService : Service() {
         // over other apps; otherwise the notification opens it: full screen when locked, as a banner when in use.
         startActivity(RingingActivity.intent(this))
         player.start(sound = ringing.first.sound, vibrate = ringing.alarms.any { it.vibrate }, fadeIn = ringing.first.fadeIn)
+        if (checkIn) {
+            // A check-in starts quietly. Unanswered, it turns into the full alarm.
+            player.setQuiet(true)
+            checkInAt = at
+            checkInTimer = scope.launch {
+                delay(CHECK_IN_TIME)
+                RingingSession.state.value?.let { RingingSession.start(it.copy(harder = true)) }
+                becomeFullAlarm()
+            }
+        }
         heartbeat = scope.launch {
             while (true) {
                 RingingBackup.arm(this@RingingService, at)
@@ -152,6 +182,16 @@ class RingingService : Service() {
         }
     }
 
+    /** Turns a check-in into the full alarm: loud again, with the time limit of a regular ring. */
+    private fun becomeFullAlarm() {
+        checkInTimer?.cancel()
+        checkInAt = null
+        RingingSession.state.value?.let { RingingSession.start(it.copy(checkInUntil = null)) }
+        player.setQuiet(false)
+        restartTimeout()
+        updateNotification(notificationAlerts)
+    }
+
     /** Opens the ringing screen again. From the background, Android allows that only with "display over other apps". */
     private fun bringBack() {
         // With the screen off, it can wait until the screen is turned on again.
@@ -174,6 +214,8 @@ class RingingService : Service() {
         val ringing = RingingSession.state.value
         stopping = true
         keepOnScreen?.cancel()
+        checkInTimer?.cancel()
+        checkInAt = null
         timeout?.cancel()
         quietWhileSolving?.cancel()
         heartbeat?.cancel()
@@ -232,10 +274,12 @@ class RingingService : Service() {
         const val ACTION_SNOOZE = "io.github.geanyl17.openalarm.action.SNOOZE"
         const val ACTION_DISMISS = "io.github.geanyl17.openalarm.action.DISMISS"
         const val ACTION_SHOW_AGAIN = "io.github.geanyl17.openalarm.action.SHOW_AGAIN"
+        const val ACTION_CHECKED_IN = "io.github.geanyl17.openalarm.action.CHECKED_IN"
         private const val EXTRA_TRIGGER_AT = "trigger_at"
         private val RING_TIMEOUT = 10.minutes
         private val WAKE_LOCK_TIMEOUT = RING_TIMEOUT + 1.minutes
         private val QUIET_WHILE_SOLVING = 20.seconds
+        private val CHECK_IN_TIME = 60.seconds
         private val CHECK_INTERVAL = 1.seconds
         private val COMEBACK_DELAY = 200.milliseconds
         private val COMEBACK_INTERVAL = 500.milliseconds

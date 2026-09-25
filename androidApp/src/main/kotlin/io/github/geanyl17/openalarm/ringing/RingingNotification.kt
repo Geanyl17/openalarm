@@ -45,7 +45,7 @@ object RingingNotification {
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_alarm)
             .setContentTitle(ringing?.label?.ifBlank { null } ?: context.getString(R.string.notification_title))
-            .setContentText(context.getString(R.string.notification_text))
+            .setContentText(context.getString(if (ringing?.checkIn == true) R.string.notification_check_in else R.string.notification_text))
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -57,17 +57,21 @@ object RingingNotification {
         if (ringing?.snoozeMinutes != null) {
             builder.addAction(0, context.getString(R.string.action_snooze), serviceAction(context, RingingService.ACTION_SNOOZE, 1))
         }
-        if (ringing?.missions.isNullOrEmpty()) {
-            builder.addAction(0, context.getString(R.string.action_dismiss), serviceAction(context, RingingService.ACTION_DISMISS, 2))
-        } else {
-            // No dismiss button: the alarm only turns off once its mission is done on the ringing screen.
-            val startMission = PendingIntent.getActivity(
-                context,
-                3,
-                RingingActivity.intent(context, startMission = true),
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-            )
-            builder.addAction(0, context.getString(R.string.action_turn_off), startMission)
+        when {
+            // A check-in is answered on its own screen, where the button moves around, so it has no actions.
+            ringing?.checkIn == true -> Unit
+            ringing?.missions.isNullOrEmpty() ->
+                builder.addAction(0, context.getString(R.string.action_dismiss), serviceAction(context, RingingService.ACTION_DISMISS, 2))
+            else -> {
+                // No dismiss button: the alarm only turns off once its mission is done on the ringing screen.
+                val startMission = PendingIntent.getActivity(
+                    context,
+                    3,
+                    RingingActivity.intent(context, startMission = true),
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+                )
+                builder.addAction(0, context.getString(R.string.action_turn_off), startMission)
+            }
         }
         ringing?.first?.colorArgb?.let { builder.setColor(it) }
         if (alert) builder.setFullScreenIntent(ringingScreen, true) else builder.setSilent(true)

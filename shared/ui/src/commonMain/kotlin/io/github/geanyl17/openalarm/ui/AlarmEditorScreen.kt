@@ -61,6 +61,7 @@ import io.github.geanyl17.openalarm.missions.difficultyName
 import io.github.geanyl17.openalarm.missions.missionName
 import io.github.geanyl17.openalarm.ui.resources.Res
 import io.github.geanyl17.openalarm.ui.resources.cancel
+import io.github.geanyl17.openalarm.ui.resources.check_ins
 import io.github.geanyl17.openalarm.ui.resources.color
 import io.github.geanyl17.openalarm.ui.resources.delete_alarm
 import io.github.geanyl17.openalarm.ui.resources.edit_alarm
@@ -128,6 +129,7 @@ internal fun AlarmEditorScreen(
     var colorArgb by rememberSaveable { mutableStateOf(base.colorArgb) }
     var vibrate by rememberSaveable { mutableStateOf(base.vibrate) }
     var fadeIn by rememberSaveable { mutableStateOf(base.fadeIn) }
+    var checkIns by rememberSaveable { mutableStateOf(base.checkIns) }
     var snoozeMinutes by rememberSaveable { mutableIntStateOf(base.snoozeMinutes) }
     var snoozeLimit by rememberSaveable { mutableStateOf(base.snoozeLimit) }
 
@@ -154,6 +156,7 @@ internal fun AlarmEditorScreen(
                                         enabled = true,
                                         vibrate = vibrate,
                                         fadeIn = fadeIn,
+                                        checkIns = checkIns,
                                         snoozeMinutes = snoozeMinutes,
                                         snoozeLimit = snoozeLimit,
                                         colorArgb = colorArgb,
@@ -223,6 +226,7 @@ internal fun AlarmEditorScreen(
 
                 SwitchRow(stringResource(Res.string.vibrate), vibrate) { vibrate = it }
                 SwitchRow(stringResource(Res.string.fade_in), fadeIn) { fadeIn = it }
+                SwitchRow(stringResource(Res.string.check_ins), checkIns) { checkIns = it }
 
                 SectionTitle(stringResource(Res.string.snooze_length))
                 SnoozeLengthPicker(snoozeMinutes, onSelect = { snoozeMinutes = it })

@@ -85,11 +85,11 @@ class AlarmControllerTest {
     }
 }
 
-private class FixedClock(private val now: Instant) : Clock {
+internal class FixedClock(private val now: Instant) : Clock {
     override fun now(): Instant = now
 }
 
-private class FakeRepository : AlarmRepository {
+internal class FakeRepository : AlarmRepository {
     private val state = MutableStateFlow<List<Alarm>>(emptyList())
     private var nextId = 1L
 

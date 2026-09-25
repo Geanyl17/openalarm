@@ -2,12 +2,14 @@ package io.github.geanyl17.openalarm.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
@@ -27,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -48,9 +51,12 @@ import io.github.geanyl17.openalarm.core.Mission
 import io.github.geanyl17.openalarm.missions.MissionScreen
 import io.github.geanyl17.openalarm.ui.resources.Res
 import io.github.geanyl17.openalarm.ui.resources.alarm
+import io.github.geanyl17.openalarm.ui.resources.check_in_button
+import io.github.geanyl17.openalarm.ui.resources.check_in_title
 import io.github.geanyl17.openalarm.ui.resources.dismiss
 import io.github.geanyl17.openalarm.ui.resources.emergency_call
 import io.github.geanyl17.openalarm.ui.resources.ic_alarm
+import io.github.geanyl17.openalarm.ui.resources.seconds_short
 import io.github.geanyl17.openalarm.ui.resources.snooze_for
 import io.github.geanyl17.openalarm.ui.resources.snooze_for_left
 import io.github.geanyl17.openalarm.ui.resources.turn_off
@@ -61,14 +67,17 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import kotlin.random.Random
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 
 /**
  * The screen shown while an alarm rings, themed with the alarm's own color and showing its cover
  * [photo], if it has one. With [missions], the alarm only turns off once they're done;
  * [onMissionInteraction] is called on every tap in them. [snoozeMinutes] is null once the snooze
  * limit is used up. [startWithMission] opens the missions straight away, for example from the
- * notification. [onEmergencyCall] opens the emergency dialer: a ringing alarm keeps its screen in
+ * notification. With [checkInUntil], it's a check-in, answered with [onCheckedIn]. [onEmergencyCall] opens the emergency dialer: a ringing alarm keeps its screen in
  * front, but it must never stand in the way of an emergency call.
  */
 @Composable
@@ -85,15 +94,20 @@ fun RingingScreen(
     onDismiss: () -> Unit,
     onMissionInteraction: () -> Unit,
     onEmergencyCall: () -> Unit,
+    checkInUntil: Long? = null,
+    onCheckedIn: () -> Unit = {},
 ) {
     OpenAlarmTheme(seedColor = colorArgb?.let { Color(it) } ?: DefaultSeedColor) {
-        val now = rememberNow(tick = 1.seconds).toLocalDateTime(TimeZone.currentSystemDefault())
+        val instant = rememberNow(tick = 1.seconds)
+        val now = instant.toLocalDateTime(TimeZone.currentSystemDefault())
         var solving by rememberSaveable { mutableStateOf(false) }
         LaunchedEffect(startWithMission) {
             if (startWithMission && missions.isNotEmpty()) solving = true
         }
 
-        if (solving) {
+        if (checkInUntil != null) {
+            CheckIn(now, Instant.fromEpochMilliseconds(checkInUntil) - instant, use24Hour, onCheckedIn, onEmergencyCall)
+        } else if (solving) {
             Surface(Modifier.fillMaxSize()) {
                 Column(
                     modifier = Modifier
@@ -237,3 +251,51 @@ private fun withSmallLetters(time: String): AnnotatedString = buildAnnotatedStri
 @Composable
 private fun snoozeText(minutes: Int, left: Int?): String =
     if (left == null) stringResource(Res.string.snooze_for, minutes) else stringResource(Res.string.snooze_for_left, minutes, left)
+
+/** A surprise check-in. "I'm up" sits somewhere different every time, so it can't be tapped half asleep. */
+@Composable
+private fun CheckIn(
+    now: LocalDateTime,
+    left: Duration,
+    use24Hour: Boolean,
+    onCheckedIn: () -> Unit,
+    onEmergencyCall: () -> Unit,
+) {
+    val spot = remember { Random.nextFloat() to Random.nextFloat() }
+    Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.primaryContainer) {
+        BoxWithConstraints(Modifier.fillMaxSize().safeDrawingPadding().padding(24.dp)) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                EmergencyCallButton(onEmergencyCall)
+                Text(
+                    text = withSmallLetters(formatTime(now.hour, now.minute, use24Hour)),
+                    style = MaterialTheme.typography.displayLarge,
+                )
+                Text(stringResource(Res.string.check_in_title), style = MaterialTheme.typography.headlineSmall)
+                Text(
+                    text = stringResource(Res.string.seconds_short, left.inWholeSeconds.coerceAtLeast(0)),
+                    style = MaterialTheme.typography.titleLarge,
+                )
+            }
+            val top = CheckInHeader
+            Button(
+                onClick = onCheckedIn,
+                modifier = Modifier
+                    .offset(
+                        x = (maxWidth - CheckInButtonWidth) * spot.first,
+                        y = top + (maxHeight - top - CheckInButtonHeight).coerceAtLeast(0.dp) * spot.second,
+                    )
+                    .size(CheckInButtonWidth, CheckInButtonHeight),
+            ) {
+                Text(stringResource(Res.string.check_in_button), style = MaterialTheme.typography.titleLarge)
+            }
+        }
+    }
+}
+
+private val CheckInHeader = 260.dp
+private val CheckInButtonWidth = 160.dp
+private val CheckInButtonHeight = 72.dp

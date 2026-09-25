@@ -7,6 +7,7 @@ All notable changes to OpenAlarm. Versions follow [Semantic Versioning](https://
 ### Added
 
 - A snooze limit for each alarm. Under a limit, each snooze is half as long as the one before (10, then 5, then 2 minutes) and adds a round to the mission. Once the snoozes are used up, only turning the alarm off stops it.
+- Check-ins: after you turn an alarm off, it checks once or twice, 5 to 15 minutes later, that you're still up. Tap "I'm up", which appears somewhere different each time, within 60 seconds, or the alarm rings again with a harder mission.
 
 ## [0.2.0] - 2026-09-25
 

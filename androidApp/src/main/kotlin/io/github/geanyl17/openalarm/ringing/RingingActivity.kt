@@ -63,6 +63,8 @@ class RingingActivity : ComponentActivity() {
                     onDismiss = { startService(RingingService.intent(this, RingingService.ACTION_DISMISS)) },
                     onMissionInteraction = RingingSession::missionInteraction,
                     onEmergencyCall = ::callEmergencyServices,
+                    checkInUntil = current.checkInUntil,
+                    onCheckedIn = { startService(RingingService.intent(this, RingingService.ACTION_CHECKED_IN)) },
                 )
             }
         }

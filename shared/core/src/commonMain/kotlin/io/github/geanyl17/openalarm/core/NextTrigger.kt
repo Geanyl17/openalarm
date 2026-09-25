@@ -12,13 +12,20 @@ import kotlin.time.Instant
 /** An alarm together with the moment it rings next. */
 data class UpcomingAlarm(val alarm: Alarm, val at: Instant)
 
-/** The next moment this alarm rings, strictly after [after]. Null if the alarm is switched off. */
+/**
+ * The next moment this alarm rings, strictly after [after]: its regular time, a snooze or a check-in.
+ * A switched-off alarm still has its pending check-ins, since one-time alarms switch off once they're done.
+ */
 fun Alarm.nextTrigger(after: Instant, timeZone: TimeZone): Instant? {
-    if (!enabled) return null
+    val checkIn = checkInsAt.map { Instant.fromEpochMilliseconds(it) }.filter { it > after }.minOrNull()
+    if (!enabled) return checkIn
     val snooze = snoozedUntil?.let { Instant.fromEpochMilliseconds(it) }?.takeIf { it > after }
     val regular = nextRegularTrigger(after, timeZone)
-    return listOfNotNull(snooze, regular).minOrNull()
+    return listOfNotNull(snooze, regular, checkIn).minOrNull()
 }
+
+/** Whether this alarm is due at [at] for a check-in, rather than to ring. */
+fun Alarm.isCheckInAt(at: Instant): Boolean = at.toEpochMilliseconds() in checkInsAt
 
 private fun Alarm.nextRegularTrigger(after: Instant, timeZone: TimeZone): Instant? {
     val startDate = after.toLocalDateTime(timeZone).date

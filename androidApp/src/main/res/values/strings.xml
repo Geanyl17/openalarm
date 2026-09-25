@@ -6,6 +6,7 @@
     <string name="channel_ringing">Ringing alarms</string>
     <string name="notification_title">Alarm</string>
     <string name="notification_text">Ringing now</string>
+    <string name="notification_check_in">Are you up?</string>
     <string name="action_snooze">Snooze</string>
     <string name="action_dismiss">Dismiss</string>
     <string name="action_turn_off">Turn off</string>

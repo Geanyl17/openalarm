@@ -12,6 +12,7 @@ All notable changes to OpenAlarm. Versions follow [Semantic Versioning](https://
 - A Colors mission: a color word is written in another color, and you tap the color, not the word. Its colors can be told apart with color blindness too. A wrong answer costs a round, and after 3 you can switch to math.
 - Mission chains: up to 3 missions on one alarm, done one after another.
 - A Theme screen, behind the palette button on the alarm list: pick the app's color, or take it from the wallpaper (Android 12 and later), and a mode: System, Light, Dark, Black (pure black backgrounds for OLED screens) or Night red (red on black, with no blue light, for setting alarms in bed). Alarms with their own color keep it, in the chosen mode.
+- Wake-ups, behind the history button on the alarm list: every wake-up with how long it took to get up, its snoozes and check-ins, and your streak of mornings in a row. The Honesty Log part of it shows each way around an alarm: force-stopping the app, turning a snoozed alarm off in the app (which skips its mission), and missed check-ins break the streak. A restart or the app being stopped mid-alarm is shown too, but doesn't count against you, since a flat battery or the system can cause it.
 
 ### Changed
 

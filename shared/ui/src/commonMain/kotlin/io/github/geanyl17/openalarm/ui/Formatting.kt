@@ -3,6 +3,7 @@ package io.github.geanyl17.openalarm.ui
 import androidx.compose.runtime.Composable
 import io.github.geanyl17.openalarm.core.RepeatDays
 import io.github.geanyl17.openalarm.ui.resources.Res
+import io.github.geanyl17.openalarm.ui.resources.date_short
 import io.github.geanyl17.openalarm.ui.resources.day_friday
 import io.github.geanyl17.openalarm.ui.resources.day_letter_friday
 import io.github.geanyl17.openalarm.ui.resources.day_letter_monday
@@ -28,6 +29,18 @@ import io.github.geanyl17.openalarm.ui.resources.duration_days_hours
 import io.github.geanyl17.openalarm.ui.resources.duration_hours_minutes
 import io.github.geanyl17.openalarm.ui.resources.duration_minutes
 import io.github.geanyl17.openalarm.ui.resources.duration_under_a_minute
+import io.github.geanyl17.openalarm.ui.resources.month_1
+import io.github.geanyl17.openalarm.ui.resources.month_10
+import io.github.geanyl17.openalarm.ui.resources.month_11
+import io.github.geanyl17.openalarm.ui.resources.month_12
+import io.github.geanyl17.openalarm.ui.resources.month_2
+import io.github.geanyl17.openalarm.ui.resources.month_3
+import io.github.geanyl17.openalarm.ui.resources.month_4
+import io.github.geanyl17.openalarm.ui.resources.month_5
+import io.github.geanyl17.openalarm.ui.resources.month_6
+import io.github.geanyl17.openalarm.ui.resources.month_7
+import io.github.geanyl17.openalarm.ui.resources.month_8
+import io.github.geanyl17.openalarm.ui.resources.month_9
 import io.github.geanyl17.openalarm.ui.resources.repeat_every_day
 import io.github.geanyl17.openalarm.ui.resources.repeat_once
 import io.github.geanyl17.openalarm.ui.resources.repeat_weekdays
@@ -35,6 +48,7 @@ import io.github.geanyl17.openalarm.ui.resources.repeat_weekends
 import io.github.geanyl17.openalarm.ui.resources.time_am
 import io.github.geanyl17.openalarm.ui.resources.time_pm
 import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
@@ -83,6 +97,16 @@ internal fun repeatSummary(repeat: RepeatDays): String = when (repeat) {
     RepeatDays.Weekend -> stringResource(Res.string.repeat_weekends)
     else -> repeat.days.map { stringResource(it.shortName) }.joinToString(", ")
 }
+
+/** "Fri, Sep 25". */
+@Composable
+internal fun formatDate(date: LocalDate): String =
+    stringResource(Res.string.date_short, stringResource(date.dayOfWeek.shortName), stringResource(Months[date.month.ordinal]), date.day)
+
+private val Months = listOf(
+    Res.string.month_1, Res.string.month_2, Res.string.month_3, Res.string.month_4, Res.string.month_5, Res.string.month_6,
+    Res.string.month_7, Res.string.month_8, Res.string.month_9, Res.string.month_10, Res.string.month_11, Res.string.month_12,
+)
 
 internal val DayOfWeek.letter: StringResource
     get() = when (this) {

@@ -5,8 +5,10 @@ import android.content.Context
 import io.github.geanyl17.openalarm.alarm.AndroidAlarmScheduler
 import io.github.geanyl17.openalarm.core.AlarmController
 import io.github.geanyl17.openalarm.core.ThemeSettings
+import io.github.geanyl17.openalarm.core.WakeLog
 import io.github.geanyl17.openalarm.data.openAlarmRepository
 import io.github.geanyl17.openalarm.data.openSettingsRepository
+import io.github.geanyl17.openalarm.data.openWakeLogRepository
 import io.github.geanyl17.openalarm.ringing.RingingNotification
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -43,9 +45,12 @@ class AppGraph(app: Application) {
     // so alarms still ring, in the chosen theme, if the phone restarts overnight.
     private val files = app.createDeviceProtectedStorageContext().filesDir.toOkioPath()
 
+    val wakeLog = WakeLog(openWakeLogRepository(FileSystem.SYSTEM, files / "wakeups.json", scope))
+
     val controller = AlarmController(
         repository = openAlarmRepository(FileSystem.SYSTEM, files / "alarms.json", scope),
         scheduler = AndroidAlarmScheduler(app),
+        wakeLog = wakeLog,
     )
 
     val settings = openSettingsRepository(FileSystem.SYSTEM, files / "settings.json", scope)

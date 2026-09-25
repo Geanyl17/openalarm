@@ -13,7 +13,9 @@ import androidx.navigation3.ui.NavDisplay
 import io.github.geanyl17.openalarm.core.Alarm
 import io.github.geanyl17.openalarm.core.AlarmController
 import io.github.geanyl17.openalarm.core.ThemeSettings
+import io.github.geanyl17.openalarm.core.WakeUp
 import io.github.geanyl17.openalarm.core.nextTrigger
+import io.github.geanyl17.openalarm.core.streak
 import io.github.geanyl17.openalarm.ui.resources.Res
 import io.github.geanyl17.openalarm.ui.resources.alarm_set_for
 import io.github.geanyl17.openalarm.ui.theme.OpenAlarmTheme
@@ -22,6 +24,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import org.jetbrains.compose.resources.getString
 import kotlin.time.Clock
+import kotlinx.coroutines.flow.Flow
 
 private sealed interface Screen {
     data object AlarmList : Screen
@@ -30,12 +33,15 @@ private sealed interface Screen {
     data class EditAlarm(val alarm: Alarm?) : Screen
 
     data object Theme : Screen
+
+    data object WakeUps : Screen
 }
 
 /**
  * The main app UI. [setupIssues] lists the permissions still missing, and [onFixSetupIssue]
  * takes the user to where they can grant one. Both come from the platform, as do [sounds] and [photos].
- * [wallpaperColor] is the wallpaper's main color, or null on phones that don't offer one.
+ * [wallpaperColor] is the wallpaper's main color, or null on phones that don't offer one. [wakeUps] is the
+ * wake-up log, oldest first.
  */
 @Composable
 fun App(
@@ -48,8 +54,11 @@ fun App(
     theme: ThemeSettings,
     wallpaperColor: Color?,
     onThemeChange: (ThemeSettings) -> Unit,
+    wakeUps: Flow<List<WakeUp>>,
 ) = ProvideAppTheme(theme, wallpaperColor) {
     OpenAlarmTheme {
+        val wakeUpLog by wakeUps.collectAsState(initial = emptyList())
+        val streak = remember(wakeUpLog) { wakeUpLog.streak(TimeZone.currentSystemDefault()) }
         val backStack = remember { mutableStateListOf<Screen>(Screen.AlarmList) }
         val scope = rememberCoroutineScope()
         val snackbarHostState = remember { SnackbarHostState() }
@@ -83,7 +92,12 @@ fun App(
                             }
                         },
                         onOpenTheme = { backStack.add(Screen.Theme) },
+                        streak = streak,
+                        onOpenWakeUps = { backStack.add(Screen.WakeUps) },
                     )
+                }
+                entry<Screen.WakeUps> {
+                    WakeUpsScreen(wakeUpLog, streak, use24Hour, onClose = { backStack.removeLastOrNull() })
                 }
                 entry<Screen.Theme> {
                     ThemeScreen(

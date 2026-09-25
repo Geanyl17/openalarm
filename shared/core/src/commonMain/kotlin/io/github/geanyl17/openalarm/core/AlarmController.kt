@@ -11,6 +11,7 @@ import kotlin.time.Instant
 
 /**
  * Every change to alarms goes through here, so the scheduled OS alarm always matches what's stored.
+ * Snoozes, turning alarms off and ways around them also go into [wakeLog].
  */
 class AlarmController(
     private val repository: AlarmRepository,
@@ -18,6 +19,7 @@ class AlarmController(
     private val clock: Clock = Clock.System,
     private val timeZone: () -> TimeZone = { TimeZone.currentSystemDefault() },
     private val random: Random = Random.Default,
+    private val wakeLog: WakeLog? = null,
 ) {
     val alarms: Flow<List<Alarm>> get() = repository.alarms
 
@@ -25,17 +27,20 @@ class AlarmController(
 
     /** Saves a new or edited alarm. Editing an alarm cancels any pending snooze. */
     suspend fun save(alarm: Alarm): Alarm {
+        if (alarm.id != 0L) logSkippedMission(alarm.id)
         val saved = repository.save(alarm.copy(snoozedUntil = null, snoozesTaken = 0))
         reschedule()
         return saved
     }
 
     suspend fun setEnabled(id: Long, enabled: Boolean) {
+        if (!enabled) logSkippedMission(id)
         repository.update(listOf(id)) { it.copy(enabled = enabled, snoozedUntil = null, snoozesTaken = 0) }
         reschedule()
     }
 
     suspend fun delete(id: Long) {
+        logSkippedMission(id, includingCheckIns = true)
         repository.delete(id)
         reschedule()
     }
@@ -57,12 +62,14 @@ class AlarmController(
                 checkInsAt = if (it.checkIns) checkInTimes(now).map(Instant::toEpochMilliseconds) else emptyList(),
             )
         }
+        wakeLog?.turnedOff(ids)
         reschedule()
     }
 
     /** The user answered the check-in due at [at]. */
     suspend fun checkedIn(ids: Collection<Long>, at: Instant) {
         repository.update(ids) { it.copy(checkInsAt = it.checkInsAt - at.toEpochMilliseconds()) }
+        wakeLog?.checkedIn(ids)
         reschedule()
     }
 
@@ -78,7 +85,20 @@ class AlarmController(
         repository.update(ids) {
             it.copy(snoozedUntil = (now + it.nextSnoozeMinutes.minutes).toEpochMilliseconds(), snoozesTaken = it.snoozesTaken + 1)
         }
+        wakeLog?.snoozed(ids)
         reschedule()
+    }
+
+    /**
+     * Switching off, editing or deleting a snoozed alarm cancels the snooze, so its mission is never done.
+     * That's allowed, but it goes into the Honesty Log. Deleting also cancels pending check-ins.
+     */
+    private suspend fun logSkippedMission(id: Long, includingCheckIns: Boolean = false) {
+        val alarm = repository.get(id) ?: return
+        val snoozedWithMission = alarm.snoozedUntil != null && alarm.missions.isNotEmpty()
+        if (snoozedWithMission || (includingCheckIns && alarm.checkInsAt.isNotEmpty())) {
+            wakeLog?.escaped(listOf(id), Escape.TurnedOffInApp)
+        }
     }
 
     /** Schedules the next alarm with the OS. Returns it, or null if no alarm is on. */

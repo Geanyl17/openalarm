@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import io.github.geanyl17.openalarm.appGraph
+import io.github.geanyl17.openalarm.core.Escape
 import io.github.geanyl17.openalarm.ringing.RingingBackup
 import kotlinx.coroutines.launch
 
@@ -22,7 +23,14 @@ class RescheduleReceiver : BroadcastReceiver() {
         graph.scope.launch {
             try {
                 graph.controller.reschedule()
-                RingingBackup.ringAgainIfInterrupted(context)
+                // An alarm still ringing after a reboot means the phone was switched off (or its battery ran out)
+                // mid-ring. After an app update, there's nothing to log.
+                val reason = when (intent.action) {
+                    Intent.ACTION_BOOT_COMPLETED, Intent.ACTION_LOCKED_BOOT_COMPLETED -> Escape.PhoneOff
+                    Intent.ACTION_MY_PACKAGE_REPLACED -> null
+                    else -> Escape.AppStopped
+                }
+                RingingBackup.ringAgainIfInterrupted(context, reason)
             } finally {
                 pending.finish()
             }

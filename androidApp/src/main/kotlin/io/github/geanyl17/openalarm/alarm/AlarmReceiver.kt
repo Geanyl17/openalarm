@@ -34,6 +34,14 @@ class AlarmReceiver : BroadcastReceiver() {
         /** The backup that re-rings an alarm if the app dies while it's ringing. */
         const val REQUEST_BACKUP = 1
 
+        /** Whether the PendingIntent for [requestCode] exists. A force stop deletes them all. */
+        fun exists(context: Context, requestCode: Int): Boolean = PendingIntent.getBroadcast(
+            context,
+            requestCode,
+            Intent(context, AlarmReceiver::class.java).setAction(ACTION_FIRE),
+            PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE,
+        ) != null
+
         /** Fires for the alarms due at [at]. [requestCode] keeps the next alarm and the backup apart. */
         fun pendingIntent(context: Context, at: Instant?, requestCode: Int = REQUEST_NEXT): PendingIntent {
             val intent = Intent(context, AlarmReceiver::class.java).setAction(ACTION_FIRE)

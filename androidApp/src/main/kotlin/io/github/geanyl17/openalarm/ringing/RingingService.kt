@@ -14,6 +14,7 @@ import android.provider.Settings
 import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
 import io.github.geanyl17.openalarm.appGraph
+import io.github.geanyl17.openalarm.core.Escape
 import io.github.geanyl17.openalarm.core.isCheckInAt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -102,6 +103,12 @@ class RingingService : Service() {
             if (current == null) stopRinging()
             return
         }
+        // Read before this ring is remembered: whether the same alarm was already ringing when the app was stopped.
+        val interruption = if (current == null) RingingBackup.interruption(this, at) else null
+        val ids = due.map { it.id }
+        appGraph.wakeLog.rang(due, checkIn = due.all { it.isCheckInAt(at) })
+        interruption?.let { appGraph.wakeLog.escaped(ids, it) }
+
         val alarms = (current?.alarms.orEmpty() + due).distinctBy { it.id }
         val checkIn = current == null && due.all { it.isCheckInAt(at) }
         val ringing = Ringing(
@@ -130,6 +137,7 @@ class RingingService : Service() {
             checkInAt = at
             checkInTimer = scope.launch {
                 delay(CHECK_IN_TIME)
+                appGraph.wakeLog.escaped(ids, Escape.MissedCheckIn)
                 RingingSession.state.value?.let { RingingSession.start(it.copy(harder = true)) }
                 becomeFullAlarm()
             }

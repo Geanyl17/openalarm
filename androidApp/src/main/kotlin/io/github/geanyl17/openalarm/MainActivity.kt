@@ -108,6 +108,7 @@ class MainActivity : ComponentActivity() {
                     theme = theme,
                     wallpaperColor = wallpaperColor(this),
                     onThemeChange = graph::setTheme,
+                    wakeUps = graph.wakeLog.wakeUps,
                 )
             }
         }
@@ -130,7 +131,7 @@ class MainActivity : ComponentActivity() {
         // The user may have just come back from granting a permission in the system settings.
         setupIssues = missingSetup()
         // Force-stopping the app doesn't turn off a ringing alarm: it rings again as soon as the app is opened.
-        RingingBackup.ringAgainIfInterrupted(this)
+        RingingBackup.ringAgainIfInterrupted(this, RingingBackup.reasonOnAppOpen(this))
     }
 
     private fun fixSetupIssue(issue: SetupIssue) {

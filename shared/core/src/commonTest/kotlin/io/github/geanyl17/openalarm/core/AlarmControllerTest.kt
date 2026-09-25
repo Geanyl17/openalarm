@@ -85,6 +85,13 @@ class AlarmControllerTest {
     }
 }
 
+internal class FakeWakeLogRepository : WakeLogRepository {
+    private val state = MutableStateFlow<List<WakeUp>>(emptyList())
+    override val wakeUps: Flow<List<WakeUp>> = state
+
+    override suspend fun update(transform: (List<WakeUp>) -> List<WakeUp>) = state.update(transform)
+}
+
 internal class FixedClock(private val now: Instant) : Clock {
     override fun now(): Instant = now
 }

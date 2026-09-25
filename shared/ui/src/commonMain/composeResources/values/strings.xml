@@ -89,6 +89,49 @@
     <string name="mission_difficulty">Difficulty</string>
     <string name="mission_rounds">Rounds</string>
 
+    <!-- Wake-up log -->
+    <string name="wake_ups">Wake-ups</string>
+    <string name="streak_current">Streak</string>
+    <string name="streak_best">Best</string>
+    <plurals name="streak_days">
+        <item quantity="one">%1$d day</item>
+        <item quantity="other">%1$d days</item>
+    </plurals>
+    <plurals name="streak_in_a_row">
+        <item quantity="one">%1$d day in a row</item>
+        <item quantity="other">%1$d days in a row</item>
+    </plurals>
+    <string name="no_wake_ups">No wake-ups yet</string>
+    <string name="up_after">Up after %1$s</string>
+    <string name="still_going">Still going</string>
+    <plurals name="snoozes_count">
+        <item quantity="one">%1$d snooze</item>
+        <item quantity="other">%1$d snoozes</item>
+    </plurals>
+    <plurals name="check_ins_count">
+        <item quantity="one">%1$d check-in</item>
+        <item quantity="other">%1$d check-ins</item>
+    </plurals>
+    <string name="escape_force_stop">Force-stopped the app</string>
+    <string name="escape_turned_off_in_app">Turned off in the app, skipping the mission</string>
+    <string name="escape_missed_check_in">Missed a check-in</string>
+    <string name="escape_phone_off">Phone restarted while ringing</string>
+    <string name="escape_app_stopped">App stopped while ringing</string>
+    <!-- A date such as "Fri, Sep 25": the short day name, the short month name and the day of the month -->
+    <string name="date_short">%1$s, %2$s %3$d</string>
+    <string name="month_1">Jan</string>
+    <string name="month_2">Feb</string>
+    <string name="month_3">Mar</string>
+    <string name="month_4">Apr</string>
+    <string name="month_5">May</string>
+    <string name="month_6">Jun</string>
+    <string name="month_7">Jul</string>
+    <string name="month_8">Aug</string>
+    <string name="month_9">Sep</string>
+    <string name="month_10">Oct</string>
+    <string name="month_11">Nov</string>
+    <string name="month_12">Dec</string>
+
     <!-- Theme -->
     <string name="theme">Theme</string>
     <string name="back">Back</string>

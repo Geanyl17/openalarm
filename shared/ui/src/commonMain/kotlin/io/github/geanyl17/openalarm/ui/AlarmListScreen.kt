@@ -2,6 +2,7 @@ package io.github.geanyl17.openalarm.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +44,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import io.github.geanyl17.openalarm.core.Alarm
+import io.github.geanyl17.openalarm.core.Streak
 import io.github.geanyl17.openalarm.core.nextUpcoming
 import io.github.geanyl17.openalarm.missions.missionName
 import io.github.geanyl17.openalarm.ui.resources.Res
@@ -52,11 +54,14 @@ import io.github.geanyl17.openalarm.ui.resources.app_name
 import io.github.geanyl17.openalarm.ui.resources.ic_add
 import io.github.geanyl17.openalarm.ui.resources.ic_palette
 import io.github.geanyl17.openalarm.ui.resources.ic_alarm
+import io.github.geanyl17.openalarm.ui.resources.ic_history
 import io.github.geanyl17.openalarm.ui.resources.next_alarm_in
 import io.github.geanyl17.openalarm.ui.resources.no_alarm_on
 import io.github.geanyl17.openalarm.ui.resources.no_alarms_title
 import io.github.geanyl17.openalarm.ui.resources.snoozed_until
+import io.github.geanyl17.openalarm.ui.resources.streak_in_a_row
 import io.github.geanyl17.openalarm.ui.resources.theme
+import io.github.geanyl17.openalarm.ui.resources.wake_ups
 import io.github.geanyl17.openalarm.ui.theme.isNightRed
 import io.github.geanyl17.openalarm.ui.theme.nightRedFilter
 import kotlinx.datetime.TimeZone
@@ -65,6 +70,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
+import org.jetbrains.compose.resources.pluralStringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,6 +85,8 @@ internal fun AlarmListScreen(
     onEdit: (Alarm) -> Unit,
     onToggle: (Alarm, Boolean) -> Unit,
     onOpenTheme: () -> Unit,
+    streak: Streak,
+    onOpenWakeUps: () -> Unit,
 ) {
     val now = rememberNow(tick = 15.seconds)
     Scaffold(
@@ -86,6 +94,9 @@ internal fun AlarmListScreen(
             TopAppBar(
                 title = { Text(stringResource(Res.string.app_name)) },
                 actions = {
+                    IconButton(onClick = onOpenWakeUps) {
+                        Icon(painterResource(Res.drawable.ic_history), contentDescription = stringResource(Res.string.wake_ups))
+                    }
                     IconButton(onClick = onOpenTheme) {
                         Icon(painterResource(Res.drawable.ic_palette), contentDescription = stringResource(Res.string.theme))
                     }
@@ -117,7 +128,7 @@ internal fun AlarmListScreen(
             if (alarms.isEmpty()) {
                 item { EmptyState(Modifier.fillParentMaxHeight(0.7f)) }
             } else {
-                item { NextAlarmSummary(alarms, now) }
+                item { NextAlarmSummary(alarms, now, streak, onOpenWakeUps) }
                 items(alarms, key = { it.id }) { alarm ->
                     AlarmCard(
                         alarm = alarm,
@@ -134,18 +145,27 @@ internal fun AlarmListScreen(
 }
 
 @Composable
-private fun NextAlarmSummary(alarms: List<Alarm>, now: Instant) {
+private fun NextAlarmSummary(alarms: List<Alarm>, now: Instant, streak: Streak, onOpenWakeUps: () -> Unit) {
     val next = alarms.nextUpcoming(now, TimeZone.currentSystemDefault())
-    Text(
-        text = if (next == null) {
-            stringResource(Res.string.no_alarm_on)
-        } else {
-            stringResource(Res.string.next_alarm_in, formatDuration(next.at - now))
-        },
-        style = MaterialTheme.typography.titleMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(horizontal = 4.dp),
-    )
+    Column(Modifier.padding(horizontal = 4.dp)) {
+        Text(
+            text = if (next == null) {
+                stringResource(Res.string.no_alarm_on)
+            } else {
+                stringResource(Res.string.next_alarm_in, formatDuration(next.at - now))
+            },
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        if (streak.current > 0) {
+            Text(
+                text = pluralStringResource(Res.plurals.streak_in_a_row, streak.current, streak.current),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.clickable(onClick = onOpenWakeUps),
+            )
+        }
+    }
 }
 
 @Composable

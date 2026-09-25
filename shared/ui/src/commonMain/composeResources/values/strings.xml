@@ -94,6 +94,13 @@
     <string name="nfc_scan_hint">Hold an NFC tag to the back of your phone. Then put it somewhere away from your bed.</string>
     <string name="nfc_off">NFC is off.</string>
     <string name="nfc_turn_on">Turn on NFC</string>
+    <string name="alertness_speed">Your speed: %1$d ms</string>
+    <string name="alertness_not_measured">Your speed isn't measured yet</string>
+    <string name="alertness_measure">Measure</string>
+    <string name="alertness_measure_title">Measure your speed</string>
+    <string name="alertness_measure_hint">Do this when you're wide awake. Your mornings are compared to it.</string>
+    <string name="alertness_measure_slips">That run had a few slips. Try again when you're wide awake.</string>
+    <string name="alertness_try_again">Try again</string>
 
     <!-- Wake-up log -->
     <string name="wake_ups">Wake-ups</string>

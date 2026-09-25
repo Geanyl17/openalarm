@@ -24,6 +24,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import org.jetbrains.compose.resources.getString
 import kotlin.time.Clock
+import kotlin.time.Duration
 import kotlinx.coroutines.flow.Flow
 
 private sealed interface Screen {
@@ -55,6 +56,8 @@ fun App(
     wallpaperColor: Color?,
     onThemeChange: (ThemeSettings) -> Unit,
     wakeUps: Flow<List<WakeUp>>,
+    alertnessBaseline: Duration?,
+    onAlertnessBaseline: (Duration) -> Unit,
 ) = ProvideAppTheme(theme, wallpaperColor) {
     OpenAlarmTheme {
         val wakeUpLog by wakeUps.collectAsState(initial = emptyList())
@@ -113,6 +116,8 @@ fun App(
                         use24Hour = use24Hour,
                         sounds = sounds,
                         photos = photos,
+                        alertnessBaseline = alertnessBaseline,
+                        onAlertnessBaseline = onAlertnessBaseline,
                         onSave = { alarm ->
                             backStack.removeLastOrNull()
                             scope.launch { confirmSchedule(controller.save(alarm)) }

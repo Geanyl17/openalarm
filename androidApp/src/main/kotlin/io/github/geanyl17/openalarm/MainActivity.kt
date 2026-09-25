@@ -14,6 +14,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -122,6 +123,8 @@ class MainActivity : ComponentActivity() {
                         wallpaperColor = wallpaperColor(this),
                         onThemeChange = graph::setTheme,
                         wakeUps = graph.wakeLog.wakeUps,
+                        alertnessBaseline = graph.alertnessBaseline.collectAsState().value,
+                        onAlertnessBaseline = graph::setAlertnessBaseline,
                     )
                 }
             }

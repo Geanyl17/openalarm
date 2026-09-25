@@ -63,6 +63,10 @@ enum class MissionType {
     /** Tap an NFC tag placed away from the bed. */
     @SerialName("nfc_tag")
     NfcTag,
+
+    /** React about as fast as during the day, over a run of about 45 seconds. */
+    @SerialName("alertness")
+    Alertness,
 }
 
 @Serializable

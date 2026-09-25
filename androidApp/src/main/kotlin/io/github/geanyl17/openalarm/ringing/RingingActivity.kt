@@ -23,7 +23,9 @@ import androidx.lifecycle.lifecycleScope
 import io.github.geanyl17.openalarm.AlarmMedia
 import io.github.geanyl17.openalarm.AndroidMissionSensors
 import io.github.geanyl17.openalarm.WithThemeSettings
+import io.github.geanyl17.openalarm.appGraph
 import io.github.geanyl17.openalarm.wallpaperColor
+import io.github.geanyl17.openalarm.missions.LocalAlertnessBaseline
 import io.github.geanyl17.openalarm.missions.LocalMissionSensors
 import io.github.geanyl17.openalarm.ui.RingingScreen
 import io.github.geanyl17.openalarm.ui.theme.ProvideAppTheme
@@ -57,7 +59,10 @@ class RingingActivity : ComponentActivity() {
                 }
                 WithThemeSettings { theme ->
                     ProvideAppTheme(theme, wallpaperColor(this)) {
-                        CompositionLocalProvider(LocalMissionSensors provides sensors) {
+                        CompositionLocalProvider(
+                            LocalMissionSensors provides sensors,
+                            LocalAlertnessBaseline provides appGraph.alertnessBaseline.collectAsState().value,
+                        ) {
                             RingingScreen(
                                 label = current.label,
                                 colorArgb = current.first.colorArgb,

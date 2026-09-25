@@ -8,6 +8,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Settings(
     val theme: ThemeSettings = ThemeSettings(),
+    /** The user's median reaction time when wide awake, in milliseconds, for the Alertness Gate. Null until measured. */
+    val alertnessBaselineMillis: Long? = null,
 )
 
 /** How the app looks. An alarm with its own color keeps it, in the mode chosen here. */

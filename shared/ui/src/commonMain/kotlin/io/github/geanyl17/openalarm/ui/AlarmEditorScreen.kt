@@ -70,6 +70,9 @@ import io.github.geanyl17.openalarm.missions.canRun
 import io.github.geanyl17.openalarm.missions.difficultyName
 import io.github.geanyl17.openalarm.missions.missionName
 import io.github.geanyl17.openalarm.ui.resources.Res
+import io.github.geanyl17.openalarm.ui.resources.alertness_measure
+import io.github.geanyl17.openalarm.ui.resources.alertness_not_measured
+import io.github.geanyl17.openalarm.ui.resources.alertness_speed
 import io.github.geanyl17.openalarm.ui.resources.cancel
 import io.github.geanyl17.openalarm.ui.resources.check_ins
 import io.github.geanyl17.openalarm.ui.resources.color
@@ -106,6 +109,7 @@ import io.github.geanyl17.openalarm.ui.resources.sound_custom
 import io.github.geanyl17.openalarm.ui.resources.sound_default
 import io.github.geanyl17.openalarm.ui.resources.vibrate
 import io.github.geanyl17.openalarm.ui.theme.OpenAlarmTheme
+import kotlin.time.Duration
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.TimeZone
 import org.jetbrains.compose.resources.painterResource
@@ -139,6 +143,8 @@ internal fun AlarmEditorScreen(
     use24Hour: Boolean,
     sounds: AlarmSounds,
     photos: AlarmPhotos,
+    alertnessBaseline: Duration?,
+    onAlertnessBaseline: (Duration) -> Unit,
     onSave: (Alarm) -> Unit,
     onDelete: (Alarm) -> Unit,
     onClose: () -> Unit,
@@ -187,7 +193,8 @@ internal fun AlarmEditorScreen(
                                         colorArgb = colorArgb,
                                         sound = sound,
                                         photo = photo,
-                                        missions = missions,
+                                        // A tag scanned for a mission that's since become another kind isn't needed.
+                                        missions = missions.map { if (it.type == MissionType.NfcTag) it else it.copy(tag = null) },
                                     ),
                                 )
                             },
@@ -233,6 +240,8 @@ internal fun AlarmEditorScreen(
                     MissionCard(
                         number = index + 1,
                         mission = mission,
+                        alertnessBaseline = alertnessBaseline,
+                        onAlertnessBaseline = onAlertnessBaseline,
                         onChange = { changed -> missions = missions.toMutableList().also { it[index] = changed } },
                         onRemove = { missions = missions.toMutableList().also { it.removeAt(index) } },
                     )
@@ -326,7 +335,14 @@ internal fun SectionTitle(text: String) {
 }
 
 @Composable
-private fun MissionCard(number: Int, mission: Mission, onChange: (Mission) -> Unit, onRemove: () -> Unit) {
+private fun MissionCard(
+    number: Int,
+    mission: Mission,
+    alertnessBaseline: Duration?,
+    onAlertnessBaseline: (Duration) -> Unit,
+    onChange: (Mission) -> Unit,
+    onRemove: () -> Unit,
+) {
     Surface(
         shape = MaterialTheme.shapes.large,
         color = MaterialTheme.colorScheme.surfaceContainer,
@@ -368,8 +384,31 @@ private fun MissionCard(number: Int, mission: Mission, onChange: (Mission) -> Un
             } else {
                 Text(stringResource(Res.string.mission_difficulty), style = MaterialTheme.typography.labelLarge)
                 ChoiceChips(Difficulty.entries, mission.difficulty, label = { difficultyName(it) }, onSelect = { onChange(mission.copy(difficulty = it)) })
-                Text(stringResource(Res.string.mission_rounds), style = MaterialTheme.typography.labelLarge)
-                ChoiceChips(RoundChoices, mission.rounds, label = { it.toString() }, onSelect = { onChange(mission.copy(rounds = it)) })
+                if (mission.type == MissionType.Alertness) {
+                    // One run is the whole mission, compared to the user's own daytime speed.
+                    var measuring by rememberSaveable { mutableStateOf(false) }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = alertnessBaseline?.let { stringResource(Res.string.alertness_speed, it.inWholeMilliseconds) }
+                                ?: stringResource(Res.string.alertness_not_measured),
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.weight(1f),
+                        )
+                        TextButton(onClick = { measuring = true }) { Text(stringResource(Res.string.alertness_measure)) }
+                    }
+                    if (measuring) {
+                        AlertnessMeasureDialog(
+                            onMeasured = {
+                                measuring = false
+                                onAlertnessBaseline(it)
+                            },
+                            onDismiss = { measuring = false },
+                        )
+                    }
+                } else {
+                    Text(stringResource(Res.string.mission_rounds), style = MaterialTheme.typography.labelLarge)
+                    ChoiceChips(RoundChoices, mission.rounds, label = { it.toString() }, onSelect = { onChange(mission.copy(rounds = it)) })
+                }
             }
             if (scanningTag) {
                 NfcTagScanDialog(

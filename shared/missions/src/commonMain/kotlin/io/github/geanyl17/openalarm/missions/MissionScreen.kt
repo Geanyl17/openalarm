@@ -23,6 +23,7 @@ import io.github.geanyl17.openalarm.missions.resources.Res
 import io.github.geanyl17.openalarm.missions.resources.difficulty_easy
 import io.github.geanyl17.openalarm.missions.resources.difficulty_hard
 import io.github.geanyl17.openalarm.missions.resources.difficulty_normal
+import io.github.geanyl17.openalarm.missions.resources.mission_alertness
 import io.github.geanyl17.openalarm.missions.resources.mission_lights_on
 import io.github.geanyl17.openalarm.missions.resources.mission_math
 import io.github.geanyl17.openalarm.missions.resources.mission_memory
@@ -108,6 +109,13 @@ fun MissionScreen(
                 MissionType.LightsOn -> LightsOnMission(mission, sensors.light!!, onInteraction, onDone = { index++ })
                 MissionType.Steps -> StepsMission(mission, sensors.steps!!, onInteraction, onDone = { index++ })
                 MissionType.NfcTag -> NfcMission(mission, sensors.nfcTags!!, onInteraction, onDone = { index++ })
+                MissionType.Alertness -> AlertnessGateMission(
+                    mission = mission,
+                    baseline = LocalAlertnessBaseline.current ?: TYPICAL_REACTION,
+                    onInteraction = onInteraction,
+                    onDone = { index++ },
+                    onSwitchToMath = { switchedToMath = true },
+                )
             }
         }
         if (offerMath && !useMath) {
@@ -128,6 +136,7 @@ fun missionName(type: MissionType): String = stringResource(
         MissionType.LightsOn -> Res.string.mission_lights_on
         MissionType.Steps -> Res.string.mission_steps
         MissionType.NfcTag -> Res.string.mission_nfc_tag
+        MissionType.Alertness -> Res.string.mission_alertness
     },
 )
 

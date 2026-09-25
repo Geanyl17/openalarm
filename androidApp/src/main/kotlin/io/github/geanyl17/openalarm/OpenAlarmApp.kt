@@ -20,6 +20,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import okio.FileSystem
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 import okio.Path.Companion.toOkioPath
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.setResourceReaderAndroidContext
@@ -63,6 +65,16 @@ class AppGraph(app: Application) {
 
     fun setTheme(theme: ThemeSettings) {
         scope.launch { settings.update { it.copy(theme = theme) } }
+    }
+
+    /** The user's daytime reaction speed, for the Alertness Gate, or null until it's measured. */
+    val alertnessBaseline: StateFlow<Duration?> = settings.settings
+        .map { settings -> settings.alertnessBaselineMillis?.milliseconds }
+        .catch { emit(null) }
+        .stateIn(scope, SharingStarted.Eagerly, null)
+
+    fun setAlertnessBaseline(baseline: Duration) {
+        scope.launch { settings.update { it.copy(alertnessBaselineMillis = baseline.inWholeMilliseconds) } }
     }
 }
 

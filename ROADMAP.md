@@ -106,7 +106,7 @@ openalarm/
 │   ├── core/       # alarm model, next-ring-time math, snooze and dismiss rules (later: Wake Guard state machine)
 │   ├── data/       # alarm storage (a versioned JSON file)
 │   ├── ui/         # Compose Multiplatform screens and the theme engine
-│   └── missions/   # the missions: math, memory, reaction and Stroop so far, camera missions next
+│   └── missions/   # the missions: math, memory, reaction, Stroop and Lights On so far, camera missions next
 ├── tools/          # scripts that generate bundled assets, such as the fallback alarm sound
 ├── iosApp/         # (Phase 5) AlarmKit alarm engine in Swift, Live Activity
 ├── models/         # (Phase 3) on-device ML models, their licenses and conversion scripts
@@ -156,8 +156,8 @@ IzzyOnDroid was part of this phase, but its [inclusion policy](https://izzyondro
 - [ ] Wake Guard 4 (with the camera missions in Phase 3)
 - [x] Mission chains
 - [x] Wake-up streaks
-- [x] Missions: Stroop, and Reaction, a short version of the Alertness Gate
-- [ ] Missions: Steps, NFC Tag, Lights On, the full Alertness Gate
+- [x] Missions: Stroop, Lights On, and Reaction, a short version of the Alertness Gate
+- [ ] Missions: Steps, NFC Tag, the full Alertness Gate
 - [ ] Submit to F-Droid
 
 ### Phase 3: smarter camera missions

@@ -12,6 +12,7 @@ import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.addCallback
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,8 +21,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.lifecycleScope
 import io.github.geanyl17.openalarm.AlarmMedia
+import io.github.geanyl17.openalarm.AndroidMissionSensors
 import io.github.geanyl17.openalarm.WithThemeSettings
 import io.github.geanyl17.openalarm.wallpaperColor
+import io.github.geanyl17.openalarm.missions.LocalMissionSensors
 import io.github.geanyl17.openalarm.ui.RingingScreen
 import io.github.geanyl17.openalarm.ui.theme.ProvideAppTheme
 import kotlinx.coroutines.Dispatchers
@@ -34,6 +37,7 @@ import kotlin.time.Duration.Companion.seconds
 /** The full-screen ringing alarm, shown over the lock screen. Closes itself once the alarm stops. */
 class RingingActivity : ComponentActivity() {
     private var startWithMission by mutableStateOf(false)
+    private val sensors by lazy { AndroidMissionSensors(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,22 +57,24 @@ class RingingActivity : ComponentActivity() {
                 }
                 WithThemeSettings { theme ->
                     ProvideAppTheme(theme, wallpaperColor(this)) {
-                        RingingScreen(
-                            label = current.label,
-                            colorArgb = current.first.colorArgb,
-                            photo = photo,
-                            snoozeMinutes = current.snoozeMinutes,
-                            snoozesLeft = current.snoozesLeft,
-                            missions = current.missions,
-                            use24Hour = use24Hour,
-                            startWithMission = startWithMission,
-                            onSnooze = { startService(RingingService.intent(this, RingingService.ACTION_SNOOZE)) },
-                            onDismiss = { startService(RingingService.intent(this, RingingService.ACTION_DISMISS)) },
-                            onMissionInteraction = RingingSession::missionInteraction,
-                            onEmergencyCall = ::callEmergencyServices,
-                            checkInUntil = current.checkInUntil,
-                            onCheckedIn = { startService(RingingService.intent(this, RingingService.ACTION_CHECKED_IN)) },
-                        )
+                        CompositionLocalProvider(LocalMissionSensors provides sensors) {
+                            RingingScreen(
+                                label = current.label,
+                                colorArgb = current.first.colorArgb,
+                                photo = photo,
+                                snoozeMinutes = current.snoozeMinutes,
+                                snoozesLeft = current.snoozesLeft,
+                                missions = current.missions,
+                                use24Hour = use24Hour,
+                                startWithMission = startWithMission,
+                                onSnooze = { startService(RingingService.intent(this, RingingService.ACTION_SNOOZE)) },
+                                onDismiss = { startService(RingingService.intent(this, RingingService.ACTION_DISMISS)) },
+                                onMissionInteraction = RingingSession::missionInteraction,
+                                onEmergencyCall = ::callEmergencyServices,
+                                checkInUntil = current.checkInUntil,
+                                onCheckedIn = { startService(RingingService.intent(this, RingingService.ACTION_CHECKED_IN)) },
+                            )
+                        }
                     }
                 }
             }

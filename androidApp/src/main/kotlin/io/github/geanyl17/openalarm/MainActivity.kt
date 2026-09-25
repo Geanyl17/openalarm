@@ -13,6 +13,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -20,6 +21,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.core.content.IntentCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
+import io.github.geanyl17.openalarm.missions.LocalMissionSensors
 import io.github.geanyl17.openalarm.ringing.RingingBackup
 import io.github.geanyl17.openalarm.ui.AlarmPhotos
 import io.github.geanyl17.openalarm.ui.AlarmSounds
@@ -48,6 +50,8 @@ class MainActivity : ComponentActivity() {
         onPhotoChosen = null
         if (uri != null && onChosen != null) copyInBackground({ AlarmMedia.importPhoto(this, uri) }, onChosen)
     }
+
+    private val sensors by lazy { AndroidMissionSensors(this) }
 
     private val defaultAlarmSound: Uri get() = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
 
@@ -98,18 +102,20 @@ class MainActivity : ComponentActivity() {
         }
         setContent {
             WithThemeSettings { theme ->
-                App(
-                    controller = graph.controller,
-                    setupIssues = setupIssues,
-                    onFixSetupIssue = ::fixSetupIssue,
-                    sounds = sounds,
-                    photos = photos,
-                    use24Hour = DateFormat.is24HourFormat(this),
-                    theme = theme,
-                    wallpaperColor = wallpaperColor(this),
-                    onThemeChange = graph::setTheme,
-                    wakeUps = graph.wakeLog.wakeUps,
-                )
+                CompositionLocalProvider(LocalMissionSensors provides sensors) {
+                    App(
+                        controller = graph.controller,
+                        setupIssues = setupIssues,
+                        onFixSetupIssue = ::fixSetupIssue,
+                        sounds = sounds,
+                        photos = photos,
+                        use24Hour = DateFormat.is24HourFormat(this),
+                        theme = theme,
+                        wallpaperColor = wallpaperColor(this),
+                        onThemeChange = graph::setTheme,
+                        wakeUps = graph.wakeLog.wakeUps,
+                    )
+                }
             }
         }
     }

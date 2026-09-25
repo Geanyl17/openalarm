@@ -65,6 +65,8 @@ import io.github.geanyl17.openalarm.core.Mission
 import io.github.geanyl17.openalarm.core.MissionType
 import io.github.geanyl17.openalarm.core.RepeatDays
 import io.github.geanyl17.openalarm.core.nextTrigger
+import io.github.geanyl17.openalarm.missions.LocalMissionSensors
+import io.github.geanyl17.openalarm.missions.canRun
 import io.github.geanyl17.openalarm.missions.difficultyName
 import io.github.geanyl17.openalarm.missions.missionName
 import io.github.geanyl17.openalarm.ui.resources.Res
@@ -222,6 +224,7 @@ internal fun AlarmEditorScreen(
                 )
 
                 SectionTitle(stringResource(Res.string.missions))
+                val sensors = LocalMissionSensors.current
                 missions.forEachIndexed { index, mission ->
                     MissionCard(
                         number = index + 1,
@@ -234,7 +237,8 @@ internal fun AlarmEditorScreen(
                     OutlinedButton(
                         onClick = {
                             // A chain is more fun with different missions, so start with one that isn't in it yet.
-                            val type = MissionType.entries.firstOrNull { type -> missions.none { it.type == type } } ?: MissionType.Math
+                            val type = MissionType.entries.firstOrNull { type -> missions.none { it.type == type } && sensors.canRun(type) }
+                                ?: MissionType.Math
                             missions = missions + Mission(type)
                         },
                     ) {
@@ -327,7 +331,10 @@ private fun MissionCard(number: Int, mission: Mission, onChange: (Mission) -> Un
                     Icon(painterResource(Res.drawable.ic_close), contentDescription = stringResource(Res.string.mission_remove, number))
                 }
             }
-            ChoiceChips(MissionType.entries, mission.type, label = { missionName(it) }, onSelect = { onChange(mission.copy(type = it)) })
+            // Missions this phone can't run aren't offered.
+            val sensors = LocalMissionSensors.current
+            val types = MissionType.entries.filter { it == mission.type || sensors.canRun(it) }
+            ChoiceChips(types, mission.type, label = { missionName(it) }, onSelect = { onChange(mission.copy(type = it)) })
             Text(stringResource(Res.string.mission_difficulty), style = MaterialTheme.typography.labelLarge)
             ChoiceChips(Difficulty.entries, mission.difficulty, label = { difficultyName(it) }, onSelect = { onChange(mission.copy(difficulty = it)) })
             Text(stringResource(Res.string.mission_rounds), style = MaterialTheme.typography.labelLarge)

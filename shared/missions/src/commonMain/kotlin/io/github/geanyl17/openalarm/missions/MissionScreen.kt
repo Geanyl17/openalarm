@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -22,12 +23,18 @@ import io.github.geanyl17.openalarm.missions.resources.Res
 import io.github.geanyl17.openalarm.missions.resources.difficulty_easy
 import io.github.geanyl17.openalarm.missions.resources.difficulty_hard
 import io.github.geanyl17.openalarm.missions.resources.difficulty_normal
+import io.github.geanyl17.openalarm.missions.resources.mission_lights_on
 import io.github.geanyl17.openalarm.missions.resources.mission_math
 import io.github.geanyl17.openalarm.missions.resources.mission_memory
 import io.github.geanyl17.openalarm.missions.resources.mission_progress
 import io.github.geanyl17.openalarm.missions.resources.mission_reaction
 import io.github.geanyl17.openalarm.missions.resources.mission_stroop
+import io.github.geanyl17.openalarm.missions.resources.switch_to_math
+import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
+import kotlin.time.Duration.Companion.seconds
+
+private val OFFER_MATH_AFTER = 60.seconds
 
 /**
  * Runs [missions] one after another, then calls [onComplete]. [onInteraction] is called on every
@@ -40,13 +47,24 @@ fun MissionScreen(
     onComplete: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val sensors = LocalMissionSensors.current
     var index by rememberSaveable { mutableIntStateOf(0) }
     // Never trap anyone: a mission someone can't finish can be swapped for math problems.
     var switchedToMath by rememberSaveable(index) { mutableStateOf(false) }
+    var offerMath by rememberSaveable(index) { mutableStateOf(false) }
     val mission = missions.getOrNull(index)
     if (mission == null) {
         LaunchedEffect(Unit) { onComplete() }
         return
+    }
+    // A phone without the hardware a mission needs gets math instead. One that does gets the offer after
+    // a while, for rooms without bright enough lights and the like.
+    val useMath = switchedToMath || !sensors.canRun(mission.type)
+    if (mission.type.usesHardware && !useMath) {
+        LaunchedEffect(index) {
+            delay(OFFER_MATH_AFTER)
+            offerMath = true
+        }
     }
 
     Column(
@@ -61,8 +79,8 @@ fun MissionScreen(
                 color = MaterialTheme.colorScheme.primary,
             )
         }
-        key(index, switchedToMath) {
-            when (if (switchedToMath) MissionType.Math else mission.type) {
+        key(index, useMath) {
+            when (if (useMath) MissionType.Math else mission.type) {
                 MissionType.Math -> MathMission(mission, onInteraction, onDone = { index++ })
                 MissionType.Memory -> MemoryMission(
                     mission = mission,
@@ -82,6 +100,12 @@ fun MissionScreen(
                     onDone = { index++ },
                     onSwitchToMath = { switchedToMath = true },
                 )
+                MissionType.LightsOn -> LightsOnMission(mission, sensors.light!!, onInteraction, onDone = { index++ })
+            }
+        }
+        if (offerMath && !useMath) {
+            TextButton(onClick = { onInteraction(); switchedToMath = true }) {
+                Text(stringResource(Res.string.switch_to_math))
             }
         }
     }
@@ -94,6 +118,7 @@ fun missionName(type: MissionType): String = stringResource(
         MissionType.Memory -> Res.string.mission_memory
         MissionType.Reaction -> Res.string.mission_reaction
         MissionType.Stroop -> Res.string.mission_stroop
+        MissionType.LightsOn -> Res.string.mission_lights_on
     },
 )
 

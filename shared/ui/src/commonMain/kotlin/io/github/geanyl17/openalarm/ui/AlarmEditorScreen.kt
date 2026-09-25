@@ -1,6 +1,7 @@
 package io.github.geanyl17.openalarm.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +37,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -74,6 +76,9 @@ import io.github.geanyl17.openalarm.ui.resources.new_alarm
 import io.github.geanyl17.openalarm.ui.resources.repeat
 import io.github.geanyl17.openalarm.ui.resources.save
 import io.github.geanyl17.openalarm.ui.resources.snooze_length
+import io.github.geanyl17.openalarm.ui.resources.sound
+import io.github.geanyl17.openalarm.ui.resources.sound_custom
+import io.github.geanyl17.openalarm.ui.resources.sound_default
 import io.github.geanyl17.openalarm.ui.resources.type_time
 import io.github.geanyl17.openalarm.ui.resources.use_dial
 import io.github.geanyl17.openalarm.ui.resources.vibrate
@@ -91,6 +96,7 @@ private const val MAX_LABEL_LENGTH = 60
 internal fun AlarmEditorScreen(
     initial: Alarm?,
     use24Hour: Boolean,
+    sounds: AlarmSounds,
     onSave: (Alarm) -> Unit,
     onDelete: (Alarm) -> Unit,
     onClose: () -> Unit,
@@ -104,6 +110,7 @@ internal fun AlarmEditorScreen(
     var missionType by rememberSaveable { mutableStateOf(baseMission?.type) }
     var difficulty by rememberSaveable { mutableStateOf(baseMission?.difficulty ?: Difficulty.Normal) }
     var rounds by rememberSaveable { mutableIntStateOf(baseMission?.rounds ?: 3) }
+    var sound by rememberSaveable { mutableStateOf(base.sound) }
     var colorArgb by rememberSaveable { mutableStateOf(base.colorArgb) }
     var vibrate by rememberSaveable { mutableStateOf(base.vibrate) }
     var fadeIn by rememberSaveable { mutableStateOf(base.fadeIn) }
@@ -132,6 +139,7 @@ internal fun AlarmEditorScreen(
                                     fadeIn = fadeIn,
                                     snoozeMinutes = snoozeMinutes,
                                     colorArgb = colorArgb,
+                                    sound = sound,
                                     missions = listOfNotNull(missionType?.let { Mission(it, difficulty, rounds) }),
                                 ),
                             )
@@ -189,6 +197,8 @@ internal fun AlarmEditorScreen(
                 ChoiceChips(RoundChoices, rounds, label = { it.toString() }, onSelect = { rounds = it })
             }
 
+            SoundRow(sound, sounds, onChosen = { sound = it })
+
             SectionTitle(stringResource(Res.string.color))
             AlarmColorPicker(selected = colorArgb, onSelect = { colorArgb = it })
 
@@ -235,6 +245,25 @@ private fun <T> ChoiceChips(options: List<T>, selected: T, label: @Composable (T
                 label = { Text(label(option)) },
             )
         }
+    }
+}
+
+@Composable
+private fun SoundRow(sound: String?, sounds: AlarmSounds, onChosen: (String?) -> Unit) {
+    val name = if (sound == null) {
+        stringResource(Res.string.sound_default)
+    } else {
+        remember(sound) { sounds.name(sound) } ?: stringResource(Res.string.sound_custom)
+    }
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp)
+            .clickable { sounds.choose(sound, onChosen) }
+            .padding(vertical = 12.dp),
+    ) {
+        Text(stringResource(Res.string.sound), style = MaterialTheme.typography.bodyLarge)
+        Text(name, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 

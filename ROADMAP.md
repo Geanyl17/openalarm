@@ -128,7 +128,7 @@ Each mission declares what it needs (camera, NFC, step counter, microphone) and 
 ### Phase 1: "It always rings" (first Android release)
 
 - [x] Alarms: time, repeat days, label, fade-in, vibration, snooze length
-- [ ] Choosing the alarm sound (for now it's the phone's default alarm sound)
+- [x] Choosing the alarm sound, with the phone's own sound picker (no "silent" option)
 - [x] Ringing screen over the lock screen, with snooze and dismiss
 - [x] Re-arming after a reboot, a clock or time-zone change, and an app update
 - [x] Direct Boot: alarms ring even before the first unlock after a reboot

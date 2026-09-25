@@ -1,0 +1,5 @@
+• Snooze limits: each snooze is shorter than the last and adds a mission round.
+• Check-ins after you turn an alarm off, answered for you if you're walking around.
+• New missions: Reaction, Colors, Lights on and Steps. Chain up to 3 on one alarm.
+• Wake-ups: your streak, and an Honesty Log of ways around your alarms.
+• Themes: any color or your wallpaper's, in Light, Dark, Black or Night red.

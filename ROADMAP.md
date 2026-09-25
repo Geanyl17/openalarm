@@ -149,6 +149,8 @@ IzzyOnDroid was part of this phase, but its [inclusion policy](https://izzyondro
 
 ### Phase 2: "You can't fall back asleep"
 
+[0.3.0](CHANGELOG.md) shipped everything checked here.
+
 - [x] Wake Guard 5–7: a ringing alarm keeps coming back, can't be turned down, and rings again after a reboot or a force stop, with an Honesty Log
 - [x] Wake Guard 1 on Android: the backup alarm that rings again if the app dies or the phone restarts
 - [x] Wake Guard 2: Aftershocks, skipped while you walk around

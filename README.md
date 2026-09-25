@@ -2,11 +2,11 @@
 
 **A free, open-source alarm clock that makes you prove you're awake.**
 
-To turn off an OpenAlarm alarm, you complete a mission. Today that means solving math problems or repeating a memory pattern. Next come missions that get you out of bed: photographing something in another room, scanning a barcode, tapping an NFC tag, and follow-up checks in case you went back to sleep.
+To turn off an OpenAlarm alarm, you complete a mission: solve math problems, repeat a memory pattern, walk around or turn the lights on. Afterwards, surprise check-ins catch you if you go back to sleep. Next come camera missions: photographing something in another room and scanning a barcode.
 
 - **No ads, no subscriptions, no account.**
 - **No tracking and no internet.** The app doesn't have the internet permission, and everything runs on your phone.
-- **Your colors.** Give each alarm any color, and its screens re-theme around it, with text that stays readable.
+- **Your colors.** Pick any color for the app and for each alarm, and everything re-themes around it, with text that stays readable. Light, Dark, pure Black or a red night mode.
 - **Free software**, licensed GPL-3.0-or-later.
 
 ## Install
@@ -24,17 +24,18 @@ io.github.geanyl17.openalarm
 
 - **Alarms that always ring:** at the exact minute and over the lock screen, after reboots (even before the first unlock), clock, time-zone and daylight-saving changes. If the app is killed mid-alarm, a backup alarm rings again within a minute, and an alarm whose sound can't play falls back to a bundled one.
 - **No way around it:** a ringing alarm keeps its screen in front until you turn it off or snooze it, its volume can't be turned down, and it rings again after a reboot. Emergency calls and phone calls always come first.
-- **Missions:** Math and Memory. The alarm turns quiet while you solve and gets loud again if you stop.
+- **Missions:** Math, Memory, Reaction, Colors (a Stroop test), Lights on and Steps, up to 3 in a row. The alarm turns quiet while you solve and gets loud again if you stop.
+- **No going back to sleep:** limited snoozes that get shorter and harder, surprise check-ins after you turn an alarm off, and a wake-up log with your streak and an Honesty Log of ways around your alarms.
 - **Setting alarms:** scroll wheels with a "Rings in 7 h 32 min" check, repeat days, labels, any alarm sound on the phone, including your own, a volume that rises gradually, and snoozes from 1 to 60 minutes.
-- **A color and a cover photo for each alarm,** the color from presets or a color wheel.
+- **Themes:** a color for the app, or your wallpaper's, and for each alarm, from presets or a color wheel. Light, Dark, Black or Night red, and a cover photo for each alarm.
 
 [CHANGELOG.md](CHANGELOG.md) lists every change.
 
 ## Planned
 
-- **More missions:** Color Hunt, Barcode, Photo Match, Object Hunt, NFC Tag, Steps, Lights On, Stroop, and the Alertness Gate reaction test. You'll be able to chain several together.
-- **Wake Guard:** a backup alarm that only a finished mission can cancel, surprise follow-up checks, snoozes that cost you more each time, and more.
-- **Themes:** an app-wide color, light, dark or AMOLED black, and a red night mode.
+- **More missions:** Color Hunt, Barcode and Photo Match with the camera, then NFC Tag and a full reaction test.
+- **Wake Map:** spots in other rooms to photograph, picked at random each morning.
+- **Themes:** ringing screen styles, and themes you can share.
 - **iPhone,** and Google Play.
 
 The [roadmap](ROADMAP.md) has the details.

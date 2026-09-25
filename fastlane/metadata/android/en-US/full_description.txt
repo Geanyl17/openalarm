@@ -4,7 +4,11 @@ OpenAlarm is a free and open-source alarm clock that makes you prove you're awak
 To turn off an alarm with a mission, you have to complete it:
 • Math: solve arithmetic problems, from sums of small numbers to problems like 17 × 6 + 38.
 • Memory: repeat a pattern of lit tiles on a 3×3 grid.
-While you work on a mission, the alarm turns quiet. Stop for 20 seconds and it gets loud again. An alarm with a mission can't be dismissed from its notification.
+• Reaction: tap as soon as the screen says so.
+• Colors: tap the color a word is written in, not the word.
+• Lights on: keep the room bright for a while.
+• Steps: walk around.
+Chain up to 3 missions on one alarm. While you work on a mission, the alarm turns quiet. Stop for 20 seconds and it gets loud again. An alarm with a mission can't be dismissed from its notification.
 
 <b>Alarms that always ring</b>
 • Rings at the exact minute, full screen over the lock screen.
@@ -14,15 +18,21 @@ While you work on a mission, the alarm turns quiet. Stop for 20 seconds and it g
 • Never silent: if the chosen sound can't be played, a bundled sound takes over.
 • No way around it: leave the ringing screen and it comes straight back, and the volume can't be turned down. Emergency calls and phone calls always come first.
 
+<b>No going back to sleep</b>
+• Limit snoozes: each one is shorter than the last and adds a mission round.
+• Surprise check-ins 5 to 15 minutes after you turn an alarm off. Miss one and the alarm comes back, harder. Walking around answers them for you.
+• A wake-up log with your streak, and an Honesty Log of the ways around your alarms.
+
 <b>Set it up your way</b>
 • Scroll wheels for the time, with "Rings in 7 h 32 min" underneath, so a wrong hour or AM/PM stands out.
 • Repeat days, labels, vibration, and a volume that rises gradually.
 • Any alarm sound on your phone, including your own.
 • Snooze for 5, 10, 15 or 20 minutes, or any length up to an hour.
 • A color and a cover photo for each alarm, with text that stays readable in any color.
+• Themes: any color for the app, or your wallpaper's, in Light, Dark, pure Black or Night red, a red-on-black mode for setting alarms in bed.
 
 <b>Private</b>
 No internet permission, no ads, no tracking and no account. Everything stays on your phone.
 
 <b>Coming next</b>
-Camera missions (find something of a given color, scan a barcode), a reliability self-test, and app-wide themes including AMOLED black.
+Camera missions (find something of a given color, scan a barcode, photograph a spot in another room) and a reliability self-test.

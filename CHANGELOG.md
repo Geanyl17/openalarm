@@ -2,24 +2,27 @@
 
 All notable changes to OpenAlarm. Versions follow [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [0.3.0] - 2026-09-26
 
 ### Added
 
 - A snooze limit for each alarm. Under a limit, each snooze is half as long as the one before (10, then 5, then 2 minutes) and adds a round to the mission. Once the snoozes are used up, only turning the alarm off stops it.
-- Check-ins: after you turn an alarm off, it checks once or twice, 5 to 15 minutes later, that you're still up. Tap "I'm up", which appears somewhere different each time, within 60 seconds, or the alarm rings again with a harder mission.
+- Check-ins: after you turn an alarm off, it checks once or twice, 5 to 15 minutes later, that you're still up. Tap "I'm up", which appears somewhere different each time, within 60 seconds, or the alarm rings again with a harder mission. If the step counter shows you've walked 100 steps since turning the alarm off, check-ins are answered for you.
 - A Reaction mission: tap as soon as the screen says so, within 0.9, 0.65 or 0.5 seconds depending on the difficulty. A miss costs a round, and after 3 misses you can switch to math.
 - A Colors mission: a color word is written in another color, and you tap the color, not the word. Its colors can be told apart with color blindness too. A wrong answer costs a round, and after 3 you can switch to math.
-- Mission chains: up to 3 missions on one alarm, done one after another.
 - A Lights On mission: keep the room bright for 10 seconds a round, brighter on harder difficulties. On a phone without a light sensor it's math instead, and after a minute you can switch to math if your room's lights aren't bright enough.
 - A Steps mission: walk 10, 20 or 30 steps a round, depending on the difficulty. It uses the phone's step sensor if you allow physical activity access, and the accelerometer otherwise.
-- Check-ins are answered for you if the step counter shows you've walked 100 steps since turning the alarm off.
-- A Theme screen, behind the palette button on the alarm list: pick the app's color, or take it from the wallpaper (Android 12 and later), and a mode: System, Light, Dark, Black (pure black backgrounds for OLED screens) or Night red (red on black, with no blue light, for setting alarms in bed). Alarms with their own color keep it, in the chosen mode.
+- Mission chains: up to 3 missions on one alarm, done one after another.
 - Wake-ups, behind the history button on the alarm list: every wake-up with how long it took to get up, its snoozes and check-ins, and your streak of mornings in a row. The Honesty Log part of it shows each way around an alarm: force-stopping the app, turning a snoozed alarm off in the app (which skips its mission), and missed check-ins break the streak. A restart or the app being stopped mid-alarm is shown too, but doesn't count against you, since a flat battery or the system can cause it.
+- A Theme screen, behind the palette button on the alarm list: pick the app's color, or take it from the wallpaper (Android 12 and later), and a mode: System, Light, Dark, Black (pure black backgrounds for OLED screens) or Night red (red on black, with no blue light, for setting alarms in bed). Alarms with their own color keep it, in the chosen mode.
 
 ### Changed
 
 - Selected options in the alarm editor show a check mark, so they don't rely on color alone.
+
+### Fixed
+
+- Pressing a switch row or the sound row in the alarm editor no longer lights up a square box across the whole row.
 
 ## [0.2.0] - 2026-09-25
 
@@ -73,6 +76,7 @@ The first release, for Android 8.0 and newer.
 
 - No internet permission, no ads, no tracking and no account.
 
-[Unreleased]: https://github.com/Geanyl17/openalarm/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/Geanyl17/openalarm/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/Geanyl17/openalarm/releases/tag/v0.3.0
 [0.2.0]: https://github.com/Geanyl17/openalarm/releases/tag/v0.2.0
 [0.1.0]: https://github.com/Geanyl17/openalarm/releases/tag/v0.1.0

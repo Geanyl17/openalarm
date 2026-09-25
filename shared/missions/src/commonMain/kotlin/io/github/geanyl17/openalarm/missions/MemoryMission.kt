@@ -99,11 +99,13 @@ internal fun MemoryMission(mission: Mission, onInteraction: () -> Unit, onDone: 
             textAlign = TextAlign.Center,
             modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
         )
-        Text(
-            text = stringResource(Res.string.memory_progress, round, mission.rounds),
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        if (mission.rounds > 1) {
+            Text(
+                text = stringResource(Res.string.memory_progress, round, mission.rounds),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
         TileGrid(
             lit = lit ?: tapped?.first,
             wrong = wrongTile,

@@ -4,7 +4,6 @@
 
     <!-- The notification shown while an alarm rings -->
     <string name="channel_ringing">Ringing alarms</string>
-    <string name="channel_ringing_description">Shows the alarm that\'s ringing right now, over the lock screen.</string>
     <string name="notification_title">Alarm</string>
     <string name="notification_text">Ringing now</string>
     <string name="action_snooze">Snooze</string>

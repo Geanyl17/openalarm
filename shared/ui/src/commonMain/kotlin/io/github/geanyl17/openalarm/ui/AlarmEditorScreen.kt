@@ -54,7 +54,6 @@ import io.github.geanyl17.openalarm.core.MissionType
 import io.github.geanyl17.openalarm.core.RepeatDays
 import io.github.geanyl17.openalarm.core.nextTrigger
 import io.github.geanyl17.openalarm.missions.difficultyName
-import io.github.geanyl17.openalarm.missions.missionDescription
 import io.github.geanyl17.openalarm.missions.missionName
 import io.github.geanyl17.openalarm.ui.resources.Res
 import io.github.geanyl17.openalarm.ui.resources.cancel
@@ -62,7 +61,6 @@ import io.github.geanyl17.openalarm.ui.resources.color
 import io.github.geanyl17.openalarm.ui.resources.delete_alarm
 import io.github.geanyl17.openalarm.ui.resources.edit_alarm
 import io.github.geanyl17.openalarm.ui.resources.fade_in
-import io.github.geanyl17.openalarm.ui.resources.fade_in_description
 import io.github.geanyl17.openalarm.ui.resources.ic_close
 import io.github.geanyl17.openalarm.ui.resources.ic_delete
 import io.github.geanyl17.openalarm.ui.resources.label
@@ -189,12 +187,7 @@ internal fun AlarmEditorScreen(
                     label = { type -> if (type == null) stringResource(Res.string.mission_none) else missionName(type) },
                     onSelect = { missionType = it },
                 )
-                missionType?.let { type ->
-                    Text(
-                        text = missionDescription(Mission(type, difficulty, rounds)),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+                if (missionType != null) {
                     Text(stringResource(Res.string.mission_difficulty), style = MaterialTheme.typography.labelLarge)
                     ChoiceChips(Difficulty.entries, difficulty, label = { difficultyName(it) }, onSelect = { difficulty = it })
                     Text(stringResource(Res.string.mission_rounds), style = MaterialTheme.typography.labelLarge)
@@ -206,8 +199,8 @@ internal fun AlarmEditorScreen(
                 SectionTitle(stringResource(Res.string.color))
                 AlarmColorPicker(selected = colorArgb, onSelect = { colorArgb = it })
 
-                SwitchRow(stringResource(Res.string.vibrate), null, vibrate) { vibrate = it }
-                SwitchRow(stringResource(Res.string.fade_in), stringResource(Res.string.fade_in_description), fadeIn) { fadeIn = it }
+                SwitchRow(stringResource(Res.string.vibrate), vibrate) { vibrate = it }
+                SwitchRow(stringResource(Res.string.fade_in), fadeIn) { fadeIn = it }
 
                 SectionTitle(stringResource(Res.string.snooze_length))
                 SnoozeLengthPicker(snoozeMinutes, onSelect = { snoozeMinutes = it })
@@ -328,7 +321,7 @@ private fun DayToggles(repeat: RepeatDays, onChange: (RepeatDays) -> Unit) {
 }
 
 @Composable
-private fun SwitchRow(title: String, description: String?, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
+private fun SwitchRow(title: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -336,12 +329,7 @@ private fun SwitchRow(title: String, description: String?, checked: Boolean, onC
             .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Column(Modifier.weight(1f)) {
-            Text(title, style = MaterialTheme.typography.bodyLarge)
-            if (description != null) {
-                Text(description, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-        }
+        Text(title, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
         Switch(checked = checked, onCheckedChange = null)
     }
 }

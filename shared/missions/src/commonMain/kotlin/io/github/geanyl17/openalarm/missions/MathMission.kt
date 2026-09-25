@@ -35,7 +35,6 @@ import io.github.geanyl17.openalarm.missions.resources.ic_check
 import io.github.geanyl17.openalarm.missions.resources.math_check
 import io.github.geanyl17.openalarm.missions.resources.math_delete
 import io.github.geanyl17.openalarm.missions.resources.math_progress
-import io.github.geanyl17.openalarm.missions.resources.math_title
 import io.github.geanyl17.openalarm.missions.resources.math_wrong
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -55,12 +54,13 @@ internal fun MathMission(mission: Mission, onInteraction: () -> Unit, onDone: ()
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text(stringResource(Res.string.math_title), style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
-        Text(
-            text = stringResource(Res.string.math_progress, round, mission.rounds),
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        if (mission.rounds > 1) {
+            Text(
+                text = stringResource(Res.string.math_progress, round, mission.rounds),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
         Text(
             text = "${problem.question} =",
             style = MaterialTheme.typography.displaySmall,

@@ -15,15 +15,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.geanyl17.openalarm.ui.resources.Res
-import io.github.geanyl17.openalarm.ui.resources.open_settings
-import io.github.geanyl17.openalarm.ui.resources.setup_exact_alarms_body
+import io.github.geanyl17.openalarm.ui.resources.setup_exact_alarms_action
 import io.github.geanyl17.openalarm.ui.resources.setup_exact_alarms_title
-import io.github.geanyl17.openalarm.ui.resources.setup_full_screen_body
+import io.github.geanyl17.openalarm.ui.resources.setup_full_screen_action
 import io.github.geanyl17.openalarm.ui.resources.setup_full_screen_title
 import io.github.geanyl17.openalarm.ui.resources.setup_notifications_action
-import io.github.geanyl17.openalarm.ui.resources.setup_notifications_body
 import io.github.geanyl17.openalarm.ui.resources.setup_notifications_title
-import io.github.geanyl17.openalarm.ui.resources.setup_overlay_body
+import io.github.geanyl17.openalarm.ui.resources.setup_overlay_action
 import io.github.geanyl17.openalarm.ui.resources.setup_overlay_title
 import org.jetbrains.compose.resources.stringResource
 
@@ -44,27 +42,11 @@ enum class SetupIssue {
 
 @Composable
 internal fun SetupIssueCard(issue: SetupIssue, onFix: () -> Unit) {
-    val (title, body, action) = when (issue) {
-        SetupIssue.Notifications -> Triple(
-            Res.string.setup_notifications_title,
-            Res.string.setup_notifications_body,
-            Res.string.setup_notifications_action,
-        )
-        SetupIssue.FullScreenAlarms -> Triple(
-            Res.string.setup_full_screen_title,
-            Res.string.setup_full_screen_body,
-            Res.string.open_settings,
-        )
-        SetupIssue.ExactAlarms -> Triple(
-            Res.string.setup_exact_alarms_title,
-            Res.string.setup_exact_alarms_body,
-            Res.string.open_settings,
-        )
-        SetupIssue.DisplayOverApps -> Triple(
-            Res.string.setup_overlay_title,
-            Res.string.setup_overlay_body,
-            Res.string.open_settings,
-        )
+    val (title, action) = when (issue) {
+        SetupIssue.Notifications -> Res.string.setup_notifications_title to Res.string.setup_notifications_action
+        SetupIssue.FullScreenAlarms -> Res.string.setup_full_screen_title to Res.string.setup_full_screen_action
+        SetupIssue.ExactAlarms -> Res.string.setup_exact_alarms_title to Res.string.setup_exact_alarms_action
+        SetupIssue.DisplayOverApps -> Res.string.setup_overlay_title to Res.string.setup_overlay_action
     }
     Card(
         colors = CardDefaults.cardColors(
@@ -73,9 +55,8 @@ internal fun SetupIssueCard(issue: SetupIssue, onFix: () -> Unit) {
         ),
         modifier = Modifier.fillMaxWidth(),
     ) {
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(stringResource(title), style = MaterialTheme.typography.titleMedium)
-            Text(stringResource(body), style = MaterialTheme.typography.bodyMedium)
             Button(
                 onClick = onFix,
                 colors = ButtonDefaults.buttonColors(

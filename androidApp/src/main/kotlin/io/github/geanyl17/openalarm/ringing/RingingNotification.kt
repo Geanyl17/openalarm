@@ -22,7 +22,6 @@ object RingingNotification {
             context.getString(R.string.channel_ringing),
             NotificationManager.IMPORTANCE_HIGH,
         ).apply {
-            description = context.getString(R.string.channel_ringing_description)
             // RingingService plays the sound itself, on the alarm volume.
             setSound(null, null)
             enableVibration(false)

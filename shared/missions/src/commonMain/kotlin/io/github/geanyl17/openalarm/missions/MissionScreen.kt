@@ -23,11 +23,8 @@ import io.github.geanyl17.openalarm.missions.resources.difficulty_easy
 import io.github.geanyl17.openalarm.missions.resources.difficulty_hard
 import io.github.geanyl17.openalarm.missions.resources.difficulty_normal
 import io.github.geanyl17.openalarm.missions.resources.mission_math
-import io.github.geanyl17.openalarm.missions.resources.mission_math_description
 import io.github.geanyl17.openalarm.missions.resources.mission_memory
-import io.github.geanyl17.openalarm.missions.resources.mission_memory_description
 import io.github.geanyl17.openalarm.missions.resources.mission_progress
-import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -82,17 +79,6 @@ fun missionName(type: MissionType): String = stringResource(
         MissionType.Math -> Res.string.mission_math
         MissionType.Memory -> Res.string.mission_memory
     },
-)
-
-/** What the user has to do, such as "Solve 3 math problems in a row to turn the alarm off." */
-@Composable
-fun missionDescription(mission: Mission): String = pluralStringResource(
-    when (mission.type) {
-        MissionType.Math -> Res.plurals.mission_math_description
-        MissionType.Memory -> Res.plurals.mission_memory_description
-    },
-    mission.rounds,
-    mission.rounds,
 )
 
 @Composable

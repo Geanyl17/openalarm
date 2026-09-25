@@ -48,7 +48,6 @@ import io.github.geanyl17.openalarm.ui.resources.Res
 import io.github.geanyl17.openalarm.ui.resources.brightness
 import io.github.geanyl17.openalarm.ui.resources.cancel
 import io.github.geanyl17.openalarm.ui.resources.color_custom
-import io.github.geanyl17.openalarm.ui.resources.color_preview
 import io.github.geanyl17.openalarm.ui.resources.color_wheel
 import io.github.geanyl17.openalarm.ui.resources.ic_alarm
 import io.github.geanyl17.openalarm.ui.resources.select
@@ -227,8 +226,7 @@ private fun ThemePreview(seed: Color) {
         ) {
             Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                 Icon(painterResource(Res.drawable.ic_alarm), contentDescription = null, modifier = Modifier.size(20.dp))
-                Spacer(Modifier.width(8.dp))
-                Text(stringResource(Res.string.color_preview), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+                Spacer(Modifier.weight(1f))
                 Surface(color = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary, shape = CircleShape) {
                     Text(
                         text = stringResource(Res.string.turn_off),

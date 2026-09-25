@@ -5,7 +5,6 @@
     <!-- Alarm list -->
     <string name="add_alarm">Add alarm</string>
     <string name="no_alarms_title">No alarms yet</string>
-    <string name="no_alarms_body">Tap + to set your first alarm.</string>
     <string name="next_alarm_in">Next alarm in %1$s</string>
     <string name="no_alarm_on">No alarms are on</string>
     <string name="snoozed_until">Snoozed until %1$s</string>
@@ -67,7 +66,6 @@
     <string name="color">Color</string>
     <string name="vibrate">Vibrate</string>
     <string name="fade_in">Start quietly</string>
-    <string name="fade_in_description">The volume rises over 30 seconds</string>
     <string name="snooze_length">Snooze length</string>
     <string name="minutes_short">%1$d min</string>
     <string name="snooze_custom">Custom</string>
@@ -79,7 +77,7 @@
     <string name="mission">Mission</string>
     <string name="mission_none">None</string>
     <string name="mission_difficulty">Difficulty</string>
-    <string name="mission_rounds">How many in a row</string>
+    <string name="mission_rounds">Rounds</string>
 
     <!-- Colors -->
     <string name="color_default">Theme color</string>
@@ -93,7 +91,6 @@
     <string name="color_custom">Custom color</string>
     <string name="color_wheel">Color wheel</string>
     <string name="brightness">Brightness</string>
-    <string name="color_preview">How this alarm will look</string>
     <string name="select">Select</string>
 
     <!-- Ringing screen -->
@@ -105,13 +102,11 @@
 
     <!-- Setup problems shown above the alarm list -->
     <string name="setup_notifications_title">Alarms can't ring yet</string>
-    <string name="setup_notifications_body">OpenAlarm needs permission to show notifications. That's how a ringing alarm appears on your lock screen.</string>
     <string name="setup_notifications_action">Allow notifications</string>
     <string name="setup_full_screen_title">Alarms won't fill the screen</string>
-    <string name="setup_full_screen_body">Allow full-screen notifications so a ringing alarm shows up over your lock screen.</string>
+    <string name="setup_full_screen_action">Allow full screen</string>
     <string name="setup_exact_alarms_title">Alarms might ring late</string>
-    <string name="setup_exact_alarms_body">Allow OpenAlarm to set alarms so they ring at exactly the right time.</string>
-    <string name="setup_overlay_title">A ringing alarm can be pushed aside</string>
-    <string name="setup_overlay_body">Allow OpenAlarm to display over other apps, so a ringing alarm keeps coming back until you turn it off. If the switch is grayed out, open OpenAlarm's App info, tap ⋮ and choose “Allow restricted settings” first.</string>
-    <string name="open_settings">Open settings</string>
+    <string name="setup_exact_alarms_action">Allow exact alarms</string>
+    <string name="setup_overlay_title">Ringing alarms can be closed</string>
+    <string name="setup_overlay_action">Allow display over apps</string>
 </resources>

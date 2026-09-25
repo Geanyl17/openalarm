@@ -37,7 +37,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.geanyl17.openalarm.core.Alarm
 import io.github.geanyl17.openalarm.core.nextUpcoming
@@ -50,7 +49,6 @@ import io.github.geanyl17.openalarm.ui.resources.ic_add
 import io.github.geanyl17.openalarm.ui.resources.ic_alarm
 import io.github.geanyl17.openalarm.ui.resources.next_alarm_in
 import io.github.geanyl17.openalarm.ui.resources.no_alarm_on
-import io.github.geanyl17.openalarm.ui.resources.no_alarms_body
 import io.github.geanyl17.openalarm.ui.resources.no_alarms_title
 import io.github.geanyl17.openalarm.ui.resources.snoozed_until
 import kotlinx.datetime.TimeZone
@@ -189,12 +187,5 @@ private fun EmptyState(modifier: Modifier = Modifier) {
         )
         Spacer(Modifier.height(16.dp))
         Text(stringResource(Res.string.no_alarms_title), style = MaterialTheme.typography.titleLarge)
-        Spacer(Modifier.height(4.dp))
-        Text(
-            text = stringResource(Res.string.no_alarms_body),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-        )
     }
 }

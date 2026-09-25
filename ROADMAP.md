@@ -89,7 +89,7 @@ Waking up is the easy part; the real problem is dozing off two minutes after dis
 
 ## Distribution
 
-1. GitHub Releases and [IzzyOnDroid](https://apt.izzysoft.de/fdroid/), a third-party F-Droid repository that's quick to get into.
+1. GitHub Releases, which [Obtainium](https://github.com/ImranR98/Obtainium) can install and update from.
 2. [F-Droid](https://f-droid.org), which builds the app from source.
 3. Google Play.
 4. Apple App Store (Phase 5).
@@ -127,6 +127,8 @@ Each mission declares what it needs (camera, NFC, step counter, microphone) and 
 
 ### Phase 1: "It always rings" (first Android release)
 
+[0.1.0](CHANGELOG.md) shipped everything checked here. The rest comes in 0.2.
+
 - [x] Alarms: time, repeat days, label, fade-in, vibration, snooze length
 - [x] Choosing the alarm sound, with the phone's own sound picker (no "silent" option)
 - [x] Ringing screen over the lock screen, with snooze and dismiss
@@ -140,7 +142,9 @@ Each mission declares what it needs (camera, NFC, step counter, microphone) and 
 - [ ] Missions: Color Hunt and Barcode (camera)
 - [x] A color for each alarm: a preset or any color from a color wheel
 - [ ] App color picker, AMOLED black
-- [ ] Release on GitHub and IzzyOnDroid
+- [x] Release on GitHub, with updates through Obtainium
+
+IzzyOnDroid was part of this phase, but its [inclusion policy](https://izzyondroid.org/docs/general/AppInclusionPolicy/) rejects apps whose code is partly written by generative AI tools, and OpenAlarm's is.
 
 ### Phase 2: "You can't fall back asleep"
 

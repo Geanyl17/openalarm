@@ -1,0 +1,5 @@
+First release.
+• Alarms ring at the exact minute over the lock screen, after reboots (even before the first unlock) and time changes. A backup alarm re-rings if the app is killed.
+• Math and Memory missions to turn alarms off. The alarm turns quiet while you solve.
+• Scroll-wheel time picker, any alarm sound, snoozes from 1 to 60 minutes, and a color for each alarm.
+• No internet permission, ads or tracking.

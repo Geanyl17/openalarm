@@ -1,0 +1,27 @@
+OpenAlarm is a free and open-source alarm clock that makes you prove you're awake before it turns off.
+
+<b>Missions</b>
+To turn off an alarm with a mission, you have to complete it:
+• Math: solve arithmetic problems, from sums of small numbers to problems like 17 × 6 + 38.
+• Memory: repeat a pattern of lit tiles on a 3×3 grid.
+While you work on a mission, the alarm turns quiet. Stop for 20 seconds and it gets loud again. An alarm with a mission can't be dismissed from its notification.
+
+<b>Alarms that always ring</b>
+• Rings at the exact minute, full screen over the lock screen.
+• Set again after a reboot, a clock or time-zone change and an app update, and daylight-saving changes are handled.
+• Rings even before the phone has been unlocked for the first time after a reboot.
+• If the app is killed while an alarm rings, a backup alarm rings it again within a minute.
+• Never silent: if the chosen sound can't be played, a bundled sound takes over.
+
+<b>Set it up your way</b>
+• Scroll wheels for the time, with "Rings in 7 h 32 min" underneath, so a wrong hour or AM/PM stands out.
+• Repeat days, labels, vibration, and a volume that rises gradually.
+• Any alarm sound on your phone.
+• Snooze for 5, 10, 15 or 20 minutes, or any length up to an hour.
+• A color for each alarm, from presets or a color wheel, with text that stays readable in any color.
+
+<b>Private</b>
+No internet permission, no ads, no tracking and no account. Everything stays on your phone.
+
+<b>Coming next</b>
+Camera missions (find something of a given color, scan a barcode), a reliability self-test, and app-wide themes including AMOLED black.

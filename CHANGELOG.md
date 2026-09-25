@@ -10,6 +10,7 @@ All notable changes to OpenAlarm. Versions follow [Semantic Versioning](https://
 - Check-ins: after you turn an alarm off, it checks once or twice, 5 to 15 minutes later, that you're still up. Tap "I'm up", which appears somewhere different each time, within 60 seconds, or the alarm rings again with a harder mission.
 - A Reaction mission: tap as soon as the screen says so, within 0.9, 0.65 or 0.5 seconds depending on the difficulty. A miss costs a round, and after 3 misses you can switch to math.
 - A Colors mission: a color word is written in another color, and you tap the color, not the word. Its colors can be told apart with color blindness too. A wrong answer costs a round, and after 3 you can switch to math.
+- Mission chains: up to 3 missions on one alarm, done one after another.
 
 ## [0.2.0] - 2026-09-25
 

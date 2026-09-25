@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -30,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -40,6 +42,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -66,13 +69,16 @@ import io.github.geanyl17.openalarm.ui.resources.color
 import io.github.geanyl17.openalarm.ui.resources.delete_alarm
 import io.github.geanyl17.openalarm.ui.resources.edit_alarm
 import io.github.geanyl17.openalarm.ui.resources.fade_in
+import io.github.geanyl17.openalarm.ui.resources.ic_add
 import io.github.geanyl17.openalarm.ui.resources.ic_close
 import io.github.geanyl17.openalarm.ui.resources.ic_delete
 import io.github.geanyl17.openalarm.ui.resources.label
-import io.github.geanyl17.openalarm.ui.resources.mission
+import io.github.geanyl17.openalarm.ui.resources.mission_add
 import io.github.geanyl17.openalarm.ui.resources.mission_difficulty
-import io.github.geanyl17.openalarm.ui.resources.mission_none
+import io.github.geanyl17.openalarm.ui.resources.mission_number
+import io.github.geanyl17.openalarm.ui.resources.mission_remove
 import io.github.geanyl17.openalarm.ui.resources.mission_rounds
+import io.github.geanyl17.openalarm.ui.resources.missions
 import io.github.geanyl17.openalarm.ui.resources.new_alarm
 import io.github.geanyl17.openalarm.ui.resources.photo
 import io.github.geanyl17.openalarm.ui.resources.photo_add
@@ -99,6 +105,14 @@ import kotlin.time.Duration.Companion.seconds
 
 private val RoundChoices = listOf(1, 2, 3, 5)
 
+/** Keeps the missions being edited across configuration changes, as type, difficulty and rounds for each. */
+private val MissionsSaver = listSaver<List<Mission>, Int>(
+    save = { missions -> missions.flatMap { listOf(it.type.ordinal, it.difficulty.ordinal, it.rounds) } },
+    restore = { values ->
+        values.chunked(3).map { (type, difficulty, rounds) -> Mission(MissionType.entries[type], Difficulty.entries[difficulty], rounds) }
+    },
+)
+
 /** No limit, then fewer and fewer snoozes, down to none. */
 private val SnoozeLimits = listOf(null, 3, 2, 1, 0)
 private const val MAX_LABEL_LENGTH = 60
@@ -116,14 +130,11 @@ internal fun AlarmEditorScreen(
     onClose: () -> Unit,
 ) {
     val base = initial ?: Alarm(hour = 7, minute = 0)
-    val baseMission = base.missions.firstOrNull()
     var hour by rememberSaveable { mutableIntStateOf(base.hour) }
     var minute by rememberSaveable { mutableIntStateOf(base.minute) }
     var repeat by rememberSaveable { mutableIntStateOf(base.repeat.mask) }
     var label by rememberSaveable { mutableStateOf(base.label) }
-    var missionType by rememberSaveable { mutableStateOf(baseMission?.type) }
-    var difficulty by rememberSaveable { mutableStateOf(baseMission?.difficulty ?: Difficulty.Normal) }
-    var rounds by rememberSaveable { mutableIntStateOf(baseMission?.rounds ?: 3) }
+    var missions by rememberSaveable(stateSaver = MissionsSaver) { mutableStateOf(base.missions) }
     var sound by rememberSaveable { mutableStateOf(base.sound) }
     var photo by rememberSaveable { mutableStateOf(base.photo) }
     var colorArgb by rememberSaveable { mutableStateOf(base.colorArgb) }
@@ -162,7 +173,7 @@ internal fun AlarmEditorScreen(
                                         colorArgb = colorArgb,
                                         sound = sound,
                                         photo = photo,
-                                        missions = listOfNotNull(missionType?.let { Mission(it, difficulty, rounds) }),
+                                        missions = missions,
                                     ),
                                 )
                             },
@@ -202,18 +213,27 @@ internal fun AlarmEditorScreen(
                     modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                 )
 
-                SectionTitle(stringResource(Res.string.mission))
-                ChoiceChips(
-                    options = listOf(null) + MissionType.entries,
-                    selected = missionType,
-                    label = { type -> if (type == null) stringResource(Res.string.mission_none) else missionName(type) },
-                    onSelect = { missionType = it },
-                )
-                if (missionType != null) {
-                    Text(stringResource(Res.string.mission_difficulty), style = MaterialTheme.typography.labelLarge)
-                    ChoiceChips(Difficulty.entries, difficulty, label = { difficultyName(it) }, onSelect = { difficulty = it })
-                    Text(stringResource(Res.string.mission_rounds), style = MaterialTheme.typography.labelLarge)
-                    ChoiceChips(RoundChoices, rounds, label = { it.toString() }, onSelect = { rounds = it })
+                SectionTitle(stringResource(Res.string.missions))
+                missions.forEachIndexed { index, mission ->
+                    MissionCard(
+                        number = index + 1,
+                        mission = mission,
+                        onChange = { changed -> missions = missions.toMutableList().also { it[index] = changed } },
+                        onRemove = { missions = missions.toMutableList().also { it.removeAt(index) } },
+                    )
+                }
+                if (missions.size < Alarm.MAX_MISSIONS) {
+                    OutlinedButton(
+                        onClick = {
+                            // A chain is more fun with different missions, so start with one that isn't in it yet.
+                            val type = MissionType.entries.firstOrNull { type -> missions.none { it.type == type } } ?: MissionType.Math
+                            missions = missions + Mission(type)
+                        },
+                    ) {
+                        Icon(painterResource(Res.drawable.ic_add), contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text(stringResource(Res.string.mission_add))
+                    }
                 }
 
                 SoundRow(sound, sounds, onChosen = { sound = it })
@@ -283,6 +303,29 @@ private fun SectionTitle(text: String) {
         color = MaterialTheme.colorScheme.primary,
         modifier = Modifier.padding(top = 16.dp, bottom = 4.dp),
     )
+}
+
+@Composable
+private fun MissionCard(number: Int, mission: Mission, onChange: (Mission) -> Unit, onRemove: () -> Unit) {
+    Surface(
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Column(Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(Res.string.mission_number, number), style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
+                IconButton(onClick = onRemove, modifier = Modifier.offset(x = 12.dp)) {
+                    Icon(painterResource(Res.drawable.ic_close), contentDescription = stringResource(Res.string.mission_remove, number))
+                }
+            }
+            ChoiceChips(MissionType.entries, mission.type, label = { missionName(it) }, onSelect = { onChange(mission.copy(type = it)) })
+            Text(stringResource(Res.string.mission_difficulty), style = MaterialTheme.typography.labelLarge)
+            ChoiceChips(Difficulty.entries, mission.difficulty, label = { difficultyName(it) }, onSelect = { onChange(mission.copy(difficulty = it)) })
+            Text(stringResource(Res.string.mission_rounds), style = MaterialTheme.typography.labelLarge)
+            ChoiceChips(RoundChoices, mission.rounds, label = { it.toString() }, onSelect = { onChange(mission.copy(rounds = it)) })
+        }
+    }
 }
 
 @Composable

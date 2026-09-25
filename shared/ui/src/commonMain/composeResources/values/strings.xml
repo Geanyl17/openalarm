@@ -82,8 +82,10 @@
     <string name="photo_add">Add photo</string>
     <string name="photo_change">Change</string>
     <string name="photo_remove">Remove</string>
-    <string name="mission">Mission</string>
-    <string name="mission_none">None</string>
+    <string name="missions">Missions</string>
+    <string name="mission_number">Mission %1$d</string>
+    <string name="mission_add">Add mission</string>
+    <string name="mission_remove">Remove mission %1$d</string>
     <string name="mission_difficulty">Difficulty</string>
     <string name="mission_rounds">Rounds</string>
 

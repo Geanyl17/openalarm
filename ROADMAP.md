@@ -154,7 +154,8 @@ IzzyOnDroid was part of this phase, but its [inclusion policy](https://izzyondro
 - [x] Wake Guard 2: Aftershocks (skipping them while you walk comes with the Steps mission)
 - [x] Wake Guard 3: Snooze Tax
 - [ ] Wake Guard 4 (with the camera missions in Phase 3), and the Honesty Log
-- [ ] Mission chains and wake-up streaks
+- [x] Mission chains
+- [ ] Wake-up streaks
 - [x] Missions: Stroop, and Reaction, a short version of the Alertness Gate
 - [ ] Missions: Steps, NFC Tag, Lights On, the full Alertness Gate
 - [ ] Submit to F-Droid

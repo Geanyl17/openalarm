@@ -179,7 +179,7 @@ private fun AlarmCard(
                     text = listOfNotNull(
                         alarm.label.ifBlank { null },
                         repeatSummary(alarm.repeat),
-                        alarm.missions.firstOrNull()?.let { missionName(it.type) },
+                        alarm.missions.map { missionName(it.type) }.ifEmpty { null }?.joinToString(" + "),
                     ).joinToString(" · "),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,

@@ -58,5 +58,8 @@ data class Alarm(
         const val DEFAULT_SNOOZE_MINUTES = 10
         const val MAX_SNOOZE_MINUTES = 60
         const val MAX_SNOOZE_LIMIT = 5
+
+        /** The most missions that can be chained on one alarm. */
+        const val MAX_MISSIONS = 3
     }
 }

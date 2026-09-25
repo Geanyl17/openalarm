@@ -53,6 +53,19 @@ class FileAlarmRepositoryTest {
     }
 
     @Test
+    fun anNfcMissionKeepsItsTag() = runTest {
+        val path = "/nfc.json".toPath()
+        val mission = Mission(MissionType.NfcTag, tag = "04A2B3C4D5E680")
+        val job = Job()
+        val first = openAlarmRepository(fileSystem, path, CoroutineScope(StandardTestDispatcher(testScheduler) + job))
+        val alarm = first.save(Alarm(hour = 7, minute = 0, missions = listOf(mission)))
+        job.cancelAndJoin()
+
+        val second = openAlarmRepository(fileSystem, path, backgroundScope)
+        assertEquals(listOf(mission), second.get(alarm.id)?.missions)
+    }
+
+    @Test
     fun deleteRemovesTheAlarm() = runTest {
         val repository = openAlarmRepository(fileSystem, "/delete.json".toPath(), backgroundScope)
         val alarm = repository.save(Alarm(hour = 7, minute = 0))

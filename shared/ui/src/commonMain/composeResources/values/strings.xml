@@ -88,6 +88,12 @@
     <string name="mission_remove">Remove mission %1$d</string>
     <string name="mission_difficulty">Difficulty</string>
     <string name="mission_rounds">Rounds</string>
+    <string name="nfc_tag_saved">Tag saved</string>
+    <string name="nfc_scan_again">Scan another</string>
+    <string name="nfc_scan_title">Scan your tag</string>
+    <string name="nfc_scan_hint">Hold an NFC tag to the back of your phone. Then put it somewhere away from your bed.</string>
+    <string name="nfc_off">NFC is off.</string>
+    <string name="nfc_turn_on">Turn on NFC</string>
 
     <!-- Wake-up log -->
     <string name="wake_ups">Wake-ups</string>

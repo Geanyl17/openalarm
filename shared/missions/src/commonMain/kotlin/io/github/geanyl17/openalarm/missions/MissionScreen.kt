@@ -26,6 +26,7 @@ import io.github.geanyl17.openalarm.missions.resources.difficulty_normal
 import io.github.geanyl17.openalarm.missions.resources.mission_lights_on
 import io.github.geanyl17.openalarm.missions.resources.mission_math
 import io.github.geanyl17.openalarm.missions.resources.mission_memory
+import io.github.geanyl17.openalarm.missions.resources.mission_nfc_tag
 import io.github.geanyl17.openalarm.missions.resources.mission_progress
 import io.github.geanyl17.openalarm.missions.resources.mission_reaction
 import io.github.geanyl17.openalarm.missions.resources.mission_steps
@@ -60,7 +61,10 @@ fun MissionScreen(
     }
     // A phone without the hardware a mission needs gets math instead. One that does gets the offer after
     // a while, for rooms without bright enough lights and the like.
-    val useMath = switchedToMath || !sensors.canRun(mission.type)
+    // With NFC switched off, there's no way to tap the tag. Opening the settings from the ringing screen would
+    // only make it jump back in front, so it's math instead.
+    val nfcOff = mission.type == MissionType.NfcTag && (!sensors.isNfcOn() || mission.tag == null)
+    val useMath = switchedToMath || !sensors.canRun(mission.type) || nfcOff
     if (mission.type.usesHardware && !useMath) {
         LaunchedEffect(index) {
             delay(OFFER_MATH_AFTER)
@@ -103,6 +107,7 @@ fun MissionScreen(
                 )
                 MissionType.LightsOn -> LightsOnMission(mission, sensors.light!!, onInteraction, onDone = { index++ })
                 MissionType.Steps -> StepsMission(mission, sensors.steps!!, onInteraction, onDone = { index++ })
+                MissionType.NfcTag -> NfcMission(mission, sensors.nfcTags!!, onInteraction, onDone = { index++ })
             }
         }
         if (offerMath && !useMath) {
@@ -122,6 +127,7 @@ fun missionName(type: MissionType): String = stringResource(
         MissionType.Stroop -> Res.string.mission_stroop
         MissionType.LightsOn -> Res.string.mission_lights_on
         MissionType.Steps -> Res.string.mission_steps
+        MissionType.NfcTag -> Res.string.mission_nfc_tag
     },
 )
 

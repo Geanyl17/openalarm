@@ -17,6 +17,15 @@ interface MissionSensors {
 
     /** Asks for permission to count steps, where the platform needs one. Steps are counted less well without it. */
     fun requestSteps() = Unit
+
+    /** The ID of every NFC tag held to the phone, in hex, for as long as it's collected. Null without NFC. */
+    val nfcTags: Flow<String>? get() = null
+
+    /** Whether NFC is switched on. */
+    fun isNfcOn(): Boolean = false
+
+    /** Opens the phone's settings to switch NFC on. */
+    fun openNfcSettings() = Unit
 }
 
 /** The sensors for missions on this screen. Without a platform to provide them, there are none. */
@@ -26,8 +35,10 @@ val LocalMissionSensors = staticCompositionLocalOf<MissionSensors> { object : Mi
 fun MissionSensors.canRun(type: MissionType): Boolean = when (type) {
     MissionType.LightsOn -> light != null
     MissionType.Steps -> steps != null
+    MissionType.NfcTag -> nfcTags != null
     else -> true
 }
 
 /** Missions that need something done away from the screen, which a player might not manage. */
-internal val MissionType.usesHardware: Boolean get() = this == MissionType.LightsOn || this == MissionType.Steps
+internal val MissionType.usesHardware: Boolean
+    get() = this == MissionType.LightsOn || this == MissionType.Steps || this == MissionType.NfcTag

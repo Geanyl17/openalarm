@@ -16,6 +16,8 @@ data class Mission(
     val difficulty: Difficulty = Difficulty.Normal,
     /** How many problems, patterns, taps or words in a row. For Lights On and Steps, how long or how far to go. */
     val rounds: Int = 3,
+    /** For an NFC tag mission, the ID of the tag to tap, in hex. */
+    val tag: String? = null,
 ) {
     init {
         require(rounds in 1..MAX_ROUNDS) { "Rounds out of range: $rounds" }
@@ -57,6 +59,10 @@ enum class MissionType {
     /** Walk a number of steps. */
     @SerialName("steps")
     Steps,
+
+    /** Tap an NFC tag placed away from the bed. */
+    @SerialName("nfc_tag")
+    NfcTag,
 }
 
 @Serializable

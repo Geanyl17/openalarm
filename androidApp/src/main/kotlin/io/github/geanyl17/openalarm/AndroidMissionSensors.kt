@@ -1,13 +1,17 @@
 package io.github.geanyl17.openalarm
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.nfc.NfcAdapter
 import android.os.Build
+import android.provider.Settings
 import io.github.geanyl17.openalarm.missions.MissionSensors
 import io.github.geanyl17.openalarm.missions.StepDetector
 import kotlinx.coroutines.channels.awaitClose
@@ -16,11 +20,13 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.mapNotNull
 
 /**
- * The phone's sensors, for movement missions. [onRequestSteps] asks for the permission to count steps;
- * screens that can't ask leave it out.
+ * The phone's sensors, for movement missions, on [activity]. [onRequestSteps] asks for the permission to count
+ * steps; screens that can't ask leave it out.
  */
-class AndroidMissionSensors(private val context: Context, private val onRequestSteps: (() -> Unit)? = null) : MissionSensors {
+class AndroidMissionSensors(private val activity: Activity, private val onRequestSteps: (() -> Unit)? = null) : MissionSensors {
+    private val context: Context = activity
     private val sensorManager = context.getSystemService(SensorManager::class.java)
+    private val nfc: NfcAdapter? = NfcAdapter.getDefaultAdapter(context)
 
     override val light: Flow<Float>? = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)?.let { sensor -> readings(sensor) { it[0] } }
 
@@ -40,6 +46,22 @@ class AndroidMissionSensors(private val context: Context, private val onRequestS
 
     override fun requestSteps() {
         if (!canCountSteps(context)) onRequestSteps?.invoke()
+    }
+
+    /** Reader mode only works while [activity] is in front, and Android takes care of pausing it when it isn't. */
+    override val nfcTags: Flow<String>? = nfc?.let { adapter ->
+        callbackFlow {
+            val flags = NfcAdapter.FLAG_READER_NFC_A or NfcAdapter.FLAG_READER_NFC_B or NfcAdapter.FLAG_READER_NFC_F or
+                NfcAdapter.FLAG_READER_NFC_V or NfcAdapter.FLAG_READER_NFC_BARCODE
+            adapter.enableReaderMode(activity, { tag -> trySend(tag.id.toHexString(HexFormat.UpperCase)) }, flags, null)
+            awaitClose { adapter.disableReaderMode(activity) }
+        }
+    }
+
+    override fun isNfcOn(): Boolean = nfc?.isEnabled == true
+
+    override fun openNfcSettings() {
+        activity.startActivity(Intent(Settings.ACTION_NFC_SETTINGS))
     }
 
     /** The sensor's readings while collected, turned into values by [value]. */

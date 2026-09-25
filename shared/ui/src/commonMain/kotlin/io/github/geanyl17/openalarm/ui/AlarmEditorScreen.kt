@@ -88,6 +88,8 @@ import io.github.geanyl17.openalarm.ui.resources.mission_remove
 import io.github.geanyl17.openalarm.ui.resources.mission_rounds
 import io.github.geanyl17.openalarm.ui.resources.missions
 import io.github.geanyl17.openalarm.ui.resources.new_alarm
+import io.github.geanyl17.openalarm.ui.resources.nfc_scan_again
+import io.github.geanyl17.openalarm.ui.resources.nfc_tag_saved
 import io.github.geanyl17.openalarm.ui.resources.photo
 import io.github.geanyl17.openalarm.ui.resources.photo_add
 import io.github.geanyl17.openalarm.ui.resources.photo_change
@@ -112,11 +114,13 @@ import kotlin.time.Duration.Companion.seconds
 
 private val RoundChoices = listOf(1, 2, 3, 5)
 
-/** Keeps the missions being edited across configuration changes, as type, difficulty and rounds for each. */
-private val MissionsSaver = listSaver<List<Mission>, Int>(
-    save = { missions -> missions.flatMap { listOf(it.type.ordinal, it.difficulty.ordinal, it.rounds) } },
+/** Keeps the missions being edited across configuration changes, as type, difficulty, rounds and tag for each. */
+private val MissionsSaver = listSaver<List<Mission>, Any?>(
+    save = { missions -> missions.flatMap { listOf(it.type.ordinal, it.difficulty.ordinal, it.rounds, it.tag) } },
     restore = { values ->
-        values.chunked(3).map { (type, difficulty, rounds) -> Mission(MissionType.entries[type], Difficulty.entries[difficulty], rounds) }
+        values.chunked(4).map { (type, difficulty, rounds, tag) ->
+            Mission(MissionType.entries[type as Int], Difficulty.entries[difficulty as Int], rounds as Int, tag as String?)
+        }
     },
 )
 
@@ -338,19 +342,44 @@ private fun MissionCard(number: Int, mission: Mission, onChange: (Mission) -> Un
             // Missions this phone can't run aren't offered.
             val sensors = LocalMissionSensors.current
             val types = MissionType.entries.filter { it == mission.type || sensors.canRun(it) }
+            var scanningTag by rememberSaveable { mutableStateOf(false) }
             ChoiceChips(
                 types,
                 mission.type,
                 label = { missionName(it) },
                 onSelect = {
-                    if (it == MissionType.Steps) sensors.requestSteps()
-                    onChange(mission.copy(type = it))
+                    when (it) {
+                        // An NFC mission needs its tag, so it's only picked once a tag is scanned.
+                        MissionType.NfcTag -> if (mission.tag == null) scanningTag = true else onChange(mission.copy(type = it))
+                        MissionType.Steps -> {
+                            sensors.requestSteps()
+                            onChange(mission.copy(type = it))
+                        }
+                        else -> onChange(mission.copy(type = it))
+                    }
                 },
             )
-            Text(stringResource(Res.string.mission_difficulty), style = MaterialTheme.typography.labelLarge)
-            ChoiceChips(Difficulty.entries, mission.difficulty, label = { difficultyName(it) }, onSelect = { onChange(mission.copy(difficulty = it)) })
-            Text(stringResource(Res.string.mission_rounds), style = MaterialTheme.typography.labelLarge)
-            ChoiceChips(RoundChoices, mission.rounds, label = { it.toString() }, onSelect = { onChange(mission.copy(rounds = it)) })
+            if (mission.type == MissionType.NfcTag) {
+                // The tag is the whole mission: there's no difficulty or rounds.
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(stringResource(Res.string.nfc_tag_saved), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+                    TextButton(onClick = { scanningTag = true }) { Text(stringResource(Res.string.nfc_scan_again)) }
+                }
+            } else {
+                Text(stringResource(Res.string.mission_difficulty), style = MaterialTheme.typography.labelLarge)
+                ChoiceChips(Difficulty.entries, mission.difficulty, label = { difficultyName(it) }, onSelect = { onChange(mission.copy(difficulty = it)) })
+                Text(stringResource(Res.string.mission_rounds), style = MaterialTheme.typography.labelLarge)
+                ChoiceChips(RoundChoices, mission.rounds, label = { it.toString() }, onSelect = { onChange(mission.copy(rounds = it)) })
+            }
+            if (scanningTag) {
+                NfcTagScanDialog(
+                    onScanned = { tag ->
+                        scanningTag = false
+                        onChange(mission.copy(type = MissionType.NfcTag, tag = tag))
+                    },
+                    onDismiss = { scanningTag = false },
+                )
+            }
         }
     }
 }

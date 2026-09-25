@@ -66,7 +66,6 @@ import io.github.geanyl17.openalarm.ui.resources.fade_in_description
 import io.github.geanyl17.openalarm.ui.resources.ic_close
 import io.github.geanyl17.openalarm.ui.resources.ic_delete
 import io.github.geanyl17.openalarm.ui.resources.label
-import io.github.geanyl17.openalarm.ui.resources.minutes_short
 import io.github.geanyl17.openalarm.ui.resources.mission
 import io.github.geanyl17.openalarm.ui.resources.mission_difficulty
 import io.github.geanyl17.openalarm.ui.resources.mission_none
@@ -88,7 +87,6 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Duration.Companion.seconds
 
-private val SnoozeChoices = listOf(5, 9, 10, 15, 20)
 private val RoundChoices = listOf(1, 2, 3, 5)
 private const val MAX_LABEL_LENGTH = 60
 
@@ -212,7 +210,7 @@ internal fun AlarmEditorScreen(
                 SwitchRow(stringResource(Res.string.fade_in), stringResource(Res.string.fade_in_description), fadeIn) { fadeIn = it }
 
                 SectionTitle(stringResource(Res.string.snooze_length))
-                ChoiceChips(SnoozeChoices, snoozeMinutes, label = { stringResource(Res.string.minutes_short, it) }, onSelect = { snoozeMinutes = it })
+                SnoozeLengthPicker(snoozeMinutes, onSelect = { snoozeMinutes = it })
 
                 if (initial != null) {
                     Spacer(Modifier.height(8.dp))

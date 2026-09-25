@@ -40,7 +40,7 @@ data class Alarm(
     val repeats: Boolean get() = !repeat.isEmpty
 
     companion object {
-        const val DEFAULT_SNOOZE_MINUTES = 9
+        const val DEFAULT_SNOOZE_MINUTES = 10
         const val MAX_SNOOZE_MINUTES = 60
     }
 }

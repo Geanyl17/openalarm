@@ -71,7 +71,7 @@ Waking up is the easy part; the real problem is dozing off two minutes after dis
 
 1. **Dead Man's Switch.** Every ringing alarm arms a hidden backup alarm 3 minutes out. While you work on the mission, the app keeps pushing the backup back. If the app stops doing that (it was killed, the phone was switched off, or you pressed Stop on iOS), the backup rings. Only a finished mission cancels it.
 2. **Aftershocks.** One or two surprise check-ins at random times 5 to 15 minutes after dismissal. You get 60 seconds to tap "I'm up", which appears at a random spot on the screen. Miss it and the full alarm returns with a harder mission. On Android they're skipped if the step counter shows you're walking around.
-3. **Snooze Tax.** Snoozes are limited (for example to 2), each one is shorter than the last (9, then 5, then 2 minutes), and each adds a mission step.
+3. **Snooze Tax.** Snoozes are limited (for example to 2), each one is shorter than the last (10, then 5, then 2 minutes), and each adds a mission step.
 4. **Wake Map.** During setup you register spots and objects in other rooms. Each morning one is picked at random, so you can't keep the answer next to your bed.
 5. **Reboot-proof, plus an Honesty Log.** Switch the phone off mid-alarm and it rings again after booting. Force-stopping the app in Settings is the one way out Android can't block. It takes enough fiddling that you'll be awake anyway, and the app notices it the next time it opens, logs it and resets your wake-up streak.
 6. **Volume floor (Android).** The volume buttons can't turn a ringing alarm below the level you set.

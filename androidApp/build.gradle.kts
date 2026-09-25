@@ -69,6 +69,7 @@ dependencies {
     implementation(projects.shared.ui)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core)
+    implementation(libs.androidx.exifinterface)
     implementation(libs.compose.components.resources)
 }
 

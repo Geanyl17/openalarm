@@ -29,7 +29,7 @@ private sealed interface Screen {
 
 /**
  * The main app UI. [setupIssues] lists the permissions still missing, and [onFixSetupIssue]
- * takes the user to where they can grant one. Both come from the platform, as do [sounds].
+ * takes the user to where they can grant one. Both come from the platform, as do [sounds] and [photos].
  */
 @Composable
 fun App(
@@ -37,6 +37,7 @@ fun App(
     setupIssues: List<SetupIssue>,
     onFixSetupIssue: (SetupIssue) -> Unit,
     sounds: AlarmSounds,
+    photos: AlarmPhotos,
     use24Hour: Boolean,
 ) {
     OpenAlarmTheme {
@@ -61,6 +62,7 @@ fun App(
                         alarms = alarms,
                         setupIssues = setupIssues,
                         use24Hour = use24Hour,
+                        photos = photos,
                         snackbarHostState = snackbarHostState,
                         onFixSetupIssue = onFixSetupIssue,
                         onAdd = { backStack.add(Screen.EditAlarm(null)) },
@@ -78,6 +80,7 @@ fun App(
                         initial = screen.alarm,
                         use24Hour = use24Hour,
                         sounds = sounds,
+                        photos = photos,
                         onSave = { alarm ->
                             backStack.removeLastOrNull()
                             scope.launch { confirmSchedule(controller.save(alarm)) }

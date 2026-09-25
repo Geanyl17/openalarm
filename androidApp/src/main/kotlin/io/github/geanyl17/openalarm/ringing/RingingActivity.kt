@@ -16,11 +16,16 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.lifecycleScope
+import io.github.geanyl17.openalarm.AlarmMedia
 import io.github.geanyl17.openalarm.ui.RingingScreen
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.time.Duration.Companion.seconds
 
@@ -42,9 +47,13 @@ class RingingActivity : ComponentActivity() {
             val ringing by RingingSession.state.collectAsState()
             // Null for a moment while the ringing service loads the alarm; the screen stays blank until then.
             ringing?.let { current ->
+                val photo by produceState<ImageBitmap?>(null, current.photo) {
+                    value = current.photo?.let { withContext(Dispatchers.IO) { AlarmMedia.loadPhoto(it, AlarmMedia.PHOTO_SIZE) } }
+                }
                 RingingScreen(
                     label = current.label,
                     colorArgb = current.first.colorArgb,
+                    photo = photo,
                     snoozeMinutes = current.first.snoozeMinutes,
                     missions = current.missions,
                     use24Hour = use24Hour,

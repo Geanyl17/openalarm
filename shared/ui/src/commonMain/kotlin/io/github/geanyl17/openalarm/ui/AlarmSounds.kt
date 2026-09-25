@@ -1,6 +1,6 @@
 package io.github.geanyl17.openalarm.ui
 
-/** The phone's alarm sounds. Sounds are platform references, such as content URIs on Android. */
+/** The phone's alarm sounds, including the user's own. Sounds are platform references, such as URIs on Android. */
 interface AlarmSounds {
     /** The display name of [sound], or null if it can't be read. */
     fun name(sound: String): String?

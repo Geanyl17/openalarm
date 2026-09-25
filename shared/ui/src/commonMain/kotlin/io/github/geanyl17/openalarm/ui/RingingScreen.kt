@@ -1,5 +1,6 @@
 package io.github.geanyl17.openalarm.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -29,7 +31,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -54,16 +59,17 @@ import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Duration.Companion.seconds
 
 /**
- * The screen shown while an alarm rings, themed with the alarm's own color. With [missions], the
- * alarm only turns off once they're done; [onMissionInteraction] is called on every tap in them.
- * [startWithMission] opens the missions straight away, for example from the notification.
- * [onEmergencyCall] opens the emergency dialer: a ringing alarm keeps its screen in front, but it
- * must never stand in the way of an emergency call.
+ * The screen shown while an alarm rings, themed with the alarm's own color and showing its cover
+ * [photo], if it has one. With [missions], the alarm only turns off once they're done;
+ * [onMissionInteraction] is called on every tap in them. [startWithMission] opens the missions
+ * straight away, for example from the notification. [onEmergencyCall] opens the emergency dialer:
+ * a ringing alarm keeps its screen in front, but it must never stand in the way of an emergency call.
  */
 @Composable
 fun RingingScreen(
     label: String,
     colorArgb: Int?,
+    photo: ImageBitmap?,
     snoozeMinutes: Int,
     missions: List<Mission>,
     use24Hour: Boolean,
@@ -113,6 +119,7 @@ fun RingingScreen(
             Ringing(
                 now = now,
                 label = label,
+                photo = photo,
                 snoozeMinutes = snoozeMinutes,
                 use24Hour = use24Hour,
                 needsMission = missions.isNotEmpty(),
@@ -135,6 +142,7 @@ fun RingingScreen(
 private fun Ringing(
     now: LocalDateTime,
     label: String,
+    photo: ImageBitmap?,
     snoozeMinutes: Int,
     use24Hour: Boolean,
     needsMission: Boolean,
@@ -168,6 +176,18 @@ private fun Ringing(
                     text = label.ifBlank { stringResource(Res.string.alarm) },
                     style = MaterialTheme.typography.headlineSmall,
                     textAlign = TextAlign.Center,
+                )
+            }
+            photo?.let {
+                Image(
+                    bitmap = it,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .padding(vertical = 24.dp)
+                        .clip(RoundedCornerShape(28.dp)),
                 )
             }
             Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {

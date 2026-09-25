@@ -1,5 +1,6 @@
 package io.github.geanyl17.openalarm.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -34,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -64,6 +67,7 @@ internal fun AlarmListScreen(
     alarms: List<Alarm>?,
     setupIssues: List<SetupIssue>,
     use24Hour: Boolean,
+    photos: AlarmPhotos,
     snackbarHostState: SnackbarHostState,
     onFixSetupIssue: (SetupIssue) -> Unit,
     onAdd: () -> Unit,
@@ -103,6 +107,7 @@ internal fun AlarmListScreen(
                     AlarmCard(
                         alarm = alarm,
                         use24Hour = use24Hour,
+                        photos = photos,
                         now = now,
                         onClick = { onEdit(alarm) },
                         onToggle = { enabled -> onToggle(alarm, enabled) },
@@ -129,17 +134,44 @@ private fun NextAlarmSummary(alarms: List<Alarm>, now: Instant) {
 }
 
 @Composable
-private fun AlarmCard(alarm: Alarm, use24Hour: Boolean, now: Instant, onClick: () -> Unit, onToggle: (Boolean) -> Unit) {
+private fun AlarmCard(
+    alarm: Alarm,
+    use24Hour: Boolean,
+    photos: AlarmPhotos,
+    now: Instant,
+    onClick: () -> Unit,
+    onToggle: (Boolean) -> Unit,
+) {
     val time = formatTime(alarm.hour, alarm.minute, use24Hour)
     val textColor = MaterialTheme.colorScheme.onSurface.copy(alpha = if (alarm.enabled) 1f else 0.5f)
     Card(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
         Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                Modifier
-                    .size(12.dp)
-                    .clip(CircleShape)
-                    .background(alarm.colorArgb?.let { Color(it) } ?: MaterialTheme.colorScheme.primary),
-            )
+            if (alarm.photo == null) {
+                Box(
+                    Modifier
+                        .size(12.dp)
+                        .clip(CircleShape)
+                        .background(alarm.colorArgb?.let { Color(it) } ?: MaterialTheme.colorScheme.primary),
+                )
+            } else {
+                val photo = rememberPhoto(photos, alarm.photo, maxSize = 256)
+                Box(
+                    Modifier
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.surfaceContainerHighest),
+                ) {
+                    photo?.let {
+                        Image(
+                            bitmap = it,
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            alpha = if (alarm.enabled) 1f else 0.5f,
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    }
+                }
+            }
             Spacer(Modifier.width(16.dp))
             Column(Modifier.weight(1f)) {
                 Text(time, style = MaterialTheme.typography.displaySmall, color = textColor)

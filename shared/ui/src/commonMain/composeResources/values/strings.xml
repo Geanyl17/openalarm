@@ -74,6 +74,10 @@
     <string name="sound">Sound</string>
     <string name="sound_default">Default alarm sound</string>
     <string name="sound_custom">Custom sound</string>
+    <string name="photo">Cover photo</string>
+    <string name="photo_add">Add photo</string>
+    <string name="photo_change">Change</string>
+    <string name="photo_remove">Remove</string>
     <string name="mission">Mission</string>
     <string name="mission_none">None</string>
     <string name="mission_difficulty">Difficulty</string>

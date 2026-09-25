@@ -22,8 +22,10 @@ data class Alarm(
     val snoozeMinutes: Int = DEFAULT_SNOOZE_MINUTES,
     /** Seed color (ARGB) for this alarm's screens, or null for the app's theme color. */
     val colorArgb: Int? = null,
-    /** Platform sound reference (a content URI on Android), or null for the default alarm sound. */
+    /** Platform sound reference (a URI on Android), or null for the default alarm sound. */
     val sound: String? = null,
+    /** Platform reference to a cover photo shown when the alarm rings (a file URI on Android), or null for none. */
+    val photo: String? = null,
     /** Challenges to complete, in order, before the alarm turns off. Empty means a plain dismiss button. */
     val missions: List<Mission> = emptyList(),
     /** When a snoozed alarm rings again, in epoch milliseconds; null when it isn't snoozed. */

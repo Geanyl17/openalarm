@@ -1,5 +1,6 @@
 package io.github.geanyl17.openalarm.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,6 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -43,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -69,6 +73,10 @@ import io.github.geanyl17.openalarm.ui.resources.mission_difficulty
 import io.github.geanyl17.openalarm.ui.resources.mission_none
 import io.github.geanyl17.openalarm.ui.resources.mission_rounds
 import io.github.geanyl17.openalarm.ui.resources.new_alarm
+import io.github.geanyl17.openalarm.ui.resources.photo
+import io.github.geanyl17.openalarm.ui.resources.photo_add
+import io.github.geanyl17.openalarm.ui.resources.photo_change
+import io.github.geanyl17.openalarm.ui.resources.photo_remove
 import io.github.geanyl17.openalarm.ui.resources.repeat
 import io.github.geanyl17.openalarm.ui.resources.rings_in
 import io.github.geanyl17.openalarm.ui.resources.save
@@ -95,6 +103,7 @@ internal fun AlarmEditorScreen(
     initial: Alarm?,
     use24Hour: Boolean,
     sounds: AlarmSounds,
+    photos: AlarmPhotos,
     onSave: (Alarm) -> Unit,
     onDelete: (Alarm) -> Unit,
     onClose: () -> Unit,
@@ -109,6 +118,7 @@ internal fun AlarmEditorScreen(
     var difficulty by rememberSaveable { mutableStateOf(baseMission?.difficulty ?: Difficulty.Normal) }
     var rounds by rememberSaveable { mutableIntStateOf(baseMission?.rounds ?: 3) }
     var sound by rememberSaveable { mutableStateOf(base.sound) }
+    var photo by rememberSaveable { mutableStateOf(base.photo) }
     var colorArgb by rememberSaveable { mutableStateOf(base.colorArgb) }
     var vibrate by rememberSaveable { mutableStateOf(base.vibrate) }
     var fadeIn by rememberSaveable { mutableStateOf(base.fadeIn) }
@@ -140,6 +150,7 @@ internal fun AlarmEditorScreen(
                                         snoozeMinutes = snoozeMinutes,
                                         colorArgb = colorArgb,
                                         sound = sound,
+                                        photo = photo,
                                         missions = listOfNotNull(missionType?.let { Mission(it, difficulty, rounds) }),
                                     ),
                                 )
@@ -198,6 +209,9 @@ internal fun AlarmEditorScreen(
 
                 SectionTitle(stringResource(Res.string.color))
                 AlarmColorPicker(selected = colorArgb, onSelect = { colorArgb = it })
+
+                SectionTitle(stringResource(Res.string.photo))
+                PhotoPicker(photo, photos, onChange = { photo = it })
 
                 SwitchRow(stringResource(Res.string.vibrate), vibrate) { vibrate = it }
                 SwitchRow(stringResource(Res.string.fade_in), fadeIn) { fadeIn = it }
@@ -275,6 +289,30 @@ private fun SoundRow(sound: String?, sounds: AlarmSounds, onChosen: (String?) ->
     ) {
         Text(stringResource(Res.string.sound), style = MaterialTheme.typography.bodyLarge)
         Text(name, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+}
+
+@Composable
+private fun PhotoPicker(photo: String?, photos: AlarmPhotos, onChange: (String?) -> Unit) {
+    if (photo == null) {
+        OutlinedButton(onClick = { photos.choose(onChange) }) { Text(stringResource(Res.string.photo_add)) }
+        return
+    }
+    val bitmap = rememberPhoto(photos, photo, maxSize = 1024)
+    Column {
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .height(160.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(MaterialTheme.colorScheme.surfaceContainerHighest),
+        ) {
+            bitmap?.let { Image(it, contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize()) }
+        }
+        Row(Modifier.align(Alignment.End)) {
+            TextButton(onClick = { photos.choose(onChange) }) { Text(stringResource(Res.string.photo_change)) }
+            TextButton(onClick = { onChange(null) }) { Text(stringResource(Res.string.photo_remove)) }
+        }
     }
 }
 

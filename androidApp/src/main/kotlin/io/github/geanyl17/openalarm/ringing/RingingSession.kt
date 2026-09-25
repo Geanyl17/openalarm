@@ -21,6 +21,8 @@ data class Ringing(val alarms: List<Alarm>) {
 
     /** Every ringing alarm's missions, all of which must be done to turn them off. */
     val missions: List<Mission> get() = alarms.flatMap { it.missions }
+
+    val photo: String? get() = alarms.firstNotNullOfOrNull { it.photo }
 }
 
 /** What's ringing right now. [RingingService] updates it, and [RingingActivity] shows it. */

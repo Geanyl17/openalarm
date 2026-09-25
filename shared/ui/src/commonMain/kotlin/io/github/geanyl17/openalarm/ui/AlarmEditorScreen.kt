@@ -46,7 +46,13 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import io.github.geanyl17.openalarm.core.Alarm
+import io.github.geanyl17.openalarm.core.Difficulty
+import io.github.geanyl17.openalarm.core.Mission
+import io.github.geanyl17.openalarm.core.MissionType
 import io.github.geanyl17.openalarm.core.RepeatDays
+import io.github.geanyl17.openalarm.missions.difficultyName
+import io.github.geanyl17.openalarm.missions.missionDescription
+import io.github.geanyl17.openalarm.missions.missionName
 import io.github.geanyl17.openalarm.ui.resources.Res
 import io.github.geanyl17.openalarm.ui.resources.cancel
 import io.github.geanyl17.openalarm.ui.resources.color
@@ -60,6 +66,10 @@ import io.github.geanyl17.openalarm.ui.resources.ic_keyboard
 import io.github.geanyl17.openalarm.ui.resources.ic_schedule
 import io.github.geanyl17.openalarm.ui.resources.label
 import io.github.geanyl17.openalarm.ui.resources.minutes_short
+import io.github.geanyl17.openalarm.ui.resources.mission
+import io.github.geanyl17.openalarm.ui.resources.mission_difficulty
+import io.github.geanyl17.openalarm.ui.resources.mission_none
+import io.github.geanyl17.openalarm.ui.resources.mission_rounds
 import io.github.geanyl17.openalarm.ui.resources.new_alarm
 import io.github.geanyl17.openalarm.ui.resources.repeat
 import io.github.geanyl17.openalarm.ui.resources.save
@@ -72,6 +82,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 private val SnoozeChoices = listOf(5, 9, 10, 15, 20)
+private val RoundChoices = listOf(1, 2, 3, 5)
 private const val MAX_LABEL_LENGTH = 60
 
 /** Creates a new alarm when [initial] is null, otherwise edits it. */
@@ -85,10 +96,14 @@ internal fun AlarmEditorScreen(
     onClose: () -> Unit,
 ) {
     val base = initial ?: Alarm(hour = 7, minute = 0)
+    val baseMission = base.missions.firstOrNull()
     val timeState = rememberTimePickerState(initialHour = base.hour, initialMinute = base.minute, is24Hour = use24Hour)
     var typing by rememberSaveable { mutableStateOf(false) }
     var repeat by rememberSaveable { mutableIntStateOf(base.repeat.mask) }
     var label by rememberSaveable { mutableStateOf(base.label) }
+    var missionType by rememberSaveable { mutableStateOf(baseMission?.type) }
+    var difficulty by rememberSaveable { mutableStateOf(baseMission?.difficulty ?: Difficulty.Normal) }
+    var rounds by rememberSaveable { mutableIntStateOf(baseMission?.rounds ?: 3) }
     var colorArgb by rememberSaveable { mutableStateOf(base.colorArgb) }
     var vibrate by rememberSaveable { mutableStateOf(base.vibrate) }
     var fadeIn by rememberSaveable { mutableStateOf(base.fadeIn) }
@@ -117,6 +132,7 @@ internal fun AlarmEditorScreen(
                                     fadeIn = fadeIn,
                                     snoozeMinutes = snoozeMinutes,
                                     colorArgb = colorArgb,
+                                    missions = listOfNotNull(missionType?.let { Mission(it, difficulty, rounds) }),
                                 ),
                             )
                         },
@@ -154,6 +170,25 @@ internal fun AlarmEditorScreen(
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
             )
 
+            SectionTitle(stringResource(Res.string.mission))
+            ChoiceChips(
+                options = listOf(null) + MissionType.entries,
+                selected = missionType,
+                label = { type -> if (type == null) stringResource(Res.string.mission_none) else missionName(type) },
+                onSelect = { missionType = it },
+            )
+            missionType?.let { type ->
+                Text(
+                    text = missionDescription(Mission(type, difficulty, rounds)),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Text(stringResource(Res.string.mission_difficulty), style = MaterialTheme.typography.labelLarge)
+                ChoiceChips(Difficulty.entries, difficulty, label = { difficultyName(it) }, onSelect = { difficulty = it })
+                Text(stringResource(Res.string.mission_rounds), style = MaterialTheme.typography.labelLarge)
+                ChoiceChips(RoundChoices, rounds, label = { it.toString() }, onSelect = { rounds = it })
+            }
+
             SectionTitle(stringResource(Res.string.color))
             AlarmColorPicker(selected = colorArgb, onSelect = { colorArgb = it })
 
@@ -161,15 +196,7 @@ internal fun AlarmEditorScreen(
             SwitchRow(stringResource(Res.string.fade_in), stringResource(Res.string.fade_in_description), fadeIn) { fadeIn = it }
 
             SectionTitle(stringResource(Res.string.snooze_length))
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                SnoozeChoices.forEach { minutes ->
-                    FilterChip(
-                        selected = minutes == snoozeMinutes,
-                        onClick = { snoozeMinutes = minutes },
-                        label = { Text(stringResource(Res.string.minutes_short, minutes)) },
-                    )
-                }
-            }
+            ChoiceChips(SnoozeChoices, snoozeMinutes, label = { stringResource(Res.string.minutes_short, it) }, onSelect = { snoozeMinutes = it })
 
             if (initial != null) {
                 Spacer(Modifier.height(8.dp))
@@ -196,6 +223,19 @@ private fun SectionTitle(text: String) {
         color = MaterialTheme.colorScheme.primary,
         modifier = Modifier.padding(top = 16.dp, bottom = 4.dp),
     )
+}
+
+@Composable
+private fun <T> ChoiceChips(options: List<T>, selected: T, label: @Composable (T) -> String, onSelect: (T) -> Unit) {
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        options.forEach { option ->
+            FilterChip(
+                selected = option == selected,
+                onClick = { onSelect(option) },
+                label = { Text(label(option)) },
+            )
+        }
+    }
 }
 
 @Composable

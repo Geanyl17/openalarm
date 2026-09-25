@@ -41,6 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.geanyl17.openalarm.core.Alarm
 import io.github.geanyl17.openalarm.core.nextUpcoming
+import io.github.geanyl17.openalarm.missions.missionName
 import io.github.geanyl17.openalarm.ui.resources.Res
 import io.github.geanyl17.openalarm.ui.resources.add_alarm
 import io.github.geanyl17.openalarm.ui.resources.alarm_at
@@ -145,7 +146,11 @@ private fun AlarmCard(alarm: Alarm, use24Hour: Boolean, now: Instant, onClick: (
             Column(Modifier.weight(1f)) {
                 Text(time, style = MaterialTheme.typography.displaySmall, color = textColor)
                 Text(
-                    text = listOfNotNull(alarm.label.ifBlank { null }, repeatSummary(alarm.repeat)).joinToString(" · "),
+                    text = listOfNotNull(
+                        alarm.label.ifBlank { null },
+                        repeatSummary(alarm.repeat),
+                        alarm.missions.firstOrNull()?.let { missionName(it.type) },
+                    ).joinToString(" · "),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

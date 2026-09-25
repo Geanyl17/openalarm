@@ -65,6 +65,10 @@
     <string name="fade_in_description">The volume rises over 30 seconds</string>
     <string name="snooze_length">Snooze length</string>
     <string name="minutes_short">%1$d min</string>
+    <string name="mission">Mission</string>
+    <string name="mission_none">None</string>
+    <string name="mission_difficulty">Difficulty</string>
+    <string name="mission_rounds">How many in a row</string>
 
     <!-- Colors -->
     <string name="color_default">Theme color</string>
